@@ -34,6 +34,7 @@ func airways():
 ## Execute One step (dt) of the model
 func step():
 	# Display parameters
+	print(str(age))
 	print("Time = " + str(time))
 	print("    O2 in aw = " + str(pp_O2_aw_t0))
 
@@ -46,14 +47,6 @@ func step():
 	pp_O2_alv_t0 	= pp_O2_alv_t1
 	
 	time = time + dt
-
-# ***********************
-# Variable change functions
-# *********************** 
-
-func _on_age_text_entered(new_age):
-	age = int(new_age)
-	print("Nouvel âge: " +str(age))
 
 # ***********************
 # Simulator functions
@@ -78,6 +71,14 @@ func _on_play_button_down():
 func _on_stop_button_down():
 	play = false
 
-func _on_text_age_submitted(new_text):
-	_on_age_text_entered(new_text)
+# ***********************
+# Variable change functions
+# *********************** 
+
+func _on_text_age(new_text):
+	if(new_text==""):
+		age = 25
+	else:
+		age = int(new_text)
+	print("Nouvel âge: " +str(age))
 
