@@ -18,7 +18,7 @@ var pp_O2_alv_t0:float = 1.0
 var pp_O2_alv_t1:float = 0.0
 
 # ***********************
-# Compartment functions
+# Compartments functions
 # ***********************
 
 ## Compute the partial pressure of aw
