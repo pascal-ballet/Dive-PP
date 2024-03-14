@@ -1,15 +1,16 @@
 extends Node2D
 
+# Simulator parameters
+var play:bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	for i in 10:
-		step()
+	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
-
+	if play == true:
+		step()
 
 # ***********************
 # Model parameters
@@ -31,18 +32,34 @@ var pp_O2_alv_t1:float = 0.0
 # ***********************
 # Compartment functions
 # ***********************
+
+## Compute the partial pressure of aw
 func airways():
 	var delta = (0.8 * pp_O2_aw_t0 + 0.1 * pp_O2_air_t0 + 0.1 * pp_O2_alv_t0)*dt
 	pp_O2_aw_t1 = pp_O2_aw_t0 + delta
 
-# Execute One step (dt) of the model
+## Execute One step (dt) of the model
 func step():
+	# Display parameters
+	print("Time = " + str(time))
+	print("    O2 aw = " + str(pp_O2_aw_t0))
+
 	# Compute one step
 	airways()
 	
-	# Next step
+	# Prepare the next step
 	pp_O2_air_t0 	= pp_O2_air_t1
 	pp_O2_aw_t0 	= pp_O2_aw_t1
 	pp_O2_alv_t0 	= pp_O2_alv_t1
 	
 	time = time + dt
+
+# ***********************
+# Simulator functions
+# ***********************
+
+func _on_play_button_down():
+	play = true
+
+func _on_stop_button_down():
+	play = false
