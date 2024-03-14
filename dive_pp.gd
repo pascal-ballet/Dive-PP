@@ -3,6 +3,7 @@ extends Node2D
 # ***********************
 # Model parameters
 # ***********************
+var age: int = 25
 var time:float = 0.0
 var dt:float = 0.001
 # Air compartment parameters
@@ -43,6 +44,14 @@ func step():
 	time = time + dt
 
 # ***********************
+# Variable change functions
+# *********************** 
+
+func _on_age_text_entered(new_age):
+	age = int(new_age)
+	print("Nouvel âge: " +str(age))
+
+# ***********************
 # Simulator functions
 # ***********************
 
@@ -51,7 +60,8 @@ var play:bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	$RichTextLabel.bbcode_enabled = true
+	$RichTextLabel.bbcode_text = "[center]Application to compute Partial Pressure of O2 and N2 in human body[/center]"
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
@@ -63,3 +73,7 @@ func _on_play_button_down():
 
 func _on_stop_button_down():
 	play = false
+
+func _on_text_age_submitted(new_text):
+	_on_age_text_entered(new_text)
+

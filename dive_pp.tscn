@@ -6,16 +6,34 @@
 script = ExtResource("1_vi5rk")
 
 [node name="Play" type="Button" parent="."]
-offset_right = 8.0
-offset_bottom = 8.0
+offset_left = 400.0
+offset_top = 300.0
+offset_right = 450.0
+offset_bottom = 331.0
 text = "Play"
 
 [node name="Stop" type="Button" parent="."]
-offset_left = 51.0
-offset_right = 94.0
-offset_bottom = 31.0
+offset_left = 750.0
+offset_top = 300.0
+offset_right = 800.0
+offset_bottom = 331.0
 text = "Stop
 "
 
+[node name="LineEdit" type="LineEdit" parent="."]
+offset_left = 550.0
+offset_top = 75.0
+offset_right = 650.0
+offset_bottom = 106.0
+placeholder_text = "Entrez l'âge"
+alignment = 1
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 403.0
+offset_top = 2.0
+offset_right = 803.0
+offset_bottom = 52.0
+
 [connection signal="button_down" from="Play" to="." method="_on_play_button_down"]
 [connection signal="button_down" from="Stop" to="." method="_on_stop_button_down"]
+[connection signal="text_submitted" from="LineEdit" to="." method="_on_text_age_submitted"]
