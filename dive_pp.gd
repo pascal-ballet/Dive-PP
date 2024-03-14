@@ -30,7 +30,7 @@ func airways():
 func step():
 	# Display parameters
 	print("Time = " + str(time))
-	print("    O2 aw = " + str(pp_O2_aw_t0))
+	print("    O2 in aw = " + str(pp_O2_aw_t0))
 
 	# Compute one step
 	airways()
