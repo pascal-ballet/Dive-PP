@@ -22,6 +22,10 @@ var pp_O2_alv_t1:float = 0.0
 # Compartments functions
 # ***********************
 
+## Compute the partial pressure of air
+
+
+
 ## Compute the partial pressure of aw
 func airways():
 	var delta = (0.8 * pp_O2_aw_t0 + 0.1 * pp_O2_air_t0 + 0.1 * pp_O2_alv_t0)*dt
