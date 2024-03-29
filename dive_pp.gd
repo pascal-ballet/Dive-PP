@@ -5,15 +5,15 @@ extends Node2D
 # ***********************
 
 var vent: float = 8.1
-var vaw: float = 1.0
-var valg: float = 1.5
+var vaw: float = 1.5
+var valg: float = 1.0
 var valb: float = 0.5
 var q: float = 4.2
 var va: float = 1.7
 var vc: float = 0.5
 var vv: float = 3.0
 var vti: float = 70.0
-var mo2: float = 0.119
+var mo2: float = 8.33
 var patm: float = 101325.0
 var fo2: float = 0.21
 
@@ -21,36 +21,50 @@ var fo2: float = 0.21
 # Model parameters
 # ***********************
 
-var a = 55000000000
-var b = 25000000000
-var hb = 2.19
-var oxc = 1.34
-var alpha_o2 = 0.00000997
-var ph2o:float = 6246
+var a: float = 55000000000.0
+var b: float = 2500000.0
+var hb: float = 2.1911765
+var oxc:float = 1.34
+var alpha_o2:float = 0.00000997
+var ph2o:float = 6246.0
 var k1o2:float = 0.0025
 var k2o2:float = 0.007
+var k3o2:float = 0.0025
 var R:float = 8.314
-var T:float = 310
+var T:float = 310.0
 var time:float = 0.0
 var dt:float = 0.001
 # Air compartment parameter
-var pp_O2_air:float = 19967
+var pp_O2_air:float = 19967.0
 
 # Airways compartment parameters
-var pp_O2_aw_t0:float = 17300
+var pp_O2_aw_t0:float = 17300.0
 var pp_O2_aw_t1:float = 0.0
 
 # Alveols gas compartment parameters
-var pp_O2_alv_t0:float = 14000
+var pp_O2_alv_t0:float = 14000.0
 var pp_O2_alv_t1:float = 0.0
 
 # Alveols blood compartment parameters
-var pp_O2_alb_t0:float = 13300
+var pp_O2_alb_t0:float = 13300.0
 var pp_O2_alb_t1:float = 0.0
 
 # Venous blood compartment parameters
-var pp_O2_v_t0 = 5300
+var pp_O2_v_t0:float = 5300.0
 var pp_O2_v_t1 = 0.0
+
+# Arterial blood compartment parameters
+var pp_O2_a_t0 = 12800.0
+var pp_O2_a_t1 = 0.0
+
+# Capilar blood compartment parameters
+var pp_O2_c_t0 = 6000.0
+var pp_O2_c_t1 = 0.0
+
+# Tissue compartment parameters
+var pp_O2_ti_t0 = 2000.0
+var pp_O2_ti_t1 = 0.0
+
 
 # ***********************
 # Compartments functions
@@ -62,8 +76,8 @@ func air():
 
 ## Compute the partial pressure of aw
 func airways():
-	var delta = (vent*(pp_O2_air-pp_O2_aw_t0)-k1o2*(pp_O2_aw_t0-pp_O2_alv_t0)*R*T/vaw)*dt
-	pp_O2_aw_t1 = pp_O2_aw_t1 + delta
+	var delta = ((vent/vaw*pp_O2_air)-((vent+k1o2*R*T)/vaw*pp_O2_aw_t0)+((k1o2*R*T)/vaw*pp_O2_alv_t0))*dt
+	pp_O2_aw_t1 = pp_O2_aw_t0 + delta
 
 ## Compute the partial pressure of alv
 func alveolar():
@@ -75,17 +89,50 @@ func alveolar_blood():
 	var f1 = f(pp_O2_v_t0)
 	var f2 = f(pp_O2_alb_t0)
 	var f3 = f_prime(pp_O2_alb_t0)
-	var delta = (1/valb*f3*(k2o2*(pp_O2_alv_t0-pp_O2_alb_t0)+q*(f1-f2)))*dt
+	var delta = (1/(valb*f3)*(k2o2*(pp_O2_alv_t0-pp_O2_alb_t0)+q*(f1-f2)))*dt
 	pp_O2_alb_t1 = pp_O2_alb_t0 + delta
-	
+
+## Compute the partial pressure of a
+func arterial_blood():
+	var f1 = f(pp_O2_alb_t0)
+	var f2 = f(pp_O2_a_t0)
+	var f3 = f_prime(pp_O2_a_t0)
+	var delta = (q/(va*f3)*(f1-f2))*dt
+	pp_O2_a_t1 = pp_O2_a_t0 + delta
+
+## Compute the partial pressure of v
+func venous_blood():
+	var f1 = f(pp_O2_c_t0)
+	var f2 = f(pp_O2_v_t0)
+	var f3 = f_prime(pp_O2_v_t0)
+	var delta = (q/(vv*f3)*(f1-f2))*dt
+	pp_O2_v_t1 = pp_O2_v_t0 + delta
+
+## Compute the partial pressure of c
+func capilar_blood():
+	var f1 = f(pp_O2_a_t0)
+	var f2 = f(pp_O2_c_t0)
+	var f3 = f_prime(pp_O2_c_t0)
+	var delta = (1/(vc*f3)*(q*(f1-f2)-k3o2*(pp_O2_c_t0-pp_O2_ti_t0)))*dt
+	print(delta)
+	pp_O2_c_t1 = pp_O2_c_t0 + delta
+
+## Compute the partial pressure of ti
+func tissue():
+	var delta = (1/(vti*alpha_o2)*(k3o2*(pp_O2_c_t0-pp_O2_ti_t0)-mo2))*dt
+	pp_O2_ti_t1 = pp_O2_ti_t0 + delta
+
 ## Function f
 func f(value):
-	var res = ((a*(value+b*value)**-1)+1)**-1*hb*oxc+alpha_o2*value
+	var r1 = value**3
+	var res = 1/((a*1/(r1+b*value))+1)*hb*oxc+alpha_o2*value
 	return res
 
 ## Function f prime
 func f_prime(value):
-	var res = a*hb*oxc*(3*value**2+b)/(value**3+b*value+a)**2+alpha_o2
+	var r1 = value**3
+	var r2 = value**2
+	var res = a*hb*oxc*(3*r2+b)/(r1+b*value+a)**2+alpha_o2
 	return res
 
 ## Execute One step (dt) of the model
@@ -93,9 +140,13 @@ func step():
 	# Display parameters
 	print("Time = " + str(time))
 	print("    O2 in air in Pa = " + str(pp_O2_air))
-	print("    O2 in aw in Pa = " + str(pp_O2_aw_t1))
-	print("    O2 in alv in Pa = " + str(pp_O2_alv_t1))
-	print("    O2 in alb in Pa = " + str(pp_O2_alb_t1))
+	print("    O2 in aw in Pa = " + str(pp_O2_aw_t0))
+	print("    O2 in alv in Pa = " + str(pp_O2_alv_t0))
+	print("    O2 in alb in Pa = " + str(pp_O2_alb_t0))
+	print("    O2 in a in Pa = " + str(pp_O2_a_t0))
+	print("    O2 in c in Pa = " + str(pp_O2_c_t0))
+	print("    O2 in v in Pa = " + str(pp_O2_v_t0))
+	print("    O2 in ti in Pa = " + str(pp_O2_ti_t0))
 	time = time + dt
 	
 		# Compute one step
@@ -103,11 +154,19 @@ func step():
 	airways()
 	alveolar()
 	alveolar_blood()
+	arterial_blood()
+	venous_blood()
+	capilar_blood()
+	tissue()
 	
 		# Prepare the next step
 	pp_O2_aw_t0 	= pp_O2_aw_t1
 	pp_O2_alv_t0	= pp_O2_alv_t1
 	pp_O2_alb_t0	 = pp_O2_alb_t1
+	pp_O2_a_t0		= pp_O2_a_t1
+	pp_O2_v_t0		= pp_O2_v_t1
+	pp_O2_c_t0		= pp_O2_c_t1
+	pp_O2_ti_t0 	= pp_O2_ti_t1
 
 # ***********************
 # Simulator functions
