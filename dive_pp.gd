@@ -76,7 +76,7 @@ func air():
 
 ## Compute the partial pressure of aw
 func airways():
-	var delta = ((vent/vaw*pp_O2_air)-((vent+k1o2*R*T)/vaw*pp_O2_aw_t0)+((k1o2*R*T)/vaw*pp_O2_alv_t0))*dt
+	var delta = ((vent/vaw*pp_O2_air)-(vent+k1o2*R*T)/vaw*pp_O2_aw_t0+(k1o2*R*T)/vaw*pp_O2_alv_t0)*dt
 	pp_O2_aw_t1 = pp_O2_aw_t0 + delta
 
 ## Compute the partial pressure of alv
@@ -86,54 +86,40 @@ func alveolar():
 
 ## Compute the partial pressure of alb
 func alveolar_blood():
-	var f1 = f(pp_O2_v_t0)
-	var f2 = f(pp_O2_alb_t0)
-	var f3 = f_prime(pp_O2_alb_t0)
+	var f1 = ((a*(pp_O2_v_t0**3+b*pp_O2_v_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_v_t0
+	var f2 = ((a*(pp_O2_alb_t0**3+b*pp_O2_alb_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_alb_t0
+	var f3 = a*hb*oxc*(3*pp_O2_alb_t0**2+b)/(pp_O2_alb_t0**3+b*pp_O2_alb_t0+a)**2+alpha_o2
 	var delta = (1/(valb*f3)*(k2o2*(pp_O2_alv_t0-pp_O2_alb_t0)+q*(f1-f2)))*dt
 	pp_O2_alb_t1 = pp_O2_alb_t0 + delta
 
 ## Compute the partial pressure of a
 func arterial_blood():
-	var f1 = f(pp_O2_alb_t0)
-	var f2 = f(pp_O2_a_t0)
-	var f3 = f_prime(pp_O2_a_t0)
+	var f1 = ((a*(pp_O2_alb_t0**3+b*pp_O2_alb_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_alb_t0
+	var f2 = ((a*(pp_O2_a_t0**3+b*pp_O2_a_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_a_t0
+	var f3 = a*hb*oxc*(3*pp_O2_a_t0**2+b)/(pp_O2_a_t0**3+b*pp_O2_a_t0+a)**2+alpha_o2
 	var delta = (q/(va*f3)*(f1-f2))*dt
 	pp_O2_a_t1 = pp_O2_a_t0 + delta
 
 ## Compute the partial pressure of v
 func venous_blood():
-	var f1 = f(pp_O2_c_t0)
-	var f2 = f(pp_O2_v_t0)
-	var f3 = f_prime(pp_O2_v_t0)
+	var f1 = ((a*(pp_O2_c_t0**3+b*pp_O2_c_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_c_t0
+	var f2 = ((a*(pp_O2_v_t0**3+b*pp_O2_v_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_v_t0
+	var f3 = a*hb*oxc*(3*pp_O2_v_t0**2+b)/(pp_O2_v_t0**3+b*pp_O2_v_t0+a)**2+alpha_o2
 	var delta = (q/(vv*f3)*(f1-f2))*dt
 	pp_O2_v_t1 = pp_O2_v_t0 + delta
 
 ## Compute the partial pressure of c
 func capilar_blood():
-	var f1 = f(pp_O2_a_t0)
-	var f2 = f(pp_O2_c_t0)
-	var f3 = f_prime(pp_O2_c_t0)
+	var f1 = ((a*(pp_O2_a_t0**3+b*pp_O2_a_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_a_t0
+	var f2 = ((a*(pp_O2_c_t0**3+b*pp_O2_c_t0)**-1)+1)**-1*hb*oxc+alpha_o2*pp_O2_c_t0
+	var f3 = a*hb*oxc*(3*pp_O2_c_t0**2+b)/(pp_O2_c_t0**3+b*pp_O2_c_t0+a)**2+alpha_o2
 	var delta = (1/(vc*f3)*(q*(f1-f2)-k3o2*(pp_O2_c_t0-pp_O2_ti_t0)))*dt
-	print(delta)
 	pp_O2_c_t1 = pp_O2_c_t0 + delta
 
 ## Compute the partial pressure of ti
 func tissue():
 	var delta = (1/(vti*alpha_o2)*(k3o2*(pp_O2_c_t0-pp_O2_ti_t0)-mo2))*dt
 	pp_O2_ti_t1 = pp_O2_ti_t0 + delta
-
-## Function f
-func f(value):
-	var r1 = value**3
-	var res = 1/((a*1/(r1+b*value))+1)*hb*oxc+alpha_o2*value
-	return res
-
-## Function f prime
-func f_prime(value):
-	var r1 = value**3
-	var r2 = value**2
-	var res = a*hb*oxc*(3*r2+b)/(r1+b*value+a)**2+alpha_o2
-	return res
 
 ## Execute One step (dt) of the model
 func step():
@@ -153,10 +139,14 @@ func step():
 	air()
 	airways()
 	alveolar()
-	alveolar_blood()
-	arterial_blood()
-	venous_blood()
-	capilar_blood()
+	#alveolar_blood()
+	pp_O2_alb_t1 = 12867
+	#arterial_blood()
+	pp_O2_a_t1 = 12835
+	#venous_blood()
+	pp_O2_v_t1 = 5355
+	#capilar_blood()
+	pp_O2_c_t1 = 5358
 	tissue()
 	
 		# Prepare the next step
