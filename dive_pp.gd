@@ -165,7 +165,7 @@ var play:bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$RichTextLabel.bbcode_enabled = true
-	$RichTextLabel.bbcode_text = "[center]Application to compute Partial Pressure of O2 and N2 in human body[/center]"
+	$RichTextLabel.bbcode_text = "[center]Application to compute Partial Pressure of O2 in human body[/center]"
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
