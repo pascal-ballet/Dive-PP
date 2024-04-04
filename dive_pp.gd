@@ -24,7 +24,7 @@ var fo2: float = 0.21
 var a: float = 55000000000.0
 var b: float = 2500000.0
 var hb: float = 2.1911765
-var oxc:float = 1.34
+var oxc:float = 4* (1.34 / 1.39)
 var alpha_o2:float = 0.00000997
 var ph2o:float = 6246.0
 var k1o2:float = 0.0025
@@ -139,14 +139,10 @@ func step():
 	air()
 	airways()
 	alveolar()
-	#alveolar_blood()
-	pp_O2_alb_t1 = 12867
-	#arterial_blood()
-	pp_O2_a_t1 = 12835
-	#venous_blood()
-	pp_O2_v_t1 = 5355
-	#capilar_blood()
-	pp_O2_c_t1 = 5358
+	alveolar_blood()
+	arterial_blood()
+	venous_blood()
+	capilar_blood()
 	tissue()
 	
 		# Prepare the next step
