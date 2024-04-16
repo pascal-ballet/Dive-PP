@@ -13,57 +13,52 @@ var va: float = 1.7
 var vc: float = 0.5
 var vv: float = 3.0
 var vti: float = 70.0
-var mo2: float = 8.33
 var patm: float = 101325.0
-var fo2: float = 0.21
+var fn2: float = 0.79
 
 # ***********************
 # Model parameters
 # ***********************
 
-var a: float = 55000000000.0
-var b: float = 2500000.0
-var hb: float = 2.1911765
-var oxc:float = 4*(1.34/1.39)
-var alpha_o2:float = 0.00000997
+var alpha_n2:float = 0.0000619
 var ph2o:float = 6246.0
-var k1o2:float = 0.0025
-var k2o2:float = 0.007
-var k3o2:float = 0.0025
+var k1:float = 0.00267
+var k2:float = 0.00748
+var k3:float = 0.00267
 var R:float = 8.314
 var T:float = 310.0
 var time:float = 0.0
 var dt:float = 0.001
 
 # Air compartment parameter
-var pp_N2_air:float = 19967.0
+var pp_N2_air:float = 0.0
 
 # Airways compartment parameters
-var pp_N2_aw_t0:float = 17300.0
+var pp_N2_aw_t0:float = 75112.41
 var pp_N2_aw_t1:float = 0.0
 
 # Alveols gas compartment parameters
-var pp_N2_alv_t0:float = 14000.0
+var pp_N2_alv_t0:float = 75112.41
 var pp_N2_alv_t1:float = 0.0
 
 # Alveols blood compartment parameters
-var pp_N2_alb_t0:float = 13300.0
+var pp_N2_alb_t0:float = 75112.41
 var pp_N2_alb_t1:float = 0.0
 
 # Venous blood compartment parameters
-var pp_N2_v_t0:float = 5300.0
+var pp_N2_v_t0:float = 75112.41
 var pp_N2_v_t1 = 0.0
 
 # Arterial blood compartment parameters
-var pp_N2_a_t0 = 12800.0
+var pp_N2_a_t0 = 75112.41
 var pp_N2_a_t1 = 0.0
 
 # Capilar blood compartment parameters
-var pp_N2_c_t0 = 6000.0
+var pp_N2_c_t0 = 75112.41
 var pp_N2_c_t1 = 0.0
 
 # Tissue compartment parameters
-var pp_N2_ti_t0 = 2000.0
+var pp_N2_ti_t0 = 75112.41
 var pp_N2_ti_t1 = 0.0
 
 
@@ -73,35 +68,43 @@ var pp_N2_ti_t1 = 0.0
 
 ## Compute the partial pressure of air
 func air():
-	pass
+	pp_N2_air = (patm-ph2o)*fn2
 	
 ## Compute the partial pressure of aw
 func airways():
-	pass
-	
+	var delta = ((vent/vaw*pp_N2_air)-(vent+k1*R*T)/vaw*pp_N2_aw_t0+(k1*R*T)/vaw*pp_N2_alv_t0)*dt
+	print(delta)
+	pp_N2_aw_t1 = pp_N2_aw_t0 + delta
+
 ## Compute the partial pressure of alv
 func alveolar():
-	pass
-	
+	var delta = (-R*T/valg*(k1+k2)*pp_N2_alv_t0+R*T/valg*(k1*pp_N2_aw_t0+k2*pp_N2_alb_t0))*dt
+	pp_N2_alv_t1 = pp_N2_alv_t0 + delta
+
 ## Compute the partial pressure of alb
 func alveolar_blood():
-	pass
-	
+	var delta = (1/(valb*alpha_n2)*(k2*pp_N2_alv_t0-pp_N2_alb_t0*(k2+alpha_n2*q)+alpha_n2*q*pp_N2_v_t0))*dt
+	pp_N2_alb_t1 = pp_N2_alb_t0 + delta
+
 ## Compute the partial pressure of a
 func arterial_blood():
-	pass
+	var delta = (q/va*(pp_N2_alb_t0-pp_N2_a_t0))*dt
+	pp_N2_a_t1 = pp_N2_a_t0 + delta
 	
 ## Compute the partial pressure of v
 func venous_blood():
-	pass
+	var delta = (q/vv*(pp_N2_c_t0-pp_N2_v_t0))*dt
+	pp_N2_v_t1 = pp_N2_v_t0 + delta
 
 ## Compute the partial pressure of c
 func capilar_blood():
-	pass
+	var delta = (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+k3)*pp_N2_c_t0+k3*pp_N2_ti_t0))*dt
+	pp_N2_c_t1 = pp_N2_c_t0 + delta
 
 ## Compute the partial pressure of ti
 func tissue():
-	pass
+	var delta = (k3/(alpha_n2*vti)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
+	pp_N2_ti_t1 = pp_N2_ti_t0 + delta
 
 ## Execute One step (dt) of the model
 func step():
@@ -226,13 +229,6 @@ func _on_text_vti(new_text):
 		vti = float(new_text)
 	print("Nouvelle valeur de V𝒕𝒊: " +str(vti))
 	
-func _on_text_metabolism(new_text):
-	if(new_text==""):
-		mo2 = 0.119
-	else:
-		mo2 = float(new_text)
-	print("Nouvelle valeur de ṀO₂: " +str(mo2))
-	
 func _on_text_patm(new_text):
 	if(new_text==""):
 		patm = 101325
@@ -242,8 +238,8 @@ func _on_text_patm(new_text):
 	
 func _on_text_fo2(new_text):
 	if(new_text==""):
-		fo2 = 0.21
+		fn2 = 0.79
 	else:
-		fo2 = float(new_text)
-	print("Nouvelle valeur de fO₂: " +str(fo2))
+		fn2 = float(new_text)
+	print("Nouvelle valeur de fO₂: " +str(fn2))
 	
