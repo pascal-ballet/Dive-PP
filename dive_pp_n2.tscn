@@ -6,25 +6,25 @@
 script = ExtResource("1_d2c84")
 
 [node name="Play" type="Button" parent="."]
-offset_left = 100.0
+offset_left = 180.0
 offset_top = 100.0
-offset_right = 150.0
+offset_right = 230.0
 offset_bottom = 131.0
 text = "Play"
 
 [node name="Stop" type="Button" parent="."]
-offset_left = 300.0
+offset_left = 495.0
 offset_top = 100.0
-offset_right = 350.0
+offset_right = 545.0
 offset_bottom = 131.0
 text = "Stop
 "
 
 [node name="Ventilatory" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 10.0
+offset_top = 6.0
 offset_right = 859.0
-offset_bottom = 41.0
+offset_bottom = 37.0
 placeholder_text = "Value of V̇"
 alignment = 1
 
@@ -36,176 +36,336 @@ offset_bottom = 52.0
 
 [node name="MeanExpiratoryReserveVolume" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 65.0
+offset_top = 61.0
 offset_right = 859.0
-offset_bottom = 96.0
+offset_bottom = 92.0
 placeholder_text = "Value of V𝑨𝒘"
 alignment = 1
 
 [node name="MeanFunctionalResidualVolume" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 120.0
+offset_top = 116.0
 offset_right = 859.0
-offset_bottom = 151.0
+offset_bottom = 147.0
 placeholder_text = "Value of V𝑨𝒍𝒈"
 alignment = 1
 
 [node name="AlveolarBloodVolume" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 175.0
+offset_top = 171.0
 offset_right = 859.0
-offset_bottom = 206.0
+offset_bottom = 202.0
 placeholder_text = "Value of V𝑨𝒍𝒃"
 alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="CardiacOutput" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 230.0
+offset_top = 226.0
 offset_right = 859.0
-offset_bottom = 261.0
+offset_bottom = 257.0
 placeholder_text = "Value of Q̇"
 alignment = 1
 
 [node name="ArterialBloodVolume" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 285.0
+offset_top = 281.0
 offset_right = 859.0
-offset_bottom = 316.0
+offset_bottom = 312.0
 placeholder_text = "Value of V𝑨"
 alignment = 1
 
 [node name="CapillaryBloodVolume" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 340.0
+offset_top = 336.0
 offset_right = 859.0
-offset_bottom = 371.0
+offset_bottom = 367.0
 placeholder_text = "Value of V𝒄"
 alignment = 1
 
 [node name="VenousBloodVolume" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 395.0
+offset_top = 391.0
 offset_right = 859.0
-offset_bottom = 426.0
+offset_bottom = 422.0
 placeholder_text = "Value of V𝒗"
 alignment = 1
 
 [node name="TissueVolume" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 450.0
+offset_top = 446.0
 offset_right = 859.0
-offset_bottom = 481.0
+offset_bottom = 477.0
 placeholder_text = "Value of V𝒕𝒊"
 alignment = 1
 
 [node name="Metabolism" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 505.0
+offset_top = 501.0
 offset_right = 859.0
-offset_bottom = 536.0
+offset_bottom = 532.0
 placeholder_text = "Value of ṀO₂"
 alignment = 1
 
 [node name="Default Value 1" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 10.0
+offset_top = 6.0
 offset_right = 1079.0
-offset_bottom = 41.0
+offset_bottom = 37.0
 text = "Default : 8.1 L.min-1"
 
 [node name="Default Value 2" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 230.0
+offset_top = 226.0
 offset_right = 1079.0
-offset_bottom = 261.0
+offset_bottom = 257.0
 text = "Default : 4.2 L.min-1"
 
 [node name="Default Value 3" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 120.0
+offset_top = 116.0
 offset_right = 1079.0
-offset_bottom = 151.0
+offset_bottom = 147.0
 text = "Default : 1.0 L"
 
 [node name="Default Value 4" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 175.0
+offset_top = 171.0
 offset_right = 1079.0
-offset_bottom = 206.0
+offset_bottom = 202.0
 text = "Default : 0.5 L"
 
 [node name="Default Value 5" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 65.0
+offset_top = 61.0
 offset_right = 1079.0
-offset_bottom = 96.0
+offset_bottom = 92.0
 text = "Default : 1.5 L"
 
 [node name="Default Value 6" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 285.0
+offset_top = 281.0
 offset_right = 1079.0
-offset_bottom = 316.0
+offset_bottom = 312.0
 text = "Default : 1.7 L"
 
 [node name="Default Value 7" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 340.0
+offset_top = 336.0
 offset_right = 1079.0
-offset_bottom = 371.0
+offset_bottom = 367.0
 text = "Default : 0.5 L"
 
 [node name="Default Value 8" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 395.0
+offset_top = 391.0
 offset_right = 1079.0
-offset_bottom = 426.0
+offset_bottom = 422.0
 text = "Default : 3 L"
 
 [node name="Default Value 9" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 450.0
+offset_top = 446.0
 offset_right = 1079.0
-offset_bottom = 481.0
+offset_bottom = 477.0
 text = "Default : 70 L"
 
 [node name="Default Value 10" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 505.0
+offset_top = 501.0
 offset_right = 1179.0
-offset_bottom = 536.0
+offset_bottom = 532.0
 text = "Default : 8.33 mmol"
 
 [node name="PressionAtmospherique" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 560.0
+offset_top = 556.0
 offset_right = 859.0
-offset_bottom = 591.0
+offset_bottom = 587.0
 placeholder_text = "Value of P𝘼𝙩𝙢"
 alignment = 1
 
 [node name="Metabolism3" type="LineEdit" parent="."]
 offset_left = 729.0
-offset_top = 615.0
+offset_top = 611.0
 offset_right = 859.0
-offset_bottom = 646.0
-placeholder_text = "Value of fO₂"
+offset_bottom = 642.0
+placeholder_text = "Value of fN₂"
 alignment = 1
 
 [node name="Default Value 11" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 615.0
-offset_right = 1179.0
-offset_bottom = 646.0
-text = "Default : 0.21 Percent"
+offset_top = 611.0
+offset_right = 1059.0
+offset_bottom = 642.0
+text = "Default : 0.79 Percent"
 
 [node name="Default Value 12" type="RichTextLabel" parent="."]
 offset_left = 879.0
-offset_top = 560.0
-offset_right = 1179.0
-offset_bottom = 591.0
+offset_top = 556.0
+offset_right = 1044.0
+offset_bottom = 587.0
 text = "Default : 101325 Pa"
+
+[node name="TabProf10" type="LineEdit" parent="."]
+offset_left = 640.0
+offset_top = 425.0
+offset_right = 707.063
+offset_bottom = 456.0
+placeholder_text = "Step 10"
+alignment = 1
+
+[node name="TabProf9" type="LineEdit" parent="."]
+offset_left = 570.0
+offset_top = 425.0
+offset_right = 637.063
+offset_bottom = 456.0
+placeholder_text = "Step 9"
+alignment = 1
+
+[node name="TabProf8" type="LineEdit" parent="."]
+offset_left = 500.0
+offset_top = 425.0
+offset_right = 567.063
+offset_bottom = 456.0
+placeholder_text = "Step 8"
+alignment = 1
+
+[node name="TabProf7" type="LineEdit" parent="."]
+offset_left = 430.0
+offset_top = 425.0
+offset_right = 497.063
+offset_bottom = 456.0
+placeholder_text = "Step 7"
+alignment = 1
+
+[node name="TabProf 6" type="LineEdit" parent="."]
+offset_left = 360.0
+offset_top = 425.0
+offset_right = 427.063
+offset_bottom = 456.0
+placeholder_text = "Step 6"
+alignment = 1
+
+[node name="TabProf5" type="LineEdit" parent="."]
+offset_left = 290.0
+offset_top = 425.0
+offset_right = 357.063
+offset_bottom = 456.0
+placeholder_text = "Step 5"
+alignment = 1
+
+[node name="TabProf4" type="LineEdit" parent="."]
+offset_left = 220.0
+offset_top = 425.0
+offset_right = 287.063
+offset_bottom = 456.0
+placeholder_text = "Step 4"
+alignment = 1
+
+[node name="TabProf3" type="LineEdit" parent="."]
+offset_left = 150.0
+offset_top = 425.0
+offset_right = 217.063
+offset_bottom = 456.0
+placeholder_text = "Step 3"
+alignment = 1
+
+[node name="TabProf2" type="LineEdit" parent="."]
+offset_left = 80.0
+offset_top = 425.0
+offset_right = 147.063
+offset_bottom = 456.0
+placeholder_text = "Step 2"
+alignment = 1
+
+[node name="TabProf1" type="LineEdit" parent="."]
+offset_left = 10.0
+offset_top = 425.0
+offset_right = 77.0625
+offset_bottom = 456.0
+placeholder_text = "Step 1"
+alignment = 1
+
+[node name="TabTime10" type="LineEdit" parent="."]
+offset_left = 640.0
+offset_top = 500.0
+offset_right = 709.0
+offset_bottom = 531.0
+placeholder_text = "Time 10"
+alignment = 1
+
+[node name="TabTime9" type="LineEdit" parent="."]
+offset_left = 570.0
+offset_top = 500.0
+offset_right = 637.063
+offset_bottom = 531.0
+placeholder_text = "Time 9"
+alignment = 1
+
+[node name="TabTime8" type="LineEdit" parent="."]
+offset_left = 500.0
+offset_top = 500.0
+offset_right = 567.063
+offset_bottom = 531.0
+placeholder_text = "Time 8"
+alignment = 1
+
+[node name="TabTime7" type="LineEdit" parent="."]
+offset_left = 430.0
+offset_top = 500.0
+offset_right = 497.063
+offset_bottom = 531.0
+placeholder_text = "Time 7"
+alignment = 1
+
+[node name="TabTime6" type="LineEdit" parent="."]
+offset_left = 360.0
+offset_top = 500.0
+offset_right = 427.063
+offset_bottom = 531.0
+placeholder_text = "Time 6"
+alignment = 1
+
+[node name="TabTime5" type="LineEdit" parent="."]
+offset_left = 290.0
+offset_top = 500.0
+offset_right = 357.063
+offset_bottom = 531.0
+placeholder_text = "Time 5"
+alignment = 1
+
+[node name="TabTime4" type="LineEdit" parent="."]
+offset_left = 220.0
+offset_top = 500.0
+offset_right = 287.063
+offset_bottom = 531.0
+placeholder_text = "Time 4"
+alignment = 1
+
+[node name="TabTime3" type="LineEdit" parent="."]
+offset_left = 150.0
+offset_top = 500.0
+offset_right = 217.063
+offset_bottom = 531.0
+placeholder_text = "Time 3"
+alignment = 1
+
+[node name="TabTime2" type="LineEdit" parent="."]
+offset_left = 80.0
+offset_top = 500.0
+offset_right = 147.063
+offset_bottom = 531.0
+placeholder_text = "Time 2"
+alignment = 1
+
+[node name="TabTime1" type="LineEdit" parent="."]
+offset_left = 10.0
+offset_top = 500.0
+offset_right = 77.0625
+offset_bottom = 531.0
+placeholder_text = "Time 1"
+alignment = 1
 
 [connection signal="button_down" from="Play" to="." method="_on_play_button_down"]
 [connection signal="button_down" from="Stop" to="." method="_on_stop_button_down"]
@@ -221,3 +381,23 @@ text = "Default : 101325 Pa"
 [connection signal="text_changed" from="Metabolism" to="." method="_on_text_metabolism"]
 [connection signal="text_changed" from="PressionAtmospherique" to="." method="_on_text_patm"]
 [connection signal="text_changed" from="Metabolism3" to="." method="_on_text_fo2"]
+[connection signal="text_submitted" from="TabProf10" to="." method="_on_text_s10"]
+[connection signal="text_submitted" from="TabProf9" to="." method="_on_text_s9"]
+[connection signal="text_submitted" from="TabProf8" to="." method="_on_text_s8"]
+[connection signal="text_submitted" from="TabProf7" to="." method="_on_text_s7"]
+[connection signal="text_submitted" from="TabProf 6" to="." method="_on_text_s6"]
+[connection signal="text_submitted" from="TabProf5" to="." method="_on_text_s5"]
+[connection signal="text_submitted" from="TabProf4" to="." method="_on_text_s4"]
+[connection signal="text_submitted" from="TabProf3" to="." method="_on_text_s3"]
+[connection signal="text_submitted" from="TabProf2" to="." method="_on_text_s2"]
+[connection signal="text_submitted" from="TabProf1" to="." method="_on_text_s1"]
+[connection signal="text_submitted" from="TabTime10" to="." method="_on_text_t10"]
+[connection signal="text_submitted" from="TabTime9" to="." method="_on_text_t9"]
+[connection signal="text_submitted" from="TabTime8" to="." method="_on_text_t8"]
+[connection signal="text_submitted" from="TabTime7" to="." method="_on_text_t7"]
+[connection signal="text_submitted" from="TabTime6" to="." method="_on_text_t6"]
+[connection signal="text_submitted" from="TabTime5" to="." method="_on_text_t5"]
+[connection signal="text_submitted" from="TabTime4" to="." method="_on_text_t4"]
+[connection signal="text_submitted" from="TabTime3" to="." method="_on_text_t3"]
+[connection signal="text_submitted" from="TabTime2" to="." method="_on_text_t2"]
+[connection signal="text_submitted" from="TabTime1" to="." method="_on_text_t1"]

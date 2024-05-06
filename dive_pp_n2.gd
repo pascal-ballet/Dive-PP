@@ -15,6 +15,8 @@ var vv: float = 3.0
 var vti: float = 70.0
 var patm: float = 101325.0
 var fn2: float = 0.79
+var t = [null,null,null,null,null,null,null,null,null,null]
+var s = [null,null,null,null,null,null,null,null,null,null]
 
 # ***********************
 # Model parameters
@@ -66,6 +68,9 @@ var pp_N2_ti_t1 = 0.0
 # Compartments functions
 # ***********************
 
+func pressure_atm():
+	pass
+
 ## Compute the partial pressure of air
 func air():
 	pp_N2_air = (patm-ph2o)*fn2
@@ -73,7 +78,6 @@ func air():
 ## Compute the partial pressure of aw
 func airways():
 	var delta = ((vent/vaw*pp_N2_air)-(vent+k1*R*T)/vaw*pp_N2_aw_t0+(k1*R*T)/vaw*pp_N2_alv_t0)*dt
-	print(delta)
 	pp_N2_aw_t1 = pp_N2_aw_t0 + delta
 
 ## Compute the partial pressure of alv
@@ -242,4 +246,144 @@ func _on_text_fo2(new_text):
 	else:
 		fn2 = float(new_text)
 	print("Nouvelle valeur de fO₂: " +str(fn2))
+
+func _on_text_s1(new_text):
+	if new_text == "":
+		s[0] = null
+	else:
+		s[0] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
 	
+	
+func _on_text_s2(new_text):
+	if new_text == "":
+		s[1] = null
+	else:
+		s[1] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s3(new_text):
+	if new_text == "":
+		s[2] = null
+	else:
+		s[2] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s4(new_text):
+	if new_text == "":
+		s[3] = null
+	else:
+		s[3] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s5(new_text):
+	if new_text == "":
+		s[4] = null
+	else:
+		s[4] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s6(new_text):
+	if new_text == "":
+		s[5] = null
+	else:
+		s[5] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s7(new_text):
+	if new_text == "":
+		s[6] = null
+	else:
+		s[6] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s8(new_text):
+	if new_text == "":
+		s[7] = null
+	else:
+		s[7] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s9(new_text):
+	if new_text == "":
+		s[8] = null
+	else:
+		s[8] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+	
+func _on_text_s10(new_text):
+	if new_text == "":
+		s[9] = null
+	else:
+		s[9] = float(new_text)
+	print("Nouvelle valeur de la liste des étape: " + str(s))
+
+func _on_text_t1(new_text):
+	if(new_text==""):
+		t[0] = null
+	else:
+		t[0] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t2(new_text):
+	if(new_text==""):
+		t[1] = null
+	else:
+		t[1] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t3(new_text):
+	if(new_text==""):
+		t[2] = null
+	else:
+		t[2] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t4(new_text):
+	if(new_text==""):
+		t[3] = null
+	else:
+		t[3] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t5(new_text):
+	if(new_text==""):
+		t[4] = null
+	else:
+		t[4] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t6(new_text):
+	if(new_text==""):
+		t[5] = null
+	else:
+		t[5] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t7(new_text):
+	if(new_text==""):
+		t[6] = null
+	else:
+		t[6] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t8(new_text):
+	if(new_text==""):
+		t[7] = null
+	else:
+		t[7] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t9(new_text):
+	if(new_text==""):
+		t[8] = null
+	else:
+		t[8] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
+	
+func _on_text_t10(new_text):
+	if(new_text==""):
+		t[9] = null
+	else:
+		t[9] = float(new_text)
+	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
