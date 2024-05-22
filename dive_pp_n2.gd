@@ -29,6 +29,8 @@ var k2:float = 0.00748
 var k3:float = 0.00267
 var R:float = 8.314
 var T:float = 310.0
+var tmp_t:float = 0.0
+var tmp_s:float = 0.0
 var time:float = 0.0
 var dt:float = 0.001
 
@@ -69,7 +71,76 @@ var pp_N2_ti_t1 = 0.0
 # ***********************
 
 func pressure_atm():
-	pass
+	if(t[0]!=null&&s[0]!=null):
+		if(time<=t[0]+0.001):
+			var r1 = t[0]/0.001
+			var r2 = s[0]/r1
+			patm = patm + r2*10100
+			tmp_t = t[0]
+			tmp_s = s[0]
+	if(t[1]!=null&&s[1]!=null):
+		if(time>t[0]+0.001&&time<=t[1]):
+			var r1 = (t[1]-tmp_t)/0.001
+			var r2 = (s[1]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[1]
+			tmp_s = s[1]
+	if(t[2]!=null&&s[2]!=null):
+		if(time>t[1]&&time<=t[2]):
+			var r1 = (t[2]-tmp_t)/0.001
+			var r2 = (s[2]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[2]
+			tmp_s = s[2]
+	if(t[3]!=null&&s[3]!=null):
+		if(time>t[2]&&time<=t[3]):
+			var r1 = (t[3]-tmp_t)/0.001
+			var r2 = (s[3]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[3]
+			tmp_s = s[3]
+	if(t[4]!=null&&s[4]!=null):
+		if(time>t[3]&&time<=t[4]):
+			var r1 = (t[4]-tmp_t)/0.001
+			var r2 = (s[4]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[4]
+			tmp_s = s[4]
+	if(t[5]!=null&&s[5]!=null):
+		if(time>t[4]&&time<=t[5]):
+			var r1 = (t[5]-tmp_t)/0.001
+			var r2 = (s[5]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[5]
+			tmp_s = s[5]
+	if(t[6]!=null&&s[6]!=null):
+		if(time>t[5]&&time<=t[6]):
+			var r1 = (t[6]-tmp_t)/0.001
+			var r2 = (s[6]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[6]
+			tmp_s = s[6]
+	if(t[7]!=null&&s[7]!=null):
+		if(time>t[6]&&time<=t[7]):
+			var r1 = (t[7]-tmp_t)/0.001
+			var r2 = (s[7]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[7]
+			tmp_s = s[7]
+	if(t[8]!=null&&s[8]!=null):
+		if(time>t[7]&&time<=t[8]):
+			var r1 = (t[8]-tmp_t)/0.001
+			var r2 = (s[8]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[8]
+			tmp_s = s[8]
+	if(t[9]!=null&&s[9]!=null):
+		if(time>t[8]&&time<=t[9]):
+			var r1 = (t[9]-tmp_t)/0.001
+			var r2 = (s[9]-tmp_s)/r1
+			patm = patm + r2*10100
+			tmp_t = t[9]
+			tmp_s = s[9]
 
 ## Compute the partial pressure of air
 func air():
@@ -114,6 +185,7 @@ func tissue():
 func step():
 	# Display parameters
 	print("Time = " + str(time))
+	print("    Pressure atm = " + str(patm))
 	print("    N2 in air in Pa = " + str(pp_N2_air))
 	print("    N2 in aw in Pa = " + str(pp_N2_aw_t0))
 	print("    N2 in alv in Pa = " + str(pp_N2_alv_t0))
@@ -125,6 +197,7 @@ func step():
 	time = time + dt
 	
 		# Compute one step
+	pressure_atm()
 	air()
 	airways()
 	alveolar()
@@ -162,10 +235,87 @@ func _process(_delta):
 
 func _on_play_button_down():
 	play = true
+	set_text_editable(false)
 
-func _on_stop_button_down():
+func _on_pause_button_down():
 	play = false
 
+func _on_stop_pressed():
+	play = false
+	_reset_values()
+	set_text_editable(true)
+	
+# Désactive ou active les champs de texte en fonction de l'état du booléen play
+func set_text_editable(editable: bool):
+	var text_edits = [
+		"TabProf1", "TabProf2", "TabProf3", "TabProf4",
+		"TabProf5", "TabProf6", "TabProf7", "TabProf8",
+		"TabProf9", "TabProf10", "TabTime1", "TabTime2",
+		"TabTime3", "TabTime4", "TabTime5", "TabTime6",
+		"TabTime7", "TabTime8", "TabTime9", "TabTime10",
+		"Ventilatory", "MeanExpiratoryReserveVolume", "MeanFunctionalResidualVolume", "AlveolarBloodVolume",
+		"CardiacOutput", "ArterialBloodVolume", "CapillaryBloodVolume", "VenousBloodVolume",
+		"TissueVolume", "Metabolism", "PressionAtmospherique", "Metabolism3"
+	]
+
+	for text_edit in text_edits:
+		if has_node(text_edit):
+			get_node(text_edit).editable = editable
+
+# ***********************
+# Reset function
+# ***********************
+func _reset_values():
+	time = 0.0
+	patm = 101325.0
+	pp_N2_air = 0.0
+	pp_N2_aw_t0 = 75112.41
+	pp_N2_aw_t1 = 0.0
+	pp_N2_alv_t0 = 75112.41
+	pp_N2_alv_t1 = 0.0
+	pp_N2_alb_t0 = 75112.41
+	pp_N2_alb_t1 = 0.0
+	pp_N2_v_t0 = 75112.41
+	pp_N2_v_t1 = 0.0
+	pp_N2_a_t0 = 75112.41
+	pp_N2_a_t1 = 0.0
+	pp_N2_c_t0 = 75112.41
+	pp_N2_c_t1 = 0.0
+	pp_N2_ti_t0 = 75112.41
+	pp_N2_ti_t1 = 0.0
+	tmp_t = 0.0
+	tmp_s = 0.0
+	vent = 8.1
+	vaw = 1.5
+	valg = 1.0
+	valb = 0.5
+	q = 4.2
+	va = 1.7
+	vc = 0.5
+	vv = 3.0
+	vti = 70.0
+	patm = 101325.0
+	fn2 = 0.79
+	t = [null,null,null,null,null,null,null,null,null,null]
+	s = [null,null,null,null,null,null,null,null,null,null]
+	
+	# Vider les cases de l'interface utilisateur
+	var text_edits = [
+		"TabProf1", "TabProf2", "TabProf3", "TabProf4",
+		"TabProf5", "TabProf6", "TabProf7", "TabProf8",
+		"TabProf9", "TabProf10", "TabTime1", "TabTime2",
+		"TabTime3", "TabTime4", "TabTime5", "TabTime6",
+		"TabTime7", "TabTime8", "TabTime9", "TabTime10",
+		"Ventilatory", "MeanExpiratoryReserveVolume", "MeanFunctionalResidualVolume", "AlveolarBloodVolume",
+		"CardiacOutput", "ArterialBloodVolume", "CapillaryBloodVolume", "VenousBloodVolume",
+		"TissueVolume", "Metabolism", "PressionAtmospherique", "Metabolism3"
+	]
+	
+	for text_edit in text_edits:
+		if has_node(text_edit):
+			get_node(text_edit).text = ""
+	
+	print("Valeurs remises à zéro !")
 # ***********************
 # Variable change functions
 # *********************** 

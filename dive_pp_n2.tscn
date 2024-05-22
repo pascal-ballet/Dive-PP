@@ -12,10 +12,18 @@ offset_right = 230.0
 offset_bottom = 131.0
 text = "Play"
 
-[node name="Stop" type="Button" parent="."]
-offset_left = 495.0
+[node name="Pause" type="Button" parent="."]
+offset_left = 330.0
 offset_top = 100.0
-offset_right = 545.0
+offset_right = 385.0
+offset_bottom = 131.0
+text = "Pause
+"
+
+[node name="Stop" type="Button" parent="."]
+offset_left = 480.0
+offset_top = 100.0
+offset_right = 535.0
 offset_bottom = 131.0
 text = "Stop
 "
@@ -239,7 +247,7 @@ offset_bottom = 456.0
 placeholder_text = "Step 7"
 alignment = 1
 
-[node name="TabProf 6" type="LineEdit" parent="."]
+[node name="TabProf6" type="LineEdit" parent="."]
 offset_left = 360.0
 offset_top = 425.0
 offset_right = 427.063
@@ -368,7 +376,8 @@ placeholder_text = "Time 1"
 alignment = 1
 
 [connection signal="button_down" from="Play" to="." method="_on_play_button_down"]
-[connection signal="button_down" from="Stop" to="." method="_on_stop_button_down"]
+[connection signal="button_down" from="Pause" to="." method="_on_pause_button_down"]
+[connection signal="pressed" from="Stop" to="." method="_on_stop_pressed"]
 [connection signal="text_changed" from="Ventilatory" to="." method="_on_text_vent"]
 [connection signal="text_changed" from="MeanExpiratoryReserveVolume" to="." method="_on_text_vaw"]
 [connection signal="text_changed" from="MeanFunctionalResidualVolume" to="." method="_on_text_valg"]
@@ -385,7 +394,7 @@ alignment = 1
 [connection signal="text_submitted" from="TabProf9" to="." method="_on_text_s9"]
 [connection signal="text_submitted" from="TabProf8" to="." method="_on_text_s8"]
 [connection signal="text_submitted" from="TabProf7" to="." method="_on_text_s7"]
-[connection signal="text_submitted" from="TabProf 6" to="." method="_on_text_s6"]
+[connection signal="text_submitted" from="TabProf6" to="." method="_on_text_s6"]
 [connection signal="text_submitted" from="TabProf5" to="." method="_on_text_s5"]
 [connection signal="text_submitted" from="TabProf4" to="." method="_on_text_s4"]
 [connection signal="text_submitted" from="TabProf3" to="." method="_on_text_s3"]
