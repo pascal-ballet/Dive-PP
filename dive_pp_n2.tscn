@@ -12,8 +12,8 @@ offset_right = 859.0
 offset_bottom = 53.0
 
 [node name="TabContainer" type="TabContainer" parent="."]
-offset_left = -8.0
-offset_right = 224.0
+offset_left = -7.0
+offset_right = 225.0
 offset_bottom = 31.0
 
 [node name="Simulation" type="Control" parent="TabContainer"]
