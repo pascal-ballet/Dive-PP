@@ -15,9 +15,11 @@ offset_bottom = 53.0
 offset_left = -7.0
 offset_right = 225.0
 offset_bottom = 31.0
+current_tab = 0
 
 [node name="Simulation" type="Control" parent="TabContainer"]
 layout_mode = 2
+metadata/_tab_index = 0
 
 [node name="Simulation" type="PanelContainer" parent="TabContainer/Simulation"]
 layout_mode = 0
@@ -252,6 +254,7 @@ text = "Données de base"
 [node name="Paramètres" type="Control" parent="TabContainer"]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
 [node name="Paramètres" type="PanelContainer" parent="TabContainer/Paramètres"]
 layout_mode = 0

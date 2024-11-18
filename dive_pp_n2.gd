@@ -4,15 +4,15 @@ extends Node2D
 # Variables modifiables
 # ***********************
 
-var vent: float = 8.1
-var vaw: float = 1.5
-var valg: float = 1.0
-var valb: float = 0.5
-var q: float = 4.209
-var va: float = 1.7
-var vv: float = 3.0
-var patm: float = 101325.0
-var fn2: float = 0.79
+var vent: float = 8.1 # debit ventilatoire 
+var vaw: float = 1.5 #volume des voix aérienne
+var valg: float = 1.0 # volume du gaz alvéolaire
+var valb: float = 0.5 # volume de sang alvéolaire
+var q: float = 4.209 # debit cardiaque
+var va: float = 1.7 #volume artériel
+var vv: float = 3.0 #volume veineux
+var patm: float = 101325.0 # presion ambiante
+var fn2: float = 0.79 #fraction d azote dans le gaz respiré 
 var t = [null,null,null,null,null,null,null,null,null,null]
 var s = [null,null,null,null,null,null,null,null,null,null]
 
@@ -70,11 +70,11 @@ var temps_seuils = {
 
 # Variables du cerveau
 
-var vtiCE: float = 1.35
-var vcCE: float = 0.027
-var mo2CE:float = 1.596
-var kn2CE: float = 0.00214
-var QCE: float = 0.63
+var vtiCE: float = 1.35 # Volume en L
+var vcCE: float = 0.027 # Cap Vol en L
+var mo2CE:float = 1.596 # MO2 en mMol/kg/min
+var kn2CE: float = 0.00214 # diff coef N2
+var QCE: float = 0.63 # débit sangin en L/min
 var pp_N2_tiCE_t0: float = 75112.41
 var pp_N2_tiCE_t1: float = 0.0
 var pp_N2_cCE_t0: float = 75112.41
@@ -82,11 +82,11 @@ var pp_N2_cCE_t1: float = 0.0
 
 # Variables du tissu adipeux
 
-var vtiTA: float = 16
-var vcTA: float = 0.011
-var mo2TA:float = 0.026
-var kn2TA: float = 0.0000214
-var QTA: float = 0.419
+var vtiTA: float = 16 # Volume en L
+var vcTA: float = 0.011 # Cap Vol en L
+var mo2TA:float = 0.026 # MO2 en mMol/kg/min
+var kn2TA: float = 0.0000214 # diff coef N2
+var QTA: float = 0.419 # débit sangin en L/min
 var pp_N2_tiTA_t0: float = 75112.41
 var pp_N2_tiTA_t1: float = 0.0
 var pp_N2_cTA_t0: float = 75112.41
@@ -94,11 +94,11 @@ var pp_N2_cTA_t1: float = 0.0
 
 # Variables des muscles du haut du corps
 
-var vtiMH: float = 6.72
-var vcMH: float = 0.0095
-var mo2MH:float = 0.087
-var kn2MH: float = 0.000022
-var QMH: float = 0.07
+var vtiMH: float = 6.72 # Volume en L
+var vcMH: float = 0.0095 # Cap Vol en L
+var mo2MH:float = 0.087 # MO2 en mMol/kg/min
+var kn2MH: float = 0.000022 # diff coef N2
+var QMH: float = 0.07 # débit sangin en L/min
 var pp_N2_tiMH_t0: float = 75112.41
 var pp_N2_tiMH_t1: float = 0.0
 var pp_N2_cMH_t0: float = 75112.41
@@ -106,11 +106,11 @@ var pp_N2_cMH_t1: float = 0.0
 
 # Variables des muscles 
 
-var vtiM: float = 20.17
-var vcM: float = 0.0285
-var mo2M: float = 0.087
-var kn2M: float = 0.000021
-var QM: float = 0.21
+var vtiM: float = 20.17 # Volume en L
+var vcM: float = 0.0285 # Cap Vol en L
+var mo2M: float = 0.087 # MO2 en mMol/kg/min
+var kn2M: float = 0.000021 # diff coef N2
+var QM: float = 0.21 # débit sangin en L/min
 var pp_N2_tiM_t0: float = 75112.41
 var pp_N2_tiM_t1: float = 0.0
 var pp_N2_cM_t0: float = 75112.41
@@ -118,11 +118,11 @@ var pp_N2_cM_t1: float = 0.0
 
 # Varibles du rein
 
-var vtiR: float = 0.30
-var vcR: float = 0.042
-var mo2R:float = 2.95
-var kn2R: float = 0.002
-var QR: float = 1.2
+var vtiR: float = 0.30 # Volume en L
+var vcR: float = 0.042 # Cap Vol en L
+var mo2R:float = 2.95 # MO2 en mMol/kg/min
+var kn2R: float = 0.002 # diff coef N2
+var QR: float = 1.2 # débit sangin en L/min
 var pp_N2_tiR_t0: float = 75112.41
 var pp_N2_tiR_t1: float = 0.0
 var pp_N2_cR_t0: float = 75112.41
@@ -130,11 +130,11 @@ var pp_N2_cR_t1: float = 0.0
 
 # Variables des os
 
-var vtiO: float = 6.81
-var vcO: float = 0.011
-var mo2O:float = 0.113
-var kn2O: float = 0.0000535
-var QO: float = 0.5
+var vtiO: float = 6.81 # Volume en L
+var vcO: float = 0.011 # Cap Vol en L
+var mo2O:float = 0.113 # MO2 en mMol/kg/min
+var kn2O: float = 0.0000535 # diff coef N2
+var QO: float = 0.5 # débit sangin en L/min
 var pp_N2_tiO_t0: float = 75112.41
 var pp_N2_tiO_t1: float = 0.0
 var pp_N2_cO_t0: float = 75112.41
@@ -142,11 +142,11 @@ var pp_N2_cO_t1: float = 0.0
 
 # Variables du transit gastro-intestinal
 
-var vtiTGI: float = 1.28
-var vcTGI: float = 0.040
-var mo2TGI:float = 0.0806
-var kn2TGI: float = 0.000043
-var QTGI: float = 0.065
+var vtiTGI: float = 1.28 # Volume en L
+var vcTGI: float = 0.040 # Cap Vol en L
+var mo2TGI:float = 0.0806 # MO2 en mMol/kg/min
+var kn2TGI: float = 0.000043 # diff coef N2
+var QTGI: float = 0.065 # débit sangin en L/min
 var pp_N2_tiTGI_t0: float = 75112.41
 var pp_N2_tiTGI_t1: float = 0.0
 var pp_N2_cTGI_t0: float = 75112.41
@@ -154,11 +154,11 @@ var pp_N2_cTGI_t1: float = 0.0
 
 # Variables du foie
 
-var vtiF: float = 1.71
-var vcF:float = 0.054
-var mo2F:float = 1.3507
-var kn2F: float = 0.00107
-var QF: float = 0.8
+var vtiF: float = 1.71 # Volume en L
+var vcF:float = 0.054 # Cap Vol en L
+var mo2F:float = 1.3507 # MO2 en mMol/kg/min
+var kn2F: float = 0.00107 # diff coef N2
+var QF: float = 0.8 # débit sangin en L/min
 var pp_N2_tiF_t0: float = 75112.41
 var pp_N2_tiF_t1: float = 0.0
 var pp_N2_cF_t0: float = 75112.41
@@ -166,11 +166,11 @@ var pp_N2_cF_t1: float = 0.0
 
 # Variables du reste du corps
 
-var vtiRDC: float = 6.07
-var vcRDC: float = 0.045
-var mo2RDC: float = 5.0965
-var kn2RDC: float = 0.00107
-var QRDC: float = 0.315
+var vtiRDC: float = 6.07 # Volume en L
+var vcRDC: float = 0.045 # Cap Vol en L
+var mo2RDC: float = 5.0965 # MO2 en mMol/kg/min
+var kn2RDC: float = 0.00107 # diff coef N2
+var QRDC: float = 0.315 
 var pp_N2_tiRDC_t0: float = 75112.41
 var pp_N2_tiRDC_t1: float = 0.0
 var pp_N2_cRDC_t0: float = 75112.41
