@@ -1,10 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://dvwt5odf7oxps"]
+[gd_scene load_steps=2 format=3 uid="uid://dvwt5odf7oxps"]
 
 [ext_resource type="Script" path="res://dive_pp_n2.gd" id="1_d2c84"]
-[ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
 
 [node name="Dive-PP-N2" type="Node2D"]
 script = ExtResource("1_d2c84")
+file_path = null
 
 [node name="RichTextLabel_N2" type="RichTextLabel" parent="."]
 offset_left = 319.0
@@ -14,12 +14,11 @@ offset_bottom = 53.0
 
 [node name="TabContainer" type="TabContainer" parent="."]
 offset_left = -7.0
-offset_right = 309.0
+offset_right = 225.0
 offset_bottom = 31.0
-current_tab = 2
+current_tab = 0
 
 [node name="Simulation" type="Control" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -75,7 +74,7 @@ scroll_following = true
 layout_mode = 0
 offset_left = 1157.0
 offset_top = 188.0
-offset_right = 1394.0
+offset_right = 1347.0
 offset_bottom = 619.0
 scroll_following = true
 
@@ -810,110 +809,6 @@ offset_bottom = 365.0
 placeholder_text = "Value of QRDC"
 alignment = 1
 
-[node name="Graph" type="Control" parent="TabContainer"]
-layout_mode = 2
-metadata/_tab_index = 2
-
-[node name="Graph2D" type="Control" parent="TabContainer/Graph"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = 84.0
-offset_right = 1069.0
-offset_bottom = 604.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("2_k4g8n")
-x_max = 120.0
-x_label = "Time(s)"
-y_max = 80000.0
-y_label = "Y"
-background_color = Color(0.0941176, 0.227451, 0.4, 1)
-grid_horizontal_visible = true
-grid_vertical_visible = true
-
-[node name="AddPlotCE" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 153.0
-offset_top = 35.0
-offset_right = 266.0
-offset_bottom = 66.0
-text = "Cerveau"
-
-[node name="Tissu adipeux" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 279.0
-offset_top = 35.0
-offset_right = 393.0
-offset_bottom = 66.0
-text = "Tissu adipeux"
-
-[node name="MH" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 537.0
-offset_top = 39.0
-offset_right = 651.0
-offset_bottom = 70.0
-text = "MH"
-
-[node name="muscle" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 410.0
-offset_top = 39.0
-offset_right = 524.0
-offset_bottom = 70.0
-text = "Muscle"
-
-[node name="rein" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 664.0
-offset_top = 42.0
-offset_right = 778.0
-offset_bottom = 73.0
-text = "rein"
-
-[node name="os" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 802.0
-offset_top = 45.0
-offset_right = 916.0
-offset_bottom = 76.0
-text = "OS"
-
-[node name="tgi" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 921.0
-offset_top = 45.0
-offset_right = 1035.0
-offset_bottom = 76.0
-text = "TGI"
-
-[node name="me" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1019.0
-offset_top = 45.0
-offset_right = 1133.0
-offset_bottom = 76.0
-text = "ME"
-
-[node name="RDC" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1156.0
-offset_top = 43.0
-offset_right = 1270.0
-offset_bottom = 74.0
-text = "RDC"
-
-[node name="RemoveAllPlots" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 14.0
-offset_top = 35.0
-offset_right = 151.0
-offset_bottom = 66.0
-text = "Remove All Plots"
-
 [connection signal="button_down" from="TabContainer/Simulation/Simulation/Control/Play" to="." method="_on_play_button_down"]
 [connection signal="button_down" from="TabContainer/Simulation/Simulation/Control/Pause" to="." method="_on_pause_button_down"]
 [connection signal="pressed" from="TabContainer/Simulation/Simulation/Control/Stop" to="." method="_on_stop_pressed"]
@@ -974,13 +869,3 @@ text = "Remove All Plots"
 [connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueRDC" to="." method="_on_text_vtirdc"]
 [connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarRDC" to="." method="_on_text_vcrdc"]
 [connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QRDC" to="." method="_on_text_qrdc"]
-[connection signal="pressed" from="TabContainer/Graph/AddPlotCE" to="." method="_on_add_plot_CE_pressed"]
-[connection signal="pressed" from="TabContainer/Graph/Tissu adipeux" to="." method="_on_add_plot_pressedTA"]
-[connection signal="pressed" from="TabContainer/Graph/MH" to="." method="_on_add_plot_pressedMH"]
-[connection signal="pressed" from="TabContainer/Graph/muscle" to="." method="_on_add_plot_pressedM"]
-[connection signal="pressed" from="TabContainer/Graph/rein" to="." method="_on_add_plot_pressedR"]
-[connection signal="pressed" from="TabContainer/Graph/os" to="." method="_on_add_plot_pressedOS"]
-[connection signal="pressed" from="TabContainer/Graph/tgi" to="." method="_on_add_plot_pressedTGI"]
-[connection signal="pressed" from="TabContainer/Graph/me" to="." method="_on_add_plot_pressedME"]
-[connection signal="pressed" from="TabContainer/Graph/RDC" to="." method="_on_add_plot_pressedRDC"]
-[connection signal="pressed" from="TabContainer/Graph/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
