@@ -36,6 +36,7 @@ var time:float = 0.0
 var dt:float = 0.0002
 var i = 1
 var k = 0
+var iteration = 0 ## test
 var debug_textbox
 var debug_textbox2
 var debug_textbox3
@@ -269,13 +270,13 @@ func venous_blood():
 ## Compute the partial pressure of c
 func capilar_blood_CE():
 	var delta = (1/(vcCE*alpha_n2)*(QCE*alpha_n2*pp_N2_a_t0-(alpha_n2*QCE+kn2CE)*pp_N2_cCE_t0+kn2CE*pp_N2_tiCE_t0))*dt
-	print("delta_cap_CE = ",delta)
+	#print("delta_cap_CE = ",delta)
 	pp_N2_cCE_t1 = pp_N2_cCE_t0 + delta
 
 #TODO : a corrigé
 func capilar_blood_ME():
 	var delta = (1/(vcME*alpha_n2)*(QME*alpha_n2*pp_N2_a_t0-(alpha_n2*QME+kn2ME)*pp_N2_cME_t0+kn2ME*pp_N2_tiME_t0))*dt
-	print("delta_cap_ME = ",delta) 
+#	print("delta_cap_ME = ",delta) 
 	pp_N2_cME_t1 = pp_N2_cME_t0 + delta
 	
 
@@ -314,12 +315,12 @@ func capilar_blood_RDC():
 ## Compute the partial pressure of ti
 func tissue_CE():
 	var delta = (kn2CE/(alpha_n2*vtiCE)*(pp_N2_cCE_t0-pp_N2_tiCE_t0))*dt
-	print("delta_tissue_CE = ",delta)
+	#print("delta_tissue_CE = ",delta)
 	pp_N2_tiCE_t1 = pp_N2_tiCE_t0 + delta
 
 func tissue_ME():#TODO a corriger comme cap ME
 	var delta = (kn2ME/(alpha_n2*vtiME)*(pp_N2_cME_t0-pp_N2_tiME_t0))*dt
-	print("delta_tissue_ME = ",delta)
+#	print("delta_tissue_ME = ",delta)
 	pp_N2_tiME_t1 = pp_N2_tiME_t0 + delta
 
 func tissue_TA():
@@ -413,8 +414,8 @@ func verifier_et_stocker_temps_seuil():
 		temps_seuils["pp_N2_v"] = time
 	if pp_N2_tiCE_t1 >= seuil and temps_seuils["pp_N2_tiCE"] == null:
 		temps_seuils["pp_N2_tiCE"] = time
-		#if pp_N2_tiME_t1 >= seuil and temps_seuils["pp_N2_tiME"] == null: #TODO fais planter le programe
-	#	temps_seuils["pp_N2_tiME"] = time
+	if pp_N2_tiME_t1 >= seuil and temps_seuils["pp_N2_tiME"] == null: #TODO fais planter le programe
+		temps_seuils["pp_N2_tiME"] = time
 	if pp_N2_tiTA_t1 >= seuil and temps_seuils["pp_N2_tiTA"] == null:
 		temps_seuils["pp_N2_tiTA"] = time
 	if pp_N2_tiMH_t1 >= seuil and temps_seuils["pp_N2_tiMH"] == null:
@@ -531,7 +532,7 @@ func step():
 	update_debug_textbox12(message12)	
 	
 	time = time + dt
-	
+	iteration = iteration + 1 
 		# Compute one step
 	pressure_atm()
 	air()
@@ -609,6 +610,76 @@ func step():
 		debug_textbox11.text = ""  # Vide la zone de texte de débogage 11 toutes les 100 itérations
 		debug_textbox12.text = ""  # Vide la zone de texte de débogage 12 toutes les 100 itérations
 		k = 0
+
+
+
+## Execute 1 step (dt) du modèle pour le graphe
+func step2():
+
+	time = time + dt
+	iteration = iteration + 1 
+		# Compute one step
+	pressure_atm()
+	air()
+	airways()
+	alveolar()
+	alveolar_blood()
+	arterial_blood()
+	venous_blood()
+	capilar_blood_CE()
+	tissue_CE()
+	capilar_blood_ME()
+	tissue_ME()
+	capilar_blood_TA()
+	tissue_TA()
+	capilar_blood_MH()
+	tissue_MH()
+	capilar_blood_M()
+	tissue_M()
+	capilar_blood_R()
+	tissue_R()
+	capilar_blood_O()
+	tissue_O()
+	capilar_blood_TGI()
+	tissue_TGI()
+	capilar_blood_F()
+	tissue_F()
+	capilar_blood_RDC()
+	tissue_RDC()
+	
+		# Preparer le prochain step
+	pp_N2_aw_t0 	= pp_N2_aw_t1
+	pp_N2_alv_t0	= pp_N2_alv_t1
+	pp_N2_alb_t0	 = pp_N2_alb_t1
+	pp_N2_a_t0		= pp_N2_a_t1
+	pp_N2_v_t0		= pp_N2_v_t1
+	
+		# Variables tissus
+	pp_N2_tiCE_t0		= pp_N2_tiCE_t1
+	pp_N2_cCE_t0		= pp_N2_cCE_t1
+	pp_N2_tiME_t0 	= pp_N2_tiME_t1
+	pp_N2_cME_t0		= pp_N2_cME_t1
+	pp_N2_tiTA_t0 	= pp_N2_tiTA_t1
+	pp_N2_cTA_t0		= pp_N2_cTA_t1
+	pp_N2_tiMH_t0 	= pp_N2_tiMH_t1
+	pp_N2_cMH_t0		= pp_N2_cMH_t1
+	pp_N2_cM_t0		= pp_N2_cM_t1
+	pp_N2_tiM_t0 	= pp_N2_tiM_t1
+	pp_N2_cR_t0		= pp_N2_cR_t1
+	pp_N2_tiR_t0 	= pp_N2_tiR_t1
+	pp_N2_cO_t0		= pp_N2_cO_t1
+	pp_N2_tiO_t0 	= pp_N2_tiO_t1
+	pp_N2_cTGI_t0		= pp_N2_cTGI_t1
+	pp_N2_tiTGI_t0 	= pp_N2_tiTGI_t1
+	pp_N2_cF_t0		= pp_N2_cF_t1
+	pp_N2_tiF_t0 	= pp_N2_tiF_t1
+	pp_N2_cRDC_t0		= pp_N2_cRDC_t1
+	pp_N2_tiRDC_t0 	= pp_N2_tiRDC_t1
+	
+	
+	k = k + 1
+	
+
 
 # ***********************
 # Fonctions de simulation
@@ -721,7 +792,10 @@ func set_text_editable(editable: bool):
 
 
 #graphe cerveau
+
 func _on_add_plot_CE_pressed() -> void:
+	
+
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
 	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
@@ -729,11 +803,18 @@ func _on_add_plot_CE_pressed() -> void:
 			[1.0, 1.0, 1.0].pick_random()
 			)
 	print("press add CE!")
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
 	
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiCE_t1
-		var y = 8000
-		my_plot.add_point(Vector2(x, y))
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiCE_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+
+			print("Plot updated with points!")
 		
 #graphe tissue adipeux
 func _on_add_plot_pressedTA() -> void:
