@@ -814,7 +814,8 @@ func _on_add_plot_CE_pressed() -> void:
 			# Add the point (x, y) to the plot
 			my_plot.add_point(Vector2(x, y))
 
-			print("Plot updated with points!")
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 		
 #graphe tissue adipeux
 func _on_add_plot_pressedTA() -> void:
@@ -826,10 +827,18 @@ func _on_add_plot_pressedTA() -> void:
 			)
 	print("press add TA!")
 	
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiTA_t1
-		var y = 16000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiTA_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 
 #graph muscle haut du corp
 func _on_add_plot_pressedMH() -> void:
@@ -842,10 +851,18 @@ func _on_add_plot_pressedMH() -> void:
 	print("press add MH!")
 	
 	
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiMH_t1
-		var y = 24000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiMH_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 
 #graphe muscle bas du corp
 func _on_add_plot_pressedM() -> void:
@@ -857,10 +874,18 @@ func _on_add_plot_pressedM() -> void:
 			)
 	print("press add M!")
 	
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiM_t1
-		var y = 32000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiM_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 
 #graphe rein
 func _on_add_plot_pressedR() -> void:
@@ -872,10 +897,18 @@ func _on_add_plot_pressedR() -> void:
 			)
 	print("press add R!")
 	
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiR_t1
-		var y = 40000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiR_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 
 #graphe OS		
 func _on_add_plot_pressedOS() -> void:
@@ -887,10 +920,18 @@ func _on_add_plot_pressedOS() -> void:
 			)
 	print("press add OS!")
 	
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiO_t1
-		var y = 48000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiO_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 		
 #graphe du transit gastro-intestinal
 func _on_add_plot_pressedTGI() -> void:
@@ -902,25 +943,41 @@ func _on_add_plot_pressedTGI() -> void:
 			)
 	print("press add TGI!")
 
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiTGI_t1
-		var y = 56000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiTGI_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 
 #graphe ME
 func _on_add_plot_pressedME() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
 	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
-			[Color.MAGENTA][$TabContainer/Graph/Graph2D.count() % 1],
+			[Color.BLACK][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
 			)
 	print("press add ME !")
 
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiME_t1
-		var y = 64000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiME_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 
 
 #graph rest du corp
@@ -933,10 +990,18 @@ func _on_add_plot_pressedRDC() -> void:
 			)
 	print("press add RDC!")
 
-	for x in range(0, 120, 1):
-		#var y = pp_N2_tiRDC_t1
-		var y = 72000
-		my_plot.add_point(Vector2(x, y))
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiRDC_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plot.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
 
 func _on_remove_all_plots_pressed() -> void:
 	$TabContainer/Graph/Graph2D.remove_all()
@@ -1066,9 +1131,11 @@ func _reset_values():
 	vv = 3.0
 	patm = 101325.0
 	fn2 = 0.79
-	dt = 0.001
+	dt = 0.0002
 	t = [null,null,null,null,null,null,null,null,null,null]
 	s = [null,null,null,null,null,null,null,null,null,null]
+	
+	
 	
 	# Vider les cases de l'interface utilisateur
 	var text_edits = [
@@ -1122,8 +1189,128 @@ func _reset_values():
 	debug_textbox12.text = ""  # Vide la zone de texte de débogage 12
 	
 	print("Valeurs remises à zéro !")
+# ***********************
+# Fonction de reset Pour les courbes
+# ***********************
+func _reset_valuesCourbe(): 
+	iteration =0
+	time = 0.0
+	patm = 101325.0
+	pp_N2_air = 0.0
+	pp_N2_aw_t0 = 75112.41
+	pp_N2_aw_t1 = 0.0
+	pp_N2_alv_t0 = 75112.41
+	pp_N2_alv_t1 = 0.0
+	pp_N2_alb_t0 = 75112.41
+	pp_N2_alb_t1 = 0.0
+	pp_N2_v_t0 = 75112.41
+	pp_N2_v_t1 = 0.0
+	pp_N2_a_t0 = 75112.41
+	pp_N2_a_t1 = 0.0
+	vtiCE = 1.35
+	vcCE = 0.027
+	mo2CE = 1.596
+	kn2CE = 0.00214
+	QCE = 0.63
+	pp_N2_tiCE_t0 = 75112.41
+	pp_N2_tiCE_t1 = 0.0
+	pp_N2_cCE_t0 = 75112.41
+	pp_N2_cCE_t1 = 0.0
 	
-
+	vtiME = 0.03
+	vcME = 0.006
+	mo2ME = 1.596
+	kn2ME = 0.00214
+	QME = 0.15#TODO a verifier
+	pp_N2_tiME_t0 = 75112.41
+	pp_N2_tiME_t1 = 0.0
+	pp_N2_cME_t0 = 75112.41
+	pp_N2_cME_t1 = 0.0
+	
+	vtiTA = 16
+	vcTA = 0.011
+	mo2TA = 0.026
+	kn2TA = 0.0000214
+	QTA = 0.419
+	pp_N2_tiTA_t0 = 75112.41
+	pp_N2_tiTA_t1 = 0.0
+	pp_N2_cTA_t0 = 75112.41
+	pp_N2_cTA_t1 = 0.0
+	vtiMH = 6.72
+	vcMH = 0.0095
+	mo2MH = 0.087
+	kn2MH = 0.000022
+	QMH = 0.07
+	pp_N2_tiMH_t0 = 75112.41
+	pp_N2_tiMH_t1 = 0.0
+	pp_N2_cMH_t0 = 75112.41
+	pp_N2_cMH_t1 = 0.0
+	vtiM = 20.17
+	vcM = 0.0285
+	mo2M = 0.087
+	kn2M = 0.000021
+	QM = 0.21
+	pp_N2_tiM_t0 = 75112.41
+	pp_N2_tiM_t1 = 0.0
+	pp_N2_cM_t0 = 75112.41
+	pp_N2_cM_t1 = 0.0
+	vtiR = 0.30
+	vcR = 0.042
+	mo2R = 2.95
+	kn2R = 0.002
+	QR = 1.2
+	pp_N2_tiR_t0 = 75112.41
+	pp_N2_tiR_t1 = 0.0
+	pp_N2_cR_t0 = 75112.41
+	pp_N2_cR_t1 = 0.0
+	vtiO = 6.81
+	vcO = 0.011
+	mo2O = 0.113
+	kn2O = 0.0000535
+	QO = 0.5
+	pp_N2_tiO_t0 = 75112.41
+	pp_N2_tiO_t1 = 0.0
+	pp_N2_cO_t0 = 75112.41
+	pp_N2_cO_t1 = 0.0
+	vtiTGI = 1.28
+	vcTGI = 0.040
+	mo2TGI = 0.0806
+	kn2TGI = 0.000043
+	QTGI = 0.065
+	pp_N2_tiTGI_t0 = 75112.41
+	pp_N2_tiTGI_t1 = 0.0
+	pp_N2_cTGI_t0 = 75112.41
+	pp_N2_cTGI_t1 = 0.0
+	vtiF = 1.71
+	vcF = 0.054
+	mo2F = 1.3507
+	kn2F = 0.00107
+	QF = 0.8
+	pp_N2_tiF_t0 = 75112.41
+	pp_N2_tiF_t1 = 0.0
+	pp_N2_cF_t0 = 75112.41
+	pp_N2_cF_t1 = 0.0
+	vtiRDC = 6.04
+	vcRDC = 0.039
+	mo2RDC = 5.0965
+	kn2RDC = 0.00107
+	QRDC = 0.3
+	pp_N2_tiRDC_t0 = 75112.41
+	pp_N2_tiRDC_t1 = 0.0
+	pp_N2_cRDC_t0 = 75112.41
+	pp_N2_cRDC_t1 = 0.0
+	tmp_t = 0.0
+	tmp_s = 0.0
+	vent = 8.1
+	vaw = 1.5
+	valg = 1.0
+	valb = 0.5
+	q = 4.2
+	va = 1.7
+	vv = 3.0
+	patm = 101325.0
+	fn2 = 0.79
+	dt = 0.0002
 # ***********************
 # Variable change functions
 # *********************** 
