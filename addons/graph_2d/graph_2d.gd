@@ -449,3 +449,7 @@ func _get_max_value(min_value, max_value, step):
 		
 func _log10(value: float) -> float:
 	return log(value)/log(10)
+# Méthode pour changer la couleur d'un plot spécifique
+func change_plot_color(plot: PlotItem, new_color: Color) -> void:
+	plot.color = new_color
+	plot._redraw()  # Redessiner le plot pour appliquer la nouvelle couleur

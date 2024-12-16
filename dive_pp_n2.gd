@@ -33,7 +33,8 @@ var T:float = 310.0 # Temperature en K
 var tmp_t:float = 0.0
 var tmp_s:float = 0.0
 var time:float = 0.0
-var dt:float = 0.0002
+var dtINI:float = 0.0002  #variable global de dt permet de changer tout les dt
+var dt:float = dtINI
 var i = 1
 var k = 0
 var iteration = 0 ## test
@@ -789,15 +790,42 @@ func set_text_editable(editable: bool):
 # ***********************
 # Fonctions de Graph
 # ***********************
-
-
-#graphe cerveau
+var my_plotCE : PlotItem = null
+var my_plotTA : PlotItem = null
+var my_plotME : PlotItem = null
+var my_plotR : PlotItem = null
+var my_plotO : PlotItem = null
+var my_plotMH : PlotItem = null
+var my_plotM : PlotItem = null
+var my_plotRDC : PlotItem = null
+var my_plotTGI : PlotItem = null
+var swapCE: bool = true
+var swapME: bool = true
+var swapTA: bool = true
+var swapMH: bool = true
+var swapR: bool = true
+var swapO: bool = true
+var swapTGI: bool = true
+var swapRDC: bool = true
+var swapM: bool = true
+#play
+func _on_add_Play_pressed() -> void:
+	_on_add_plot_CE_pressed()
+	_on_add_plot_pressedM()
+	_on_add_plot_pressedME()
+	_on_add_plot_pressedMH()
+	_on_add_plot_pressedOS()
+	_on_add_plot_pressedR()
+	_on_add_plot_pressedRDC()
+	_on_add_plot_pressedTA()
+	_on_add_plot_pressedTGI()
+	#graphe cerveau
 
 func _on_add_plot_CE_pressed() -> void:
 	
 
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotCE = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.RED][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -808,19 +836,30 @@ func _on_add_plot_CE_pressed() -> void:
 	
 	while time <120:
 		step2()#met a jour lest valeur
-		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 #or pp_N2_tiCE_t1>yt0*0.1
 			x = time  # Increment x 
 			y = pp_N2_tiCE_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotCE.add_point(Vector2(x, y))
 
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
-		
+
+
+func _swapCE() -> void:#passage de l'état visible a invisible de la courbe
+	if swapCE :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.TRANSPARENT)
+		swapCE=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.RED)	
+		swapCE=true
+
+
+
 #graphe tissue adipeux
 func _on_add_plot_pressedTA() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotTA = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.GREEN][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -836,14 +875,25 @@ func _on_add_plot_pressedTA() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiTA_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotTA.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+func _swapTA() -> void:
+	
+	if swapTA :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.TRANSPARENT)
+		swapTA=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.GREEN)	
+		swapTA=true
+
+
+
 
 #graph muscle haut du corp
 func _on_add_plot_pressedMH() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotMH = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.BLUE][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -860,14 +910,23 @@ func _on_add_plot_pressedMH() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiMH_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotMH.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+func _swapMH() -> void:
+	if swapMH :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.TRANSPARENT)
+		swapMH=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.BLUE)	
+		swapMH=true
+
+
 
 #graphe muscle bas du corp
 func _on_add_plot_pressedM() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotM = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.YELLOW][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -883,14 +942,21 @@ func _on_add_plot_pressedM() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiM_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotM.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+func _swapM() -> void:
+	if swapM :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.TRANSPARENT)
+		swapM=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.YELLOW)	
+		swapM=true
 
 #graphe rein
 func _on_add_plot_pressedR() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotR = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.REBECCA_PURPLE][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -906,14 +972,23 @@ func _on_add_plot_pressedR() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiR_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotR.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+	
+
+func _swapR() -> void:
+	if swapR :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.TRANSPARENT)
+		swapR=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.REBECCA_PURPLE)	
+		swapR=true
 
 #graphe OS		
 func _on_add_plot_pressedOS() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotO = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.ORANGE][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -929,14 +1004,23 @@ func _on_add_plot_pressedOS() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiO_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotO.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+	
+func _swapO() -> void:
+	if swapO :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.TRANSPARENT)
+		swapO=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.ORANGE)	
+		swapO=true
+
 		
 #graphe du transit gastro-intestinal
 func _on_add_plot_pressedTGI() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotTGI = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.TEAL][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -952,14 +1036,23 @@ func _on_add_plot_pressedTGI() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiTGI_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotTGI.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+
+func _swapTGI() -> void:
+	if swapTGI :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TRANSPARENT)
+		swapTGI=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TEAL)	
+		swapTGI=true
+
 
 #graphe ME
 func _on_add_plot_pressedME() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotME = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.BLACK][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -975,15 +1068,24 @@ func _on_add_plot_pressedME() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiME_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotME.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+
+func _swapME() -> void:
+	if swapME :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.TRANSPARENT)
+		swapME=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.BLACK)	
+		swapME=true
+
 
 
 #graph rest du corp
 func _on_add_plot_pressedRDC() -> void:
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var my_plot = $TabContainer/Graph/Graph2D.add_plot_item(  
+	my_plotRDC = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.FLORAL_WHITE][$TabContainer/Graph/Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
@@ -999,9 +1101,18 @@ func _on_add_plot_pressedRDC() -> void:
 			x = time  # Increment x 
 			y = pp_N2_tiRDC_t0  # increment  y 
 			# Add the point (x, y) to the plot
-			my_plot.add_point(Vector2(x, y))
+			my_plotRDC.add_point(Vector2(x, y))
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+
+func _swapRDC() -> void:
+	if swapRDC :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.TRANSPARENT)
+		swapRDC=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.FLORAL_WHITE)	
+		swapRDC=true
+
 
 func _on_remove_all_plots_pressed() -> void:
 	$TabContainer/Graph/Graph2D.remove_all()
@@ -1131,7 +1242,7 @@ func _reset_values():
 	vv = 3.0
 	patm = 101325.0
 	fn2 = 0.79
-	dt = 0.0002
+	dt = dtINI
 	t = [null,null,null,null,null,null,null,null,null,null]
 	s = [null,null,null,null,null,null,null,null,null,null]
 	
@@ -1310,7 +1421,7 @@ func _reset_valuesCourbe():
 	vv = 3.0
 	patm = 101325.0
 	fn2 = 0.79
-	dt = 0.0002
+	dt = dtINI
 # ***********************
 # Variable change functions
 # *********************** 
@@ -1520,7 +1631,7 @@ func _on_text_t10(new_text):
 
 func _on_text_dt(new_text):
 	if(new_text==""):
-		dt = 0.001
+		dt = dtINI
 	else:
 		dt = float(new_text)
 	print("Nouvelle valeur de dt: " +str(dt))
