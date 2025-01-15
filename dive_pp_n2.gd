@@ -33,7 +33,7 @@ var T:float = 310.0 # Temperature en K
 var tmp_t:float = 0.0
 var tmp_s:float = 0.0
 var time:float = 0.0
-var dtINI:float = 0.0004  #variable global de dt permet de changer tout les dt 0.0002 euler 0.0004 rk4
+var dtINI:float = 0.0009  #variable global de dt permet de changer tout les dt "0.0002 euler" "0.0004 rk4""0.0009 rk6" "RK8 0.0009"
 var dt:float = dtINI
 var i = 1
 var k = 0
@@ -407,6 +407,37 @@ func capilar_blood_ME_rk4():
 	
 	# Mise à jour de la variable
 	pp_N2_cME_t1 = pp_N2_cME_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6	
+
+# Implémentation du schéma Runge-Kutta d'ordre 6
+func capilar_blood_ME_rk6():
+	# Coefficients intermédiaires pour RK6
+	var k1 = dt * f_ME(pp_N2_cME_t0)
+	var k2 = dt * f_ME(pp_N2_cME_t0 + k1 / 3)
+	var k3 = dt * f_ME(pp_N2_cME_t0 + (k1 + k2) / 6)
+	var k4 = dt * f_ME(pp_N2_cME_t0 + (k1 - k2 + 2 * k3) / 8)
+	var k5 = dt * f_ME(pp_N2_cME_t0 + (k1 + 4 * k2 + k3 - k4) / 2)
+	var k6 = dt * f_ME(pp_N2_cME_t0 + (-k1 + 2 * k2 + k3 + 2 * k4 + k5) / 6)
+	
+	# Mise à jour de la variable selon le schéma RK6
+	pp_N2_cME_t1 = pp_N2_cME_t0 + (k1 + 4 * k2 + k3 + k4 + k5 + k6) / 10
+
+# Implémentation du schéma Runge-Kutta d'ordre 8
+func capilar_blood_ME_rk8():
+	# Étapes intermédiaires du schéma RK8
+	var k1 = dt * f_ME(pp_N2_cME_t0)
+	var k2 = dt * f_ME(pp_N2_cME_t0 + k1 / 6)
+	var k3 = dt * f_ME(pp_N2_cME_t0 + k1 / 27 + k2 / 27)
+	var k4 = dt * f_ME(pp_N2_cME_t0 + (k1 + 3 * k3) / 24)
+	var k5 = dt * f_ME(pp_N2_cME_t0 + (k1 + 3 * k4) / 20)
+	var k6 = dt * f_ME(pp_N2_cME_t0 + (k1 - 9 * k3 + 12 * k4) / 45)
+	var k7 = dt * f_ME(pp_N2_cME_t0 + (7 * k1 + 32 * k5 + 12 * k6) / 90)
+	var k8 = dt * f_ME(pp_N2_cME_t0 + (k1 - 8 * k4 + 14 * k5 - 2 * k6 + k7) / 60)
+	
+	# Mise à jour de la variable
+	pp_N2_cME_t1 = pp_N2_cME_t0 + (41 * k1 + 216 * k3 + 27 * k4 + 272 * k5 + 27 * k6 + 41 * k8) / 840
+
+
+
 	
 # methode euler
 func capilar_blood_TA():
@@ -647,6 +678,35 @@ func tissue_ME_rk4():
 	
 	# Mise à jour de la variable
 	pp_N2_tiME_t1 = pp_N2_tiME_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# Implémentation du schéma Runge-Kutta d'ordre 6
+func tissue_ME_rk6():
+	# Étapes intermédiaires du schéma RK6
+	var k1 = dt * f_tissue_ME(pp_N2_tiME_t0)
+	var k2 = dt * f_tissue_ME(pp_N2_tiME_t0 + k1 / 3)
+	var k3 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + k2) / 6)
+	var k4 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 - k2 + 2 * k3) / 8)
+	var k5 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + 4 * k2 + k3 - k4) / 2)
+	var k6 = dt * f_tissue_ME(pp_N2_tiME_t0 + (-k1 + 2 * k2 + k3 + 2 * k4 + k5) / 6)
+	
+	# Mise à jour de la variable
+	pp_N2_tiME_t1 = pp_N2_tiME_t0 + (k1 + 4 * k2 + k3 + k4 + k5 + k6) / 10
+
+# Implémentation du schéma Runge-Kutta d'ordre 8
+func tissue_ME_rk8():
+	# Étapes intermédiaires du schéma RK8
+	var k1 = dt * f_tissue_ME(pp_N2_tiME_t0)
+	var k2 = dt * f_tissue_ME(pp_N2_tiME_t0 + k1 / 6)
+	var k3 = dt * f_tissue_ME(pp_N2_tiME_t0 + k1 / 27 + k2 / 27)
+	var k4 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + 3 * k3) / 24)
+	var k5 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + 3 * k4) / 20)
+	var k6 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 - 9 * k3 + 12 * k4) / 45)
+	var k7 = dt * f_tissue_ME(pp_N2_tiME_t0 + (7 * k1 + 32 * k5 + 12 * k6) / 90)
+	var k8 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 - 8 * k4 + 14 * k5 - 2 * k6 + k7) / 60)
+	
+	# Mise à jour de la variable
+	pp_N2_tiME_t1 = pp_N2_tiME_t0 + (41 * k1 + 216 * k3 + 27 * k4 + 272 * k5 + 27 * k6 + 41 * k8) / 840
+
 
 # methode euler
 func tissue_TA():
@@ -1008,8 +1068,8 @@ func step():
 	venous_blood_rk4()
 	capilar_blood_CE_rk4()
 	tissue_CE_rk4()
-	capilar_blood_ME_rk4()
-	tissue_ME_rk4()
+	capilar_blood_ME_rk6()
+	tissue_ME_rk6()
 	capilar_blood_TA_rk4()
 	tissue_TA_rk4()
 	capilar_blood_MH_rk4()
@@ -1093,8 +1153,8 @@ func step2():
 	venous_blood_rk4()
 	capilar_blood_CE_rk4()
 	tissue_CE_rk4()
-	capilar_blood_ME_rk4()
-	tissue_ME_rk4()
+	capilar_blood_ME_rk6()
+	tissue_ME_rk6()
 	capilar_blood_TA_rk4()
 	tissue_TA_rk4()
 	capilar_blood_MH_rk4()
