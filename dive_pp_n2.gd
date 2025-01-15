@@ -26,14 +26,14 @@ var s = [null,null,null,null,null,null,null,null,null,null]
 
 var alpha_n2:float = 0.0000619 #coef solubilite azote
 var ph2o:float = 6246.0 # presstion partiel de vapeur d eau
-var k1:float = 0.00267 # coef de difusion respiratoire
-var k2:float = 0.00748 # coef de difusion alveolo capilaire
+var K1:float = 0.00267 # coef de difusion respiratoire
+var K2:float = 0.00748 # coef de difusion alveolo capilaire
 var R:float = 8.314 # constante des gaz parfait
 var T:float = 310.0 # Temperature en K
 var tmp_t:float = 0.0
 var tmp_s:float = 0.0
 var time:float = 0.0
-var dtINI:float = 0.0002  #variable global de dt permet de changer tout les dt
+var dtINI:float = 0.0004  #variable global de dt permet de changer tout les dt 0.0002 euler 0.0004 rk4
 var dt:float = dtINI
 var i = 1
 var k = 0
@@ -243,118 +243,582 @@ func pressure_atm():
 func air():
 	pp_N2_air = (patm-ph2o)*fn2
 	
+	
 ## Compute the partial pressure of aw
+#methode euler
 func airways():
-	var delta = ((vent/vaw*pp_N2_air)-(vent+k1*R*T)/vaw*pp_N2_aw_t0+(k1*R*T)/vaw*pp_N2_alv_t0)*dt
+	var delta = ((vent/vaw*pp_N2_air)-(vent+K1*R*T)/vaw*pp_N2_aw_t0+(K1*R*T)/vaw*pp_N2_alv_t0)*dt
 	pp_N2_aw_t1 = pp_N2_aw_t0 + delta
 
+#methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_airways(pp_N2_aw):
+	return ((vent / vaw * pp_N2_air) - (vent + K1 * R * T) / vaw * pp_N2_aw + (K1 * R * T) / vaw * pp_N2_alv_t0)
+
+func airways_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_airways(pp_N2_aw_t0)
+	var k2 = dt * f_airways(pp_N2_aw_t0 + 0.5 * k1)
+	var k3 = dt * f_airways(pp_N2_aw_t0 + 0.5 * k2)
+	var k4 = dt * f_airways(pp_N2_aw_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_aw_t1 = pp_N2_aw_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
 ## Compute the partial pressure of alv
+#methode euler
 func alveolar():
-	var delta = (-R*T/valg*(k1+k2)*pp_N2_alv_t0+R*T/valg*(k1*pp_N2_aw_t0+k2*pp_N2_alb_t0))*dt
+	var delta = (-R*T/valg*(K1+K2)*pp_N2_alv_t0+R*T/valg*(K1*pp_N2_aw_t0+K2*pp_N2_alb_t0))*dt
 	pp_N2_alv_t1 = pp_N2_alv_t0 + delta
+	
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_alveolar(pp_N2_alv):
+	return (-R * T / valg * (K1 + K2) * pp_N2_alv + R * T / valg * (K1 * pp_N2_aw_t0 + K2 * pp_N2_alb_t0))
+
+func alveolar_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_alveolar(pp_N2_alv_t0)
+	var k2 = dt * f_alveolar(pp_N2_alv_t0 + 0.5 * k1)
+	var k3 = dt * f_alveolar(pp_N2_alv_t0 + 0.5 * k2)
+	var k4 = dt * f_alveolar(pp_N2_alv_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_alv_t1 = pp_N2_alv_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
 
 ## Compute the partial pressure of alb
+#methode euler
 func alveolar_blood():
-	var delta = (1/(valb*alpha_n2)*(k2*pp_N2_alv_t0-pp_N2_alb_t0*(k2+alpha_n2*q)+alpha_n2*q*pp_N2_v_t0))*dt
+	var delta = (1/(valb*alpha_n2)*(K2*pp_N2_alv_t0-pp_N2_alb_t0*(K2+alpha_n2*q)+alpha_n2*q*pp_N2_v_t0))*dt
 	pp_N2_alb_t1 = pp_N2_alb_t0 + delta
 
+##methode tunge kutta 4
+# Fonction dérivée définie globalement
+func f_alveolar_blood(pp_N2_alb):
+		return (1 / (valb * alpha_n2) * (K2 * pp_N2_alv_t0 - pp_N2_alb * (K2 + alpha_n2 * q) + alpha_n2 * q * pp_N2_v_t0))
+
+func alveolar_blood_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_alveolar_blood(pp_N2_alb_t0)
+	var k2 = dt * f_alveolar_blood(pp_N2_alb_t0 + 0.5 * k1)
+	var k3 = dt * f_alveolar_blood(pp_N2_alb_t0 + 0.5 * k2)
+	var k4 = dt * f_alveolar_blood(pp_N2_alb_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_alb_t1 = pp_N2_alb_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
 ## Compute the partial pressure of a
+##methode euler
 func arterial_blood():
 	var delta = (q/va*(pp_N2_alb_t0-pp_N2_a_t0))*dt
 	pp_N2_a_t1 = pp_N2_a_t0 + delta
+	
+##methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_arterial_blood(pp_N2_a):
+		return (q / va * (pp_N2_alb_t0 - pp_N2_a))
+
+func arterial_blood_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_arterial_blood(pp_N2_a_t0)
+	var k2 = dt * f_arterial_blood(pp_N2_a_t0 + 0.5 * k1)
+	var k3 = dt * f_arterial_blood(pp_N2_a_t0 + 0.5 * k2)
+	var k4 = dt * f_arterial_blood(pp_N2_a_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_a_t1 = pp_N2_a_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
 
 ## Compute the partial pressure of v
+##methode euler
 func venous_blood():
 	var delta = (1/vv*((QCE*pp_N2_cCE_t0+QTA*pp_N2_cTA_t0+QMH*pp_N2_cMH_t0+QM*pp_N2_cM_t0+QR*pp_N2_cR_t0+QO*pp_N2_cO_t0+QF*pp_N2_cF_t0+QRDC*pp_N2_cRDC_t0)-(QCE+QTA+QMH+QM+QR+QO+QF+QRDC)*pp_N2_v_t0))*dt
 	pp_N2_v_t1 = pp_N2_v_t0 + delta
+	
+##methode runge kutta 4
 
-## Compute the partial pressure of c
+# Fonction dérivée définie globalement
+func f_venous_blood(pp_N2_v):
+	return (1 / vv * (
+		(QCE * pp_N2_cCE_t0 + QTA * pp_N2_cTA_t0 + QMH * pp_N2_cMH_t0 + QM * pp_N2_cM_t0 + QR * pp_N2_cR_t0 + QO * pp_N2_cO_t0 + QF * pp_N2_cF_t0 + QRDC * pp_N2_cRDC_t0) - 
+		(QCE + QTA + QMH + QM + QR + QO + QF + QRDC) * pp_N2_v
+	))
+
+func venous_blood_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_venous_blood(pp_N2_v_t0)
+	var k2 = dt * f_venous_blood(pp_N2_v_t0 + 0.5 * k1)
+	var k3 = dt * f_venous_blood(pp_N2_v_t0 + 0.5 * k2)
+	var k4 = dt * f_venous_blood(pp_N2_v_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_v_t1 = pp_N2_v_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+## Compute the partial pressure of c methode euler
 func capilar_blood_CE():
 	var delta = (1/(vcCE*alpha_n2)*(QCE*alpha_n2*pp_N2_a_t0-(alpha_n2*QCE+kn2CE)*pp_N2_cCE_t0+kn2CE*pp_N2_tiCE_t0))*dt
 	#print("delta_cap_CE = ",delta)
 	pp_N2_cCE_t1 = pp_N2_cCE_t0 + delta
+	
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_CE(pp_N2_cCE):
+	return (1 / (vcCE * alpha_n2) * (
+ 		QCE * alpha_n2 * pp_N2_a_t0 
+ 		- (alpha_n2 * QCE + kn2CE) * pp_N2_cCE 
+ 		+ kn2CE * pp_N2_tiCE_t0))
+		
+func capilar_blood_CE_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_CE(pp_N2_cCE_t0)
+	var k2 = dt * f_CE(pp_N2_cCE_t0 + 0.5 * k1)
+	var k3 = dt * f_CE(pp_N2_cCE_t0 + 0.5 * k2)
+	var k4 = dt * f_CE(pp_N2_cCE_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cCE_t1 = pp_N2_cCE_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
 
-#TODO : a corrigé
-func capilar_blood_ME():
+
+# methode euler
+func capilar_blood_ME(): 
 	var delta = (1/(vcME*alpha_n2)*(QME*alpha_n2*pp_N2_a_t0-(alpha_n2*QME+kn2ME)*pp_N2_cME_t0+kn2ME*pp_N2_tiME_t0))*dt
 #	print("delta_cap_ME = ",delta) 
 	pp_N2_cME_t1 = pp_N2_cME_t0 + delta
-	
 
+#methode runge kutta 4	
+func f_ME(pp_N2_cME):
+	return (1 / (vcME * alpha_n2) * (
+		QME * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QME + kn2ME) * pp_N2_cME 
+		+ kn2ME * pp_N2_tiME_t0))	
+		
+func capilar_blood_ME_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ME(pp_N2_cME_t0)
+	var k2 = dt * f_ME(pp_N2_cME_t0 + 0.5 * k1)
+	var k3 = dt * f_ME(pp_N2_cME_t0 + 0.5 * k2)
+	var k4 = dt * f_ME(pp_N2_cME_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cME_t1 = pp_N2_cME_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6	
+	
+# methode euler
 func capilar_blood_TA():
 	var delta = (1/(vcTA*alpha_n2)*(QTA*alpha_n2*pp_N2_a_t0-(alpha_n2*QTA+kn2TA)*pp_N2_cTA_t0+kn2TA*pp_N2_tiTA_t0))*dt
 	pp_N2_cTA_t1 = pp_N2_cTA_t0 + delta
+	
+	#methode runge kutta 4
+	
+	# Fonction dérivée définie globalement
+func f_TA(pp_N2_cTA):
+	return (1 / (vcTA * alpha_n2) * (
+		QTA * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QTA + kn2TA) * pp_N2_cTA 
+		+ kn2TA * pp_N2_tiTA_t0))
 
+func capilar_blood_TA_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_TA(pp_N2_cTA_t0)
+	var k2 = dt * f_TA(pp_N2_cTA_t0 + 0.5 * k1)
+	var k3 = dt * f_TA(pp_N2_cTA_t0 + 0.5 * k2)
+	var k4 = dt * f_TA(pp_N2_cTA_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cTA_t1 = pp_N2_cTA_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_MH():
 	var delta = (1/(vcMH*alpha_n2)*(QMH*alpha_n2*pp_N2_a_t0-(alpha_n2*QMH+kn2MH)*pp_N2_cMH_t0+kn2MH*pp_N2_tiMH_t0))*dt
 	pp_N2_cMH_t1 = pp_N2_cMH_t0 + delta
 
+#methode runge kutta4
+
+# Fonction dérivée définie globalement
+func f_MH(pp_N2_cMH):
+	return (1 / (vcMH * alpha_n2) * (
+		QMH * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QMH + kn2MH) * pp_N2_cMH 
+		+ kn2MH * pp_N2_tiMH_t0))
+
+func capilar_blood_MH_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_MH(pp_N2_cMH_t0)
+	var k2 = dt * f_MH(pp_N2_cMH_t0 + 0.5 * k1)
+	var k3 = dt * f_MH(pp_N2_cMH_t0 + 0.5 * k2)
+	var k4 = dt * f_MH(pp_N2_cMH_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cMH_t1 = pp_N2_cMH_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_M():
 	var delta = (1/(vcM*alpha_n2)*(QM*alpha_n2*pp_N2_a_t0-(alpha_n2*QM+kn2M)*pp_N2_cM_t0+kn2M*pp_N2_tiM_t0))*dt
 	pp_N2_cM_t1 = pp_N2_cM_t0 + delta
+	
+	#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+# Fonction dérivée définie globalement
+func f_M(pp_N2_cM):
+	return (1 / (vcM * alpha_n2) * (
+		QM * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QM + kn2M) * pp_N2_cM 
+		+ kn2M * pp_N2_tiM_t0))
+
+func capilar_blood_M_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_M(pp_N2_cM_t0)
+	var k2 = dt * f_M(pp_N2_cM_t0 + 0.5 * k1)
+	var k3 = dt * f_M(pp_N2_cM_t0 + 0.5 * k2)
+	var k4 = dt * f_M(pp_N2_cM_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cM_t1 = pp_N2_cM_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_R():
 	var delta = (1/(vcR*alpha_n2)*(QR*alpha_n2*pp_N2_a_t0-(alpha_n2*QR+kn2R)*pp_N2_cR_t0+kn2R*pp_N2_tiR_t0))*dt
 	pp_N2_cR_t1 = pp_N2_cR_t0 + delta
 
+# methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_R(pp_N2_cR):
+	return (1 / (vcR * alpha_n2) * (
+		QR * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QR + kn2R) * pp_N2_cR 
+		+ kn2R * pp_N2_tiR_t0))
+
+func capilar_blood_R_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_R(pp_N2_cR_t0)
+	var k2 = dt * f_R(pp_N2_cR_t0 + 0.5 * k1)
+	var k3 = dt * f_R(pp_N2_cR_t0 + 0.5 * k2)
+	var k4 = dt * f_R(pp_N2_cR_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cR_t1 = pp_N2_cR_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+# methode euler
 func capilar_blood_O():
 	var delta = (1/(vcO*alpha_n2)*(QO*alpha_n2*pp_N2_a_t0-(alpha_n2*QO+kn2O)*pp_N2_cO_t0+kn2O*pp_N2_tiO_t0))*dt
 	pp_N2_cO_t1 = pp_N2_cO_t0 + delta
+	
+#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+func f_O(pp_N2_cO):
+	return (1 / (vcO * alpha_n2) * (
+		QO * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QO + kn2O) * pp_N2_cO 
+		+ kn2O * pp_N2_tiO_t0))
+
+func capilar_blood_O_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_O(pp_N2_cO_t0)
+	var k2 = dt * f_O(pp_N2_cO_t0 + 0.5 * k1)
+	var k3 = dt * f_O(pp_N2_cO_t0 + 0.5 * k2)
+	var k4 = dt * f_O(pp_N2_cO_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cO_t1 = pp_N2_cO_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_TGI():
 	var delta = (1/(vcTGI*alpha_n2)*(QTGI*alpha_n2*pp_N2_a_t0-(alpha_n2*QTGI+kn2TGI)*pp_N2_cTGI_t0+kn2TGI*pp_N2_tiTGI_t0))*dt
 	pp_N2_cTGI_t1 = pp_N2_cTGI_t0 + delta
 
+# methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_TGI(pp_N2_cTGI):
+	return (1 / (vcTGI * alpha_n2) * (
+		QTGI * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QTGI + kn2TGI) * pp_N2_cTGI 
+		+ kn2TGI * pp_N2_tiTGI_t0))
+
+func capilar_blood_TGI_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_TGI(pp_N2_cTGI_t0)
+	var k2 = dt * f_TGI(pp_N2_cTGI_t0 + 0.5 * k1)
+	var k3 = dt * f_TGI(pp_N2_cTGI_t0 + 0.5 * k2)
+	var k4 = dt * f_TGI(pp_N2_cTGI_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cTGI_t1 = pp_N2_cTGI_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_F():
 	var delta = (1/(vcF*alpha_n2)*(alpha_n2*(QTGI*pp_N2_cTGI_t0+QF*pp_N2_a_t0)-(alpha_n2*(QF+QTGI)+kn2F)*pp_N2_cF_t0+kn2F*pp_N2_tiF_t0))*dt
 	pp_N2_cF_t1 = pp_N2_cF_t0 + delta
+	
+#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+func f_F(pp_N2_cF):
+	return (1 / (vcF * alpha_n2) * (
+		alpha_n2 * (QTGI * pp_N2_cTGI_t0 + QF * pp_N2_a_t0) 
+		- (alpha_n2 * (QF + QTGI) + kn2F) * pp_N2_cF 
+		+ kn2F * pp_N2_tiF_t0))
+
+func capilar_blood_F_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_F(pp_N2_cF_t0)
+	var k2 = dt * f_F(pp_N2_cF_t0 + 0.5 * k1)
+	var k3 = dt * f_F(pp_N2_cF_t0 + 0.5 * k2)
+	var k4 = dt * f_F(pp_N2_cF_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cF_t1 = pp_N2_cF_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_RDC():
 	var delta = (1/(vcRDC*alpha_n2)*(QRDC*alpha_n2*pp_N2_a_t0-(alpha_n2*QRDC+kn2RDC)*pp_N2_cRDC_t0+kn2RDC*pp_N2_tiRDC_t0))*dt
 	pp_N2_cRDC_t1 = pp_N2_cRDC_t0 + delta
 	
+#methode tunge kutta 4
+	# Fonction dérivée définie globalement
+func f_RDC(pp_N2_cRDC):
+		return (1 / (vcRDC * alpha_n2) * (
+			QRDC * alpha_n2 * pp_N2_a_t0 
+			- (alpha_n2 * QRDC + kn2RDC) * pp_N2_cRDC 
+			+ kn2RDC * pp_N2_tiRDC_t0))
+
+func capilar_blood_RDC_rk4():
+		# Étapes de Runge-Kutta
+		var k1 = dt * f_RDC(pp_N2_cRDC_t0)
+		var k2 = dt * f_RDC(pp_N2_cRDC_t0 + 0.5 * k1)
+		var k3 = dt * f_RDC(pp_N2_cRDC_t0 + 0.5 * k2)
+		var k4 = dt * f_RDC(pp_N2_cRDC_t0 + k3)
+		
+		# Mise à jour de la variable
+		pp_N2_cRDC_t1 = pp_N2_cRDC_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
 ## Compute the partial pressure of ti
+##methode euler
 func tissue_CE():
 	var delta = (kn2CE/(alpha_n2*vtiCE)*(pp_N2_cCE_t0-pp_N2_tiCE_t0))*dt
 	#print("delta_tissue_CE = ",delta)
 	pp_N2_tiCE_t1 = pp_N2_tiCE_t0 + delta
 
-func tissue_ME():#TODO a corriger comme cap ME
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_tissue(pp_N2_tiCE):
+	return kn2CE / (alpha_n2 * vtiCE) * (pp_N2_cCE_t0 - pp_N2_tiCE)
+
+
+func tissue_CE_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_tissue(pp_N2_tiCE_t0)
+	var k2 = dt * f_tissue(pp_N2_tiCE_t0 + 0.5 * k1)
+	var k3 = dt * f_tissue(pp_N2_tiCE_t0 + 0.5 * k2)
+	var k4 = dt * f_tissue(pp_N2_tiCE_t0 + k3)
+	
+	# Mise à jour de la variable pp_N2_tiCE_t1
+	pp_N2_tiCE_t1 = pp_N2_tiCE_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
+func tissue_ME():
 	var delta = (kn2ME/(alpha_n2*vtiME)*(pp_N2_cME_t0-pp_N2_tiME_t0))*dt
 #	print("delta_tissue_ME = ",delta)
 	pp_N2_tiME_t1 = pp_N2_tiME_t0 + delta
+	
+	
+	#methode runge kutta 4
+func f_tissue_ME(pp_N2_tiME):
+	return kn2ME / (alpha_n2 * vtiME) * (pp_N2_cME_t0 - pp_N2_tiME)
 
+func tissue_ME_rk4():
+
+	var k1 = dt * f_tissue_ME(pp_N2_tiME_t0)
+	var k2 = dt * f_tissue_ME(pp_N2_tiME_t0 + 0.5 * k1)
+	var k3 = dt * f_tissue_ME(pp_N2_tiME_t0 + 0.5 * k2)
+	var k4 = dt * f_tissue_ME(pp_N2_tiME_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiME_t1 = pp_N2_tiME_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func tissue_TA():
 	var delta = (kn2TA/(alpha_n2*vtiTA)*(pp_N2_cTA_t0-pp_N2_tiTA_t0))*dt
 	pp_N2_tiTA_t1 = pp_N2_tiTA_t0 + delta
 
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_TA(pp_N2_tiTA):
+	return (kn2TA / (alpha_n2 * vtiTA) * (pp_N2_cTA_t0 - pp_N2_tiTA))
+
+func tissue_TA_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_TA(pp_N2_tiTA_t0)
+	var k2 = dt * f_ti_TA(pp_N2_tiTA_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_TA(pp_N2_tiTA_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_TA(pp_N2_tiTA_t0 + k3)
+	
+		# Mise à jour de la variable
+	pp_N2_tiTA_t1 = pp_N2_tiTA_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func tissue_MH():
 	var delta = (kn2MH/(alpha_n2*vtiMH)*(pp_N2_cMH_t0-pp_N2_tiMH_t0))*dt
 	pp_N2_tiMH_t1 = pp_N2_tiMH_t0 + delta
 
+#methode runge kutta4
+
+# Fonction dérivée définie globalement
+func f_ti_MH(pp_N2_tiMH):
+		return (kn2MH / (alpha_n2 * vtiMH) * (pp_N2_cMH_t0 - pp_N2_tiMH))
+
+func tissue_MH_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_MH(pp_N2_tiMH_t0)
+	var k2 = dt * f_ti_MH(pp_N2_tiMH_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_MH(pp_N2_tiMH_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_MH(pp_N2_tiMH_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiMH_t1 = pp_N2_tiMH_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func tissue_M():
 	var delta = (kn2M/(alpha_n2*vtiM)*(pp_N2_cM_t0-pp_N2_tiM_t0))*dt
 	pp_N2_tiM_t1 = pp_N2_tiM_t0 + delta
+	
+#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+func f_ti_M(pp_N2_tiM):
+		return (kn2M / (alpha_n2 * vtiM) * (pp_N2_cM_t0 - pp_N2_tiM))
+
+func tissue_M_rk4():
+		# Étapes de Runge-Kutta
+		var k1 = dt * f_ti_M(pp_N2_tiM_t0)
+		var k2 = dt * f_ti_M(pp_N2_tiM_t0 + 0.5 * k1)
+		var k3 = dt * f_ti_M(pp_N2_tiM_t0 + 0.5 * k2)
+		var k4 = dt * f_ti_M(pp_N2_tiM_t0 + k3)
+		
+		# Mise à jour de la variable
+		pp_N2_tiM_t1 = pp_N2_tiM_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+# methode euler
 func tissue_R():
 	var delta = (kn2R/(alpha_n2*vtiR)*(pp_N2_cR_t0-pp_N2_tiR_t0))*dt
 	pp_N2_tiR_t1 = pp_N2_tiR_t0 + delta
+	
+#methode runge kutta 4
 
+func f_ti_R(pp_N2_tiR):
+		return (kn2R / (alpha_n2 * vtiR) * (pp_N2_cR_t0 - pp_N2_tiR))
+
+func tissue_R_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_R(pp_N2_tiR_t0)
+	var k2 = dt * f_ti_R(pp_N2_tiR_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_R(pp_N2_tiR_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_R(pp_N2_tiR_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiR_t1 = pp_N2_tiR_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
 func tissue_O():
 	var delta = (kn2O/(alpha_n2*vtiO)*(pp_N2_cO_t0-pp_N2_tiO_t0))*dt
-	pp_N2_tiO_t1 = pp_N2_tiO_t0 + delta
+	pp_N2_tiO_t1 = pp_N2_tiO_t0 + delta	
 
+
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_O(pp_N2_tiO):
+	return (kn2O / (alpha_n2 * vtiO) * (pp_N2_cO_t0 - pp_N2_tiO))
+
+func tissue_O_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_O(pp_N2_tiO_t0)
+	var k2 = dt * f_ti_O(pp_N2_tiO_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_O(pp_N2_tiO_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_O(pp_N2_tiO_t0 + k3)
+		
+	# Mise à jour de la variable
+	pp_N2_tiO_t1 = pp_N2_tiO_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
 func tissue_TGI():
 	var delta = (kn2TGI/(alpha_n2*vtiTGI)*(pp_N2_cTGI_t0-pp_N2_tiTGI_t0))*dt
-	pp_N2_tiTGI_t1 = pp_N2_tiTGI_t0 + delta
+	pp_N2_tiTGI_t1 = pp_N2_tiTGI_t0 + delta	
 
+#methode euler 
+# Fonction dérivée définie globalement
+func f_ti_TGI(pp_N2_tiTGI):
+	return (kn2TGI / (alpha_n2 * vtiTGI) * (pp_N2_cTGI_t0 - pp_N2_tiTGI))
+
+func tissue_TGI_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_TGI(pp_N2_tiTGI_t0)
+	var k2 = dt * f_ti_TGI(pp_N2_tiTGI_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_TGI(pp_N2_tiTGI_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_TGI(pp_N2_tiTGI_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiTGI_t1 = pp_N2_tiTGI_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+# methode euler
 func tissue_F():
 	var delta = (kn2F/(alpha_n2*vtiF)*(pp_N2_cF_t0-pp_N2_tiF_t0))*dt
 	pp_N2_tiF_t1 = pp_N2_tiF_t0 + delta
+	
+#mehode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_F(pp_N2_tiF):
+	return (kn2F / (alpha_n2 * vtiF) * (pp_N2_cF_t0 - pp_N2_tiF))
 
+func tissue_F_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_F(pp_N2_tiF_t0)
+	var k2 = dt * f_ti_F(pp_N2_tiF_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_F(pp_N2_tiF_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_F(pp_N2_tiF_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiF_t1 = pp_N2_tiF_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
 func tissue_RDC():
 	var delta = (kn2RDC/(alpha_n2*vtiRDC)*(pp_N2_cRDC_t0-pp_N2_tiRDC_t0))*dt
 	pp_N2_tiRDC_t1 = pp_N2_tiRDC_t0 + delta
+
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_RDC(pp_N2_tiRDC):
+		return (kn2RDC / (alpha_n2 * vtiRDC) * (pp_N2_cRDC_t0 - pp_N2_tiRDC))
+
+func tissue_RDC_rk4():
+		# Étapes de Runge-Kutta
+		var k1 = dt * f_ti_RDC(pp_N2_tiRDC_t0)
+		var k2 = dt * f_ti_RDC(pp_N2_tiRDC_t0 + 0.5 * k1)
+		var k3 = dt * f_ti_RDC(pp_N2_tiRDC_t0 + 0.5 * k2)
+		var k4 = dt * f_ti_RDC(pp_N2_tiRDC_t0 + k3)
+		
+		# Mise à jour de la variable
+		pp_N2_tiRDC_t1 = pp_N2_tiRDC_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
 
 func update_debug_textbox(debug_message):
 	# Ajoutez le message de débogage à la zone de texte
@@ -537,31 +1001,31 @@ func step():
 		# Compute one step
 	pressure_atm()
 	air()
-	airways()
-	alveolar()
-	alveolar_blood()
-	arterial_blood()
-	venous_blood()
-	capilar_blood_CE()
-	tissue_CE()
-	capilar_blood_ME()
-	tissue_ME()
-	capilar_blood_TA()
-	tissue_TA()
-	capilar_blood_MH()
-	tissue_MH()
-	capilar_blood_M()
-	tissue_M()
-	capilar_blood_R()
-	tissue_R()
-	capilar_blood_O()
-	tissue_O()
-	capilar_blood_TGI()
-	tissue_TGI()
-	capilar_blood_F()
-	tissue_F()
-	capilar_blood_RDC()
-	tissue_RDC()
+	airways_rk4()
+	alveolar_blood_rk4()
+	alveolar_blood_rk4()
+	arterial_blood_rk4()
+	venous_blood_rk4()
+	capilar_blood_CE_rk4()
+	tissue_CE_rk4()
+	capilar_blood_ME_rk4()
+	tissue_ME_rk4()
+	capilar_blood_TA_rk4()
+	tissue_TA_rk4()
+	capilar_blood_MH_rk4()
+	tissue_MH_rk4()
+	capilar_blood_M_rk4()
+	tissue_M_rk4()
+	capilar_blood_R_rk4()
+	tissue_R_rk4()
+	capilar_blood_O_rk4()
+	tissue_O_rk4()
+	capilar_blood_TGI_rk4()
+	tissue_TGI_rk4()
+	capilar_blood_F_rk4()
+	tissue_F_rk4()
+	capilar_blood_RDC_rk4()
+	tissue_RDC_rk4()
 	verifier_et_stocker_temps_seuil()
 	
 		# Preparer le prochain step
@@ -622,31 +1086,31 @@ func step2():
 		# Compute one step
 	pressure_atm()
 	air()
-	airways()
-	alveolar()
-	alveolar_blood()
-	arterial_blood()
-	venous_blood()
-	capilar_blood_CE()
-	tissue_CE()
-	capilar_blood_ME()
-	tissue_ME()
-	capilar_blood_TA()
-	tissue_TA()
-	capilar_blood_MH()
-	tissue_MH()
-	capilar_blood_M()
-	tissue_M()
-	capilar_blood_R()
-	tissue_R()
-	capilar_blood_O()
-	tissue_O()
-	capilar_blood_TGI()
-	tissue_TGI()
-	capilar_blood_F()
-	tissue_F()
-	capilar_blood_RDC()
-	tissue_RDC()
+	airways_rk4()
+	alveolar_rk4()
+	alveolar_blood_rk4()
+	arterial_blood_rk4()
+	venous_blood_rk4()
+	capilar_blood_CE_rk4()
+	tissue_CE_rk4()
+	capilar_blood_ME_rk4()
+	tissue_ME_rk4()
+	capilar_blood_TA_rk4()
+	tissue_TA_rk4()
+	capilar_blood_MH_rk4()
+	tissue_MH_rk4()
+	capilar_blood_M_rk4()
+	tissue_M_rk4()
+	capilar_blood_R_rk4()
+	tissue_R_rk4()
+	capilar_blood_O_rk4()
+	tissue_O_rk4()
+	capilar_blood_TGI_rk4()
+	tissue_TGI_rk4()
+	capilar_blood_F_rk4()
+	tissue_F_rk4()
+	capilar_blood_RDC_rk4()
+	tissue_RDC_rk4()
 	
 		# Preparer le prochain step
 	pp_N2_aw_t0 	= pp_N2_aw_t1
