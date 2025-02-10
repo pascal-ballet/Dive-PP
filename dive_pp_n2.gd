@@ -1,18 +1,17 @@
 extends Node2D
-
 # ***********************
 # Variables modifiables
 # ***********************
 
-var vent: float = 8.1
-var vaw: float = 1.5
-var valg: float = 1.0
-var valb: float = 0.5
-var q: float = 4.209
-var va: float = 1.7
-var vv: float = 3.0
-var patm: float = 101325.0
-var fn2: float = 0.79
+var vent: float = 8.1 # debit ventilatoire 
+var vaw: float = 1.5 #volume des voix aérienne
+var valg: float = 1.0 # volume du gaz alvéolaire
+var valb: float = 0.5 # volume de sang alvéolaire
+var q: float = 4.209 # debit cardiaque
+var va: float = 1.7 #volume artériel
+var vv: float = 3.0 #volume veineux
+var patm: float = 101325.0 # presion ambiante
+var fn2: float = 0.79 #fraction d azote dans le gaz respiré 
 var t = [null,null,null,null,null,null,null,null,null,null]
 var s = [null,null,null,null,null,null,null,null,null,null]
 
@@ -25,18 +24,20 @@ var s = [null,null,null,null,null,null,null,null,null,null]
 # Paramètres du modèle
 # ***********************
 
-var alpha_n2:float = 0.0000619
-var ph2o:float = 6246.0
-var k1:float = 0.00267
-var k2:float = 0.00748
-var R:float = 8.314
-var T:float = 310.0
+var alpha_n2:float = 0.0000619 #coef solubilite azote
+var ph2o:float = 6246.0 # presstion partiel de vapeur d eau
+var K1:float = 0.00267 # coef de difusion respiratoire
+var K2:float = 0.00748 # coef de difusion alveolo capilaire
+var R:float = 8.314 # constante des gaz parfait
+var T:float = 310.0 # Temperature en K
 var tmp_t:float = 0.0
 var tmp_s:float = 0.0
 var time:float = 0.0
-var dt:float = 0.001
+var dtINI:float = 0.0009  #variable global de dt permet de changer tout les dt "0.0002 euler" "0.0004 rk4""0.0009 rk6" "RK8 0.0009"
+var dt:float = dtINI
 var i = 1
 var k = 0
+var iteration = 0 ## test
 var debug_textbox
 var debug_textbox2
 var debug_textbox3
@@ -48,6 +49,7 @@ var debug_textbox8
 var debug_textbox9
 var debug_textbox10
 var debug_textbox11
+var debug_textbox12
 var seuil: float = 115007.41
 var temps_seuils = {
 	"pp_N2_aw": null,
@@ -55,6 +57,7 @@ var temps_seuils = {
 	"pp_N2_alb": null,
 	"pp_N2_v": null,
 	"pp_N2_tiCE": null,
+	"pp_N2_tiME": null,
 	"pp_N2_tiTA": null,
 	"pp_N2_tiMH": null,
 	"pp_N2_tiM": null,
@@ -70,23 +73,23 @@ var temps_seuils = {
 
 # Variables du cerveau
 
-var vtiCE: float = 1.35
-var vcCE: float = 0.027
-var mo2CE:float = 1.596
-var kn2CE: float = 0.00214
-var QCE: float = 0.63
-var pp_N2_tiCE_t0: float = 75112.41
+var vtiCE: float = 1.35 # Volume en L
+var vcCE: float = 0.027 # Capilaire Vol en L
+var mo2CE:float = 1.596 # MO2 en mMol/kg/min
+var kn2CE: float = 0.00214 # diff coef N2
+var QCE: float = 0.63 # débit sangin en L/min
+var pp_N2_tiCE_t0: float = 75112.41 #pression partiel d azote initiale
 var pp_N2_tiCE_t1: float = 0.0
-var pp_N2_cCE_t0: float = 75112.41
+var pp_N2_cCE_t0: float = 75112.41 # pression partiel capillaire
 var pp_N2_cCE_t1: float = 0.0
 
 # Variables du tissu adipeux
 
-var vtiTA: float = 16
-var vcTA: float = 0.011
-var mo2TA:float = 0.026
-var kn2TA: float = 0.0000214
-var QTA: float = 0.419
+var vtiTA: float = 16 # Volume en L
+var vcTA: float = 0.011 # Cap Vol en L
+var mo2TA:float = 0.026 # MO2 en mMol/kg/min
+var kn2TA: float = 0.0000214 # diff coef N2
+var QTA: float = 0.419 # débit sangin en L/min
 var pp_N2_tiTA_t0: float = 75112.41
 var pp_N2_tiTA_t1: float = 0.0
 var pp_N2_cTA_t0: float = 75112.41
@@ -94,11 +97,11 @@ var pp_N2_cTA_t1: float = 0.0
 
 # Variables des muscles du haut du corps
 
-var vtiMH: float = 6.72
-var vcMH: float = 0.0095
-var mo2MH:float = 0.087
-var kn2MH: float = 0.000022
-var QMH: float = 0.07
+var vtiMH: float = 6.72 # Volume en L
+var vcMH: float = 0.0095 # Cap Vol en L
+var mo2MH:float = 0.087 # MO2 en mMol/kg/min
+var kn2MH: float = 0.000022 # diff coef N2
+var QMH: float = 0.07 # débit sangin en L/min
 var pp_N2_tiMH_t0: float = 75112.41
 var pp_N2_tiMH_t1: float = 0.0
 var pp_N2_cMH_t0: float = 75112.41
@@ -106,11 +109,11 @@ var pp_N2_cMH_t1: float = 0.0
 
 # Variables des muscles 
 
-var vtiM: float = 20.17
-var vcM: float = 0.0285
-var mo2M: float = 0.087
-var kn2M: float = 0.000021
-var QM: float = 0.21
+var vtiM: float = 20.17 # Volume en L
+var vcM: float = 0.0285 # Cap Vol en L
+var mo2M: float = 0.087 # MO2 en mMol/kg/min
+var kn2M: float = 0.000021 # diff coef N2
+var QM: float = 0.21 # débit sangin en L/min
 var pp_N2_tiM_t0: float = 75112.41
 var pp_N2_tiM_t1: float = 0.0
 var pp_N2_cM_t0: float = 75112.41
@@ -118,11 +121,11 @@ var pp_N2_cM_t1: float = 0.0
 
 # Varibles du rein
 
-var vtiR: float = 0.30
-var vcR: float = 0.042
-var mo2R:float = 2.95
-var kn2R: float = 0.002
-var QR: float = 1.2
+var vtiR: float = 0.30 # Volume en L
+var vcR: float = 0.042 # Cap Vol en L
+var mo2R:float = 2.95 # MO2 en mMol/kg/min
+var kn2R: float = 0.002 # diff coef N2
+var QR: float = 1.2 # débit sangin en L/min
 var pp_N2_tiR_t0: float = 75112.41
 var pp_N2_tiR_t1: float = 0.0
 var pp_N2_cR_t0: float = 75112.41
@@ -130,11 +133,11 @@ var pp_N2_cR_t1: float = 0.0
 
 # Variables des os
 
-var vtiO: float = 6.81
-var vcO: float = 0.011
-var mo2O:float = 0.113
-var kn2O: float = 0.0000535
-var QO: float = 0.5
+var vtiO: float = 6.81 # Volume en L
+var vcO: float = 0.011 # Cap Vol en L
+var mo2O:float = 0.113 # MO2 en mMol/kg/min
+var kn2O: float = 0.0000535 # diff coef N2
+var QO: float = 0.5 # débit sangin en L/min
 var pp_N2_tiO_t0: float = 75112.41
 var pp_N2_tiO_t1: float = 0.0
 var pp_N2_cO_t0: float = 75112.41
@@ -142,11 +145,11 @@ var pp_N2_cO_t1: float = 0.0
 
 # Variables du transit gastro-intestinal
 
-var vtiTGI: float = 1.28
-var vcTGI: float = 0.040
-var mo2TGI:float = 0.0806
-var kn2TGI: float = 0.000043
-var QTGI: float = 0.065
+var vtiTGI: float = 1.28 # Volume en L
+var vcTGI: float = 0.040 # Cap Vol en L
+var mo2TGI:float = 0.0806 # MO2 en mMol/kg/min
+var kn2TGI: float = 0.000043 # diff coef N2
+var QTGI: float = 0.065 # débit sangin en L/min
 var pp_N2_tiTGI_t0: float = 75112.41
 var pp_N2_tiTGI_t1: float = 0.0
 var pp_N2_cTGI_t0: float = 75112.41
@@ -154,23 +157,35 @@ var pp_N2_cTGI_t1: float = 0.0
 
 # Variables du foie
 
-var vtiF: float = 1.71
-var vcF:float = 0.054
-var mo2F:float = 1.3507
-var kn2F: float = 0.00107
-var QF: float = 0.8
+var vtiF: float = 1.71 # Volume en L
+var vcF:float = 0.054 # Cap Vol en L
+var mo2F:float = 1.3507 # MO2 en mMol/kg/min
+var kn2F: float = 0.00107 # diff coef N2
+var QF: float = 0.8 # débit sangin en L/min
 var pp_N2_tiF_t0: float = 75112.41
 var pp_N2_tiF_t1: float = 0.0
 var pp_N2_cF_t0: float = 75112.41
 var pp_N2_cF_t1: float = 0.0
 
+# Variables du ME
+
+var vtiME: float = 0.03 # Volume en L
+var vcME:float = 0.006 # Cap Vol en L
+var mo2ME:float = 1.596 # MO2 en mMol/kg/min
+var kn2ME: float = 0.00214 # diff coef N2
+var QME: float = 0.15 # débit sangin en L/min TODO valeur
+var pp_N2_tiME_t0: float = 75112.41
+var pp_N2_tiME_t1: float = 0.0
+var pp_N2_cME_t0: float = 75112.41
+var pp_N2_cME_t1: float = 0.0
+
 # Variables du reste du corps
 
-var vtiRDC: float = 6.07
-var vcRDC: float = 0.045
-var mo2RDC: float = 5.0965
-var kn2RDC: float = 0.00107
-var QRDC: float = 0.315
+var vtiRDC: float = 6.07 # Volume en L
+var vcRDC: float = 0.045 # Cap Vol en L
+var mo2RDC: float = 5.0965 # MO2 en mMol/kg/min
+var kn2RDC: float = 0.00107 # diff coef N2
+var QRDC: float = 0.315 
 var pp_N2_tiRDC_t0: float = 75112.41
 var pp_N2_tiRDC_t1: float = 0.0
 var pp_N2_cRDC_t0: float = 75112.41
@@ -204,7 +219,7 @@ var pp_N2_a_t1: float = 0.0
 # ***********************
 # Fonctions de compartiments
 # ***********************
-
+#profil de plonge
 func pressure_atm():
 	if(t[0]!=null&&s[0]!=null):
 		if(time<=t[0]+dt):
@@ -228,112 +243,642 @@ func pressure_atm():
 func air():
 	pp_N2_air = (patm-ph2o)*fn2
 	
+	
 ## Compute the partial pressure of aw
+#methode euler
 func airways():
-	var delta = ((vent/vaw*pp_N2_air)-(vent+k1*R*T)/vaw*pp_N2_aw_t0+(k1*R*T)/vaw*pp_N2_alv_t0)*dt
+	var delta = ((vent/vaw*pp_N2_air)-(vent+K1*R*T)/vaw*pp_N2_aw_t0+(K1*R*T)/vaw*pp_N2_alv_t0)*dt
 	pp_N2_aw_t1 = pp_N2_aw_t0 + delta
 
+#methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_airways(pp_N2_aw):
+	return ((vent / vaw * pp_N2_air) - (vent + K1 * R * T) / vaw * pp_N2_aw + (K1 * R * T) / vaw * pp_N2_alv_t0)
+
+func airways_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_airways(pp_N2_aw_t0)
+	var k2 = dt * f_airways(pp_N2_aw_t0 + 0.5 * k1)
+	var k3 = dt * f_airways(pp_N2_aw_t0 + 0.5 * k2)
+	var k4 = dt * f_airways(pp_N2_aw_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_aw_t1 = pp_N2_aw_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
 ## Compute the partial pressure of alv
+#methode euler
 func alveolar():
-	var delta = (-R*T/valg*(k1+k2)*pp_N2_alv_t0+R*T/valg*(k1*pp_N2_aw_t0+k2*pp_N2_alb_t0))*dt
+	var delta = (-R*T/valg*(K1+K2)*pp_N2_alv_t0+R*T/valg*(K1*pp_N2_aw_t0+K2*pp_N2_alb_t0))*dt
 	pp_N2_alv_t1 = pp_N2_alv_t0 + delta
+	
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_alveolar(pp_N2_alv):
+	return (-R * T / valg * (K1 + K2) * pp_N2_alv + R * T / valg * (K1 * pp_N2_aw_t0 + K2 * pp_N2_alb_t0))
+
+func alveolar_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_alveolar(pp_N2_alv_t0)
+	var k2 = dt * f_alveolar(pp_N2_alv_t0 + 0.5 * k1)
+	var k3 = dt * f_alveolar(pp_N2_alv_t0 + 0.5 * k2)
+	var k4 = dt * f_alveolar(pp_N2_alv_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_alv_t1 = pp_N2_alv_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
 
 ## Compute the partial pressure of alb
+#methode euler
 func alveolar_blood():
-	var delta = (1/(valb*alpha_n2)*(k2*pp_N2_alv_t0-pp_N2_alb_t0*(k2+alpha_n2*q)+alpha_n2*q*pp_N2_v_t0))*dt
+	var delta = (1/(valb*alpha_n2)*(K2*pp_N2_alv_t0-pp_N2_alb_t0*(K2+alpha_n2*q)+alpha_n2*q*pp_N2_v_t0))*dt
 	pp_N2_alb_t1 = pp_N2_alb_t0 + delta
 
+##methode tunge kutta 4
+# Fonction dérivée définie globalement
+func f_alveolar_blood(pp_N2_alb):
+		return (1 / (valb * alpha_n2) * (K2 * pp_N2_alv_t0 - pp_N2_alb * (K2 + alpha_n2 * q) + alpha_n2 * q * pp_N2_v_t0))
+
+func alveolar_blood_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_alveolar_blood(pp_N2_alb_t0)
+	var k2 = dt * f_alveolar_blood(pp_N2_alb_t0 + 0.5 * k1)
+	var k3 = dt * f_alveolar_blood(pp_N2_alb_t0 + 0.5 * k2)
+	var k4 = dt * f_alveolar_blood(pp_N2_alb_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_alb_t1 = pp_N2_alb_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
 ## Compute the partial pressure of a
+##methode euler
 func arterial_blood():
 	var delta = (q/va*(pp_N2_alb_t0-pp_N2_a_t0))*dt
 	pp_N2_a_t1 = pp_N2_a_t0 + delta
+	
+##methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_arterial_blood(pp_N2_a):
+		return (q / va * (pp_N2_alb_t0 - pp_N2_a))
+
+func arterial_blood_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_arterial_blood(pp_N2_a_t0)
+	var k2 = dt * f_arterial_blood(pp_N2_a_t0 + 0.5 * k1)
+	var k3 = dt * f_arterial_blood(pp_N2_a_t0 + 0.5 * k2)
+	var k4 = dt * f_arterial_blood(pp_N2_a_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_a_t1 = pp_N2_a_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
 
 ## Compute the partial pressure of v
+##methode euler
 func venous_blood():
 	var delta = (1/vv*((QCE*pp_N2_cCE_t0+QTA*pp_N2_cTA_t0+QMH*pp_N2_cMH_t0+QM*pp_N2_cM_t0+QR*pp_N2_cR_t0+QO*pp_N2_cO_t0+QF*pp_N2_cF_t0+QRDC*pp_N2_cRDC_t0)-(QCE+QTA+QMH+QM+QR+QO+QF+QRDC)*pp_N2_v_t0))*dt
 	pp_N2_v_t1 = pp_N2_v_t0 + delta
+	
+##methode runge kutta 4
 
-## Compute the partial pressure of c
+# Fonction dérivée définie globalement
+func f_venous_blood(pp_N2_v):
+	return (1 / vv * (
+		(QCE * pp_N2_cCE_t0 + QTA * pp_N2_cTA_t0 + QMH * pp_N2_cMH_t0 + QM * pp_N2_cM_t0 + QR * pp_N2_cR_t0 + QO * pp_N2_cO_t0 + QF * pp_N2_cF_t0 + QRDC * pp_N2_cRDC_t0) - 
+		(QCE + QTA + QMH + QM + QR + QO + QF + QRDC) * pp_N2_v
+	))
+
+func venous_blood_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_venous_blood(pp_N2_v_t0)
+	var k2 = dt * f_venous_blood(pp_N2_v_t0 + 0.5 * k1)
+	var k3 = dt * f_venous_blood(pp_N2_v_t0 + 0.5 * k2)
+	var k4 = dt * f_venous_blood(pp_N2_v_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_v_t1 = pp_N2_v_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+## Compute the partial pressure of c methode euler
 func capilar_blood_CE():
 	var delta = (1/(vcCE*alpha_n2)*(QCE*alpha_n2*pp_N2_a_t0-(alpha_n2*QCE+kn2CE)*pp_N2_cCE_t0+kn2CE*pp_N2_tiCE_t0))*dt
+	#print("delta_cap_CE = ",delta)
 	pp_N2_cCE_t1 = pp_N2_cCE_t0 + delta
+	
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_CE(pp_N2_cCE):
+	return (1 / (vcCE * alpha_n2) * (
+ 		QCE * alpha_n2 * pp_N2_a_t0 
+ 		- (alpha_n2 * QCE + kn2CE) * pp_N2_cCE 
+ 		+ kn2CE * pp_N2_tiCE_t0))
+		
+func capilar_blood_CE_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_CE(pp_N2_cCE_t0)
+	var k2 = dt * f_CE(pp_N2_cCE_t0 + 0.5 * k1)
+	var k3 = dt * f_CE(pp_N2_cCE_t0 + 0.5 * k2)
+	var k4 = dt * f_CE(pp_N2_cCE_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cCE_t1 = pp_N2_cCE_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
 
-#func capilar_blood_ME():
-	#var delta = (1/(vcME*alpha_n2)*(QME*alpha_n2*pp_N2_a_t0-(alpha_n2*QME+kn2ME)*pp_N2_cME_t0+kn2ME*pp_N2_tiME_t0))*dt
-	#pp_N2_cME_t1 = pp_N2_cME_t0 + delta
 
+# methode euler
+func capilar_blood_ME(): 
+	var delta = (1/(vcME*alpha_n2)*(QME*alpha_n2*pp_N2_a_t0-(alpha_n2*QME+kn2ME)*pp_N2_cME_t0+kn2ME*pp_N2_tiME_t0))*dt
+#	print("delta_cap_ME = ",delta) 
+	pp_N2_cME_t1 = pp_N2_cME_t0 + delta
+
+#methode runge kutta 4	
+func f_ME(pp_N2_cME):
+	return (1 / (vcME * alpha_n2) * (
+		QME * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QME + kn2ME) * pp_N2_cME 
+		+ kn2ME * pp_N2_tiME_t0))	
+		
+func capilar_blood_ME_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ME(pp_N2_cME_t0)
+	var k2 = dt * f_ME(pp_N2_cME_t0 + 0.5 * k1)
+	var k3 = dt * f_ME(pp_N2_cME_t0 + 0.5 * k2)
+	var k4 = dt * f_ME(pp_N2_cME_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cME_t1 = pp_N2_cME_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6	
+
+# Implémentation du schéma Runge-Kutta d'ordre 6
+func capilar_blood_ME_rk6():
+	# Coefficients intermédiaires pour RK6
+	var k1 = dt * f_ME(pp_N2_cME_t0)
+	var k2 = dt * f_ME(pp_N2_cME_t0 + k1 / 3)
+	var k3 = dt * f_ME(pp_N2_cME_t0 + (k1 + k2) / 6)
+	var k4 = dt * f_ME(pp_N2_cME_t0 + (k1 - k2 + 2 * k3) / 8)
+	var k5 = dt * f_ME(pp_N2_cME_t0 + (k1 + 4 * k2 + k3 - k4) / 2)
+	var k6 = dt * f_ME(pp_N2_cME_t0 + (-k1 + 2 * k2 + k3 + 2 * k4 + k5) / 6)
+	
+	# Mise à jour de la variable selon le schéma RK6
+	pp_N2_cME_t1 = pp_N2_cME_t0 + (k1 + 4 * k2 + k3 + k4 + k5 + k6) / 10
+
+# Implémentation du schéma Runge-Kutta d'ordre 8
+func capilar_blood_ME_rk8():
+	# Étapes intermédiaires du schéma RK8
+	var k1 = dt * f_ME(pp_N2_cME_t0)
+	var k2 = dt * f_ME(pp_N2_cME_t0 + k1 / 6)
+	var k3 = dt * f_ME(pp_N2_cME_t0 + k1 / 27 + k2 / 27)
+	var k4 = dt * f_ME(pp_N2_cME_t0 + (k1 + 3 * k3) / 24)
+	var k5 = dt * f_ME(pp_N2_cME_t0 + (k1 + 3 * k4) / 20)
+	var k6 = dt * f_ME(pp_N2_cME_t0 + (k1 - 9 * k3 + 12 * k4) / 45)
+	var k7 = dt * f_ME(pp_N2_cME_t0 + (7 * k1 + 32 * k5 + 12 * k6) / 90)
+	var k8 = dt * f_ME(pp_N2_cME_t0 + (k1 - 8 * k4 + 14 * k5 - 2 * k6 + k7) / 60)
+	
+	# Mise à jour de la variable
+	pp_N2_cME_t1 = pp_N2_cME_t0 + (41 * k1 + 216 * k3 + 27 * k4 + 272 * k5 + 27 * k6 + 41 * k8) / 840
+
+
+
+	
+# methode euler
 func capilar_blood_TA():
 	var delta = (1/(vcTA*alpha_n2)*(QTA*alpha_n2*pp_N2_a_t0-(alpha_n2*QTA+kn2TA)*pp_N2_cTA_t0+kn2TA*pp_N2_tiTA_t0))*dt
 	pp_N2_cTA_t1 = pp_N2_cTA_t0 + delta
+	
+	#methode runge kutta 4
+	
+	# Fonction dérivée définie globalement
+func f_TA(pp_N2_cTA):
+	return (1 / (vcTA * alpha_n2) * (
+		QTA * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QTA + kn2TA) * pp_N2_cTA 
+		+ kn2TA * pp_N2_tiTA_t0))
 
+func capilar_blood_TA_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_TA(pp_N2_cTA_t0)
+	var k2 = dt * f_TA(pp_N2_cTA_t0 + 0.5 * k1)
+	var k3 = dt * f_TA(pp_N2_cTA_t0 + 0.5 * k2)
+	var k4 = dt * f_TA(pp_N2_cTA_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cTA_t1 = pp_N2_cTA_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_MH():
 	var delta = (1/(vcMH*alpha_n2)*(QMH*alpha_n2*pp_N2_a_t0-(alpha_n2*QMH+kn2MH)*pp_N2_cMH_t0+kn2MH*pp_N2_tiMH_t0))*dt
 	pp_N2_cMH_t1 = pp_N2_cMH_t0 + delta
 
+#methode runge kutta4
+
+# Fonction dérivée définie globalement
+func f_MH(pp_N2_cMH):
+	return (1 / (vcMH * alpha_n2) * (
+		QMH * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QMH + kn2MH) * pp_N2_cMH 
+		+ kn2MH * pp_N2_tiMH_t0))
+
+func capilar_blood_MH_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_MH(pp_N2_cMH_t0)
+	var k2 = dt * f_MH(pp_N2_cMH_t0 + 0.5 * k1)
+	var k3 = dt * f_MH(pp_N2_cMH_t0 + 0.5 * k2)
+	var k4 = dt * f_MH(pp_N2_cMH_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cMH_t1 = pp_N2_cMH_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_M():
 	var delta = (1/(vcM*alpha_n2)*(QM*alpha_n2*pp_N2_a_t0-(alpha_n2*QM+kn2M)*pp_N2_cM_t0+kn2M*pp_N2_tiM_t0))*dt
 	pp_N2_cM_t1 = pp_N2_cM_t0 + delta
+	
+	#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+# Fonction dérivée définie globalement
+func f_M(pp_N2_cM):
+	return (1 / (vcM * alpha_n2) * (
+		QM * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QM + kn2M) * pp_N2_cM 
+		+ kn2M * pp_N2_tiM_t0))
+
+func capilar_blood_M_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_M(pp_N2_cM_t0)
+	var k2 = dt * f_M(pp_N2_cM_t0 + 0.5 * k1)
+	var k3 = dt * f_M(pp_N2_cM_t0 + 0.5 * k2)
+	var k4 = dt * f_M(pp_N2_cM_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cM_t1 = pp_N2_cM_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_R():
 	var delta = (1/(vcR*alpha_n2)*(QR*alpha_n2*pp_N2_a_t0-(alpha_n2*QR+kn2R)*pp_N2_cR_t0+kn2R*pp_N2_tiR_t0))*dt
 	pp_N2_cR_t1 = pp_N2_cR_t0 + delta
 
+# methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_R(pp_N2_cR):
+	return (1 / (vcR * alpha_n2) * (
+		QR * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QR + kn2R) * pp_N2_cR 
+		+ kn2R * pp_N2_tiR_t0))
+
+func capilar_blood_R_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_R(pp_N2_cR_t0)
+	var k2 = dt * f_R(pp_N2_cR_t0 + 0.5 * k1)
+	var k3 = dt * f_R(pp_N2_cR_t0 + 0.5 * k2)
+	var k4 = dt * f_R(pp_N2_cR_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cR_t1 = pp_N2_cR_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+# methode euler
 func capilar_blood_O():
 	var delta = (1/(vcO*alpha_n2)*(QO*alpha_n2*pp_N2_a_t0-(alpha_n2*QO+kn2O)*pp_N2_cO_t0+kn2O*pp_N2_tiO_t0))*dt
 	pp_N2_cO_t1 = pp_N2_cO_t0 + delta
+	
+#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+func f_O(pp_N2_cO):
+	return (1 / (vcO * alpha_n2) * (
+		QO * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QO + kn2O) * pp_N2_cO 
+		+ kn2O * pp_N2_tiO_t0))
+
+func capilar_blood_O_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_O(pp_N2_cO_t0)
+	var k2 = dt * f_O(pp_N2_cO_t0 + 0.5 * k1)
+	var k3 = dt * f_O(pp_N2_cO_t0 + 0.5 * k2)
+	var k4 = dt * f_O(pp_N2_cO_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cO_t1 = pp_N2_cO_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_TGI():
 	var delta = (1/(vcTGI*alpha_n2)*(QTGI*alpha_n2*pp_N2_a_t0-(alpha_n2*QTGI+kn2TGI)*pp_N2_cTGI_t0+kn2TGI*pp_N2_tiTGI_t0))*dt
 	pp_N2_cTGI_t1 = pp_N2_cTGI_t0 + delta
 
+# methode runge kutta 4
+
+# Fonction dérivée définie globalement
+func f_TGI(pp_N2_cTGI):
+	return (1 / (vcTGI * alpha_n2) * (
+		QTGI * alpha_n2 * pp_N2_a_t0 
+		- (alpha_n2 * QTGI + kn2TGI) * pp_N2_cTGI 
+		+ kn2TGI * pp_N2_tiTGI_t0))
+
+func capilar_blood_TGI_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_TGI(pp_N2_cTGI_t0)
+	var k2 = dt * f_TGI(pp_N2_cTGI_t0 + 0.5 * k1)
+	var k3 = dt * f_TGI(pp_N2_cTGI_t0 + 0.5 * k2)
+	var k4 = dt * f_TGI(pp_N2_cTGI_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cTGI_t1 = pp_N2_cTGI_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_F():
 	var delta = (1/(vcF*alpha_n2)*(alpha_n2*(QTGI*pp_N2_cTGI_t0+QF*pp_N2_a_t0)-(alpha_n2*(QF+QTGI)+kn2F)*pp_N2_cF_t0+kn2F*pp_N2_tiF_t0))*dt
 	pp_N2_cF_t1 = pp_N2_cF_t0 + delta
+	
+#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+func f_F(pp_N2_cF):
+	return (1 / (vcF * alpha_n2) * (
+		alpha_n2 * (QTGI * pp_N2_cTGI_t0 + QF * pp_N2_a_t0) 
+		- (alpha_n2 * (QF + QTGI) + kn2F) * pp_N2_cF 
+		+ kn2F * pp_N2_tiF_t0))
+
+func capilar_blood_F_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_F(pp_N2_cF_t0)
+	var k2 = dt * f_F(pp_N2_cF_t0 + 0.5 * k1)
+	var k3 = dt * f_F(pp_N2_cF_t0 + 0.5 * k2)
+	var k4 = dt * f_F(pp_N2_cF_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_cF_t1 = pp_N2_cF_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func capilar_blood_RDC():
 	var delta = (1/(vcRDC*alpha_n2)*(QRDC*alpha_n2*pp_N2_a_t0-(alpha_n2*QRDC+kn2RDC)*pp_N2_cRDC_t0+kn2RDC*pp_N2_tiRDC_t0))*dt
 	pp_N2_cRDC_t1 = pp_N2_cRDC_t0 + delta
 	
+#methode tunge kutta 4
+	# Fonction dérivée définie globalement
+func f_RDC(pp_N2_cRDC):
+		return (1 / (vcRDC * alpha_n2) * (
+			QRDC * alpha_n2 * pp_N2_a_t0 
+			- (alpha_n2 * QRDC + kn2RDC) * pp_N2_cRDC 
+			+ kn2RDC * pp_N2_tiRDC_t0))
+
+func capilar_blood_RDC_rk4():
+		# Étapes de Runge-Kutta
+		var k1 = dt * f_RDC(pp_N2_cRDC_t0)
+		var k2 = dt * f_RDC(pp_N2_cRDC_t0 + 0.5 * k1)
+		var k3 = dt * f_RDC(pp_N2_cRDC_t0 + 0.5 * k2)
+		var k4 = dt * f_RDC(pp_N2_cRDC_t0 + k3)
+		
+		# Mise à jour de la variable
+		pp_N2_cRDC_t1 = pp_N2_cRDC_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
 ## Compute the partial pressure of ti
+##methode euler
 func tissue_CE():
 	var delta = (kn2CE/(alpha_n2*vtiCE)*(pp_N2_cCE_t0-pp_N2_tiCE_t0))*dt
+	#print("delta_tissue_CE = ",delta)
 	pp_N2_tiCE_t1 = pp_N2_tiCE_t0 + delta
 
-#func tissue_ME():
-	#var delta = (kn2ME/(alpha_n2*vtiME)*(pp_N2_cME_t0-pp_N2_tiME_t0))*dt
-	#pp_N2_tiME_t1 = pp_N2_tiME_t0 + delta
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_tissue(pp_N2_tiCE):
+	return kn2CE / (alpha_n2 * vtiCE) * (pp_N2_cCE_t0 - pp_N2_tiCE)
 
+
+func tissue_CE_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_tissue(pp_N2_tiCE_t0)
+	var k2 = dt * f_tissue(pp_N2_tiCE_t0 + 0.5 * k1)
+	var k3 = dt * f_tissue(pp_N2_tiCE_t0 + 0.5 * k2)
+	var k4 = dt * f_tissue(pp_N2_tiCE_t0 + k3)
+	
+	# Mise à jour de la variable pp_N2_tiCE_t1
+	pp_N2_tiCE_t1 = pp_N2_tiCE_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
+func tissue_ME():
+	var delta = (kn2ME/(alpha_n2*vtiME)*(pp_N2_cME_t0-pp_N2_tiME_t0))*dt
+#	print("delta_tissue_ME = ",delta)
+	pp_N2_tiME_t1 = pp_N2_tiME_t0 + delta
+	
+	
+	#methode runge kutta 4
+func f_tissue_ME(pp_N2_tiME):
+	return kn2ME / (alpha_n2 * vtiME) * (pp_N2_cME_t0 - pp_N2_tiME)
+
+func tissue_ME_rk4():
+
+	var k1 = dt * f_tissue_ME(pp_N2_tiME_t0)
+	var k2 = dt * f_tissue_ME(pp_N2_tiME_t0 + 0.5 * k1)
+	var k3 = dt * f_tissue_ME(pp_N2_tiME_t0 + 0.5 * k2)
+	var k4 = dt * f_tissue_ME(pp_N2_tiME_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiME_t1 = pp_N2_tiME_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# Implémentation du schéma Runge-Kutta d'ordre 6
+func tissue_ME_rk6():
+	# Étapes intermédiaires du schéma RK6
+	var k1 = dt * f_tissue_ME(pp_N2_tiME_t0)
+	var k2 = dt * f_tissue_ME(pp_N2_tiME_t0 + k1 / 3)
+	var k3 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + k2) / 6)
+	var k4 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 - k2 + 2 * k3) / 8)
+	var k5 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + 4 * k2 + k3 - k4) / 2)
+	var k6 = dt * f_tissue_ME(pp_N2_tiME_t0 + (-k1 + 2 * k2 + k3 + 2 * k4 + k5) / 6)
+	
+	# Mise à jour de la variable
+	pp_N2_tiME_t1 = pp_N2_tiME_t0 + (k1 + 4 * k2 + k3 + k4 + k5 + k6) / 10
+
+# Implémentation du schéma Runge-Kutta d'ordre 8
+func tissue_ME_rk8():
+	# Étapes intermédiaires du schéma RK8
+	var k1 = dt * f_tissue_ME(pp_N2_tiME_t0)
+	var k2 = dt * f_tissue_ME(pp_N2_tiME_t0 + k1 / 6)
+	var k3 = dt * f_tissue_ME(pp_N2_tiME_t0 + k1 / 27 + k2 / 27)
+	var k4 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + 3 * k3) / 24)
+	var k5 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 + 3 * k4) / 20)
+	var k6 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 - 9 * k3 + 12 * k4) / 45)
+	var k7 = dt * f_tissue_ME(pp_N2_tiME_t0 + (7 * k1 + 32 * k5 + 12 * k6) / 90)
+	var k8 = dt * f_tissue_ME(pp_N2_tiME_t0 + (k1 - 8 * k4 + 14 * k5 - 2 * k6 + k7) / 60)
+	
+	# Mise à jour de la variable
+	pp_N2_tiME_t1 = pp_N2_tiME_t0 + (41 * k1 + 216 * k3 + 27 * k4 + 272 * k5 + 27 * k6 + 41 * k8) / 840
+
+
+# methode euler
 func tissue_TA():
 	var delta = (kn2TA/(alpha_n2*vtiTA)*(pp_N2_cTA_t0-pp_N2_tiTA_t0))*dt
 	pp_N2_tiTA_t1 = pp_N2_tiTA_t0 + delta
 
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_TA(pp_N2_tiTA):
+	return (kn2TA / (alpha_n2 * vtiTA) * (pp_N2_cTA_t0 - pp_N2_tiTA))
+
+func tissue_TA_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_TA(pp_N2_tiTA_t0)
+	var k2 = dt * f_ti_TA(pp_N2_tiTA_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_TA(pp_N2_tiTA_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_TA(pp_N2_tiTA_t0 + k3)
+	
+		# Mise à jour de la variable
+	pp_N2_tiTA_t1 = pp_N2_tiTA_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func tissue_MH():
 	var delta = (kn2MH/(alpha_n2*vtiMH)*(pp_N2_cMH_t0-pp_N2_tiMH_t0))*dt
 	pp_N2_tiMH_t1 = pp_N2_tiMH_t0 + delta
 
+#methode runge kutta4
+
+# Fonction dérivée définie globalement
+func f_ti_MH(pp_N2_tiMH):
+		return (kn2MH / (alpha_n2 * vtiMH) * (pp_N2_cMH_t0 - pp_N2_tiMH))
+
+func tissue_MH_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_MH(pp_N2_tiMH_t0)
+	var k2 = dt * f_ti_MH(pp_N2_tiMH_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_MH(pp_N2_tiMH_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_MH(pp_N2_tiMH_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiMH_t1 = pp_N2_tiMH_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+# methode euler
 func tissue_M():
 	var delta = (kn2M/(alpha_n2*vtiM)*(pp_N2_cM_t0-pp_N2_tiM_t0))*dt
 	pp_N2_tiM_t1 = pp_N2_tiM_t0 + delta
+	
+#methode runge kutta 4
 
+# Fonction dérivée définie globalement
+func f_ti_M(pp_N2_tiM):
+		return (kn2M / (alpha_n2 * vtiM) * (pp_N2_cM_t0 - pp_N2_tiM))
+
+func tissue_M_rk4():
+		# Étapes de Runge-Kutta
+		var k1 = dt * f_ti_M(pp_N2_tiM_t0)
+		var k2 = dt * f_ti_M(pp_N2_tiM_t0 + 0.5 * k1)
+		var k3 = dt * f_ti_M(pp_N2_tiM_t0 + 0.5 * k2)
+		var k4 = dt * f_ti_M(pp_N2_tiM_t0 + k3)
+		
+		# Mise à jour de la variable
+		pp_N2_tiM_t1 = pp_N2_tiM_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+# methode euler
 func tissue_R():
 	var delta = (kn2R/(alpha_n2*vtiR)*(pp_N2_cR_t0-pp_N2_tiR_t0))*dt
 	pp_N2_tiR_t1 = pp_N2_tiR_t0 + delta
+	
+#methode runge kutta 4
 
+func f_ti_R(pp_N2_tiR):
+		return (kn2R / (alpha_n2 * vtiR) * (pp_N2_cR_t0 - pp_N2_tiR))
+
+func tissue_R_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_R(pp_N2_tiR_t0)
+	var k2 = dt * f_ti_R(pp_N2_tiR_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_R(pp_N2_tiR_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_R(pp_N2_tiR_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiR_t1 = pp_N2_tiR_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
 func tissue_O():
 	var delta = (kn2O/(alpha_n2*vtiO)*(pp_N2_cO_t0-pp_N2_tiO_t0))*dt
-	pp_N2_tiO_t1 = pp_N2_tiO_t0 + delta
+	pp_N2_tiO_t1 = pp_N2_tiO_t0 + delta	
 
+
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_O(pp_N2_tiO):
+	return (kn2O / (alpha_n2 * vtiO) * (pp_N2_cO_t0 - pp_N2_tiO))
+
+func tissue_O_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_O(pp_N2_tiO_t0)
+	var k2 = dt * f_ti_O(pp_N2_tiO_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_O(pp_N2_tiO_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_O(pp_N2_tiO_t0 + k3)
+		
+	# Mise à jour de la variable
+	pp_N2_tiO_t1 = pp_N2_tiO_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
 func tissue_TGI():
 	var delta = (kn2TGI/(alpha_n2*vtiTGI)*(pp_N2_cTGI_t0-pp_N2_tiTGI_t0))*dt
-	pp_N2_tiTGI_t1 = pp_N2_tiTGI_t0 + delta
+	pp_N2_tiTGI_t1 = pp_N2_tiTGI_t0 + delta	
 
+#methode euler 
+# Fonction dérivée définie globalement
+func f_ti_TGI(pp_N2_tiTGI):
+	return (kn2TGI / (alpha_n2 * vtiTGI) * (pp_N2_cTGI_t0 - pp_N2_tiTGI))
+
+func tissue_TGI_rk4():
+	# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_TGI(pp_N2_tiTGI_t0)
+	var k2 = dt * f_ti_TGI(pp_N2_tiTGI_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_TGI(pp_N2_tiTGI_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_TGI(pp_N2_tiTGI_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiTGI_t1 = pp_N2_tiTGI_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+# methode euler
 func tissue_F():
 	var delta = (kn2F/(alpha_n2*vtiF)*(pp_N2_cF_t0-pp_N2_tiF_t0))*dt
 	pp_N2_tiF_t1 = pp_N2_tiF_t0 + delta
+	
+#mehode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_F(pp_N2_tiF):
+	return (kn2F / (alpha_n2 * vtiF) * (pp_N2_cF_t0 - pp_N2_tiF))
 
+func tissue_F_rk4():
+		# Étapes de Runge-Kutta
+	var k1 = dt * f_ti_F(pp_N2_tiF_t0)
+	var k2 = dt * f_ti_F(pp_N2_tiF_t0 + 0.5 * k1)
+	var k3 = dt * f_ti_F(pp_N2_tiF_t0 + 0.5 * k2)
+	var k4 = dt * f_ti_F(pp_N2_tiF_t0 + k3)
+	
+	# Mise à jour de la variable
+	pp_N2_tiF_t1 = pp_N2_tiF_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+
+
+# methode euler
 func tissue_RDC():
 	var delta = (kn2RDC/(alpha_n2*vtiRDC)*(pp_N2_cRDC_t0-pp_N2_tiRDC_t0))*dt
 	pp_N2_tiRDC_t1 = pp_N2_tiRDC_t0 + delta
+
+#methode runge kutta 4
+# Fonction dérivée définie globalement
+func f_ti_RDC(pp_N2_tiRDC):
+		return (kn2RDC / (alpha_n2 * vtiRDC) * (pp_N2_cRDC_t0 - pp_N2_tiRDC))
+
+func tissue_RDC_rk4():
+		# Étapes de Runge-Kutta
+		var k1 = dt * f_ti_RDC(pp_N2_tiRDC_t0)
+		var k2 = dt * f_ti_RDC(pp_N2_tiRDC_t0 + 0.5 * k1)
+		var k3 = dt * f_ti_RDC(pp_N2_tiRDC_t0 + 0.5 * k2)
+		var k4 = dt * f_ti_RDC(pp_N2_tiRDC_t0 + k3)
+		
+		# Mise à jour de la variable
+		pp_N2_tiRDC_t1 = pp_N2_tiRDC_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
 
 func update_debug_textbox(debug_message):
 	# Ajoutez le message de débogage à la zone de texte
@@ -378,6 +923,10 @@ func update_debug_textbox10(debug_message):
 func update_debug_textbox11(debug_message):
 	# Ajoutez le message de débogage à la zone de texte
 	debug_textbox11.text += debug_message + "\n"
+	
+func update_debug_textbox12(debug_message):
+	# Ajoutez le message de débogage à la zone de texte
+	debug_textbox12.text += debug_message + "\n"
 
 func verifier_et_stocker_temps_seuil():
 	if pp_N2_aw_t1 >= seuil and temps_seuils["pp_N2_aw"] == null:
@@ -390,6 +939,8 @@ func verifier_et_stocker_temps_seuil():
 		temps_seuils["pp_N2_v"] = time
 	if pp_N2_tiCE_t1 >= seuil and temps_seuils["pp_N2_tiCE"] == null:
 		temps_seuils["pp_N2_tiCE"] = time
+	if pp_N2_tiME_t1 >= seuil and temps_seuils["pp_N2_tiME"] == null: #TODO fais planter le programe
+		temps_seuils["pp_N2_tiME"] = time
 	if pp_N2_tiTA_t1 >= seuil and temps_seuils["pp_N2_tiTA"] == null:
 		temps_seuils["pp_N2_tiTA"] = time
 	if pp_N2_tiMH_t1 >= seuil and temps_seuils["pp_N2_tiMH"] == null:
@@ -408,12 +959,12 @@ func verifier_et_stocker_temps_seuil():
 		temps_seuils["pp_N2_tiRDC"] = time
 	if pp_N2_a_t1 >= seuil and temps_seuils["pp_N2_a"] == null:
 		temps_seuils["pp_N2_a"] = time
-
+		
+@export var file_path:String = ""
 func save_data_to_file():
 	#METTRE LE CHEMIN VOULU POUR L'EMPLACEMENT DU FICHIER DE DONNEES
 	#CHANGER LE NOM DU FICHIER AU BOUT POUR CREER UN NOUVEAU FICHIER
-	var file_path = "C:/Users/louis/OneDrive/Documents/Stage M2/model_data.txt"
-	
+
 	# Lire le contenu existant du fichier
 	var existing_data = ""
 	var file = FileAccess.open(file_path, FileAccess.READ)
@@ -435,6 +986,8 @@ func save_data_to_file():
 	line += "N2 in v in Pa = " + str(pp_N2_v_t0) + ", "
 	line += "N2 in Capilar CE (Pa) = " + str(pp_N2_cCE_t0) + ", "
 	line += "N2 in Tissue CE (Pa) = " + str(pp_N2_tiCE_t0) + ", "
+	line += "N2 in Capilar ME (Pa) = " + str(pp_N2_cME_t0) + ", "
+	line += "N2 in Tissue ME (Pa) = " + str(pp_N2_tiME_t0) + ", "	
 	line += "N2 in Capilar TA (Pa) = " + str(pp_N2_cTA_t0) + ", "
 	line += "N2 in Tissue TA (Pa) = " + str(pp_N2_tiTA_t0) + ", "
 	line += "N2 in Capilar MH (Pa) = " + str(pp_N2_cMH_t0) + ", "
@@ -488,6 +1041,7 @@ func step():
 	var message9 = "Time = " + str(time) + "\n" + "N2 in Capilar (Pa) = " + str(pp_N2_cTGI_t0) + "\n" + "N2 in Tissue (Pa) = " + str(pp_N2_tiTGI_t0) + "\n"
 	var message10 = "Time = " + str(time) + "\n" + "N2 in Capilar (Pa) = " + str(pp_N2_cF_t0) + "\n" + "N2 in Tissue (Pa) = " + str(pp_N2_tiF_t0) + "\n"
 	var message11 = "Time = " + str(time) + "\n" + "N2 in Capilar (Pa) = " + str(pp_N2_cRDC_t0) + "\n" + "N2 in Tissue (Pa) = " + str(pp_N2_tiRDC_t0) + "\n"
+	var message12 = "Time = " + str(time) + "\n" + "N2 in Capilar (Pa) = " + str(pp_N2_cME_t0) + "\n" + "N2 in Tissue (Pa) = " + str(pp_N2_tiME_t0) + "\n"
 	
 	update_debug_textbox(message)
 	update_debug_textbox2(message2)
@@ -500,37 +1054,38 @@ func step():
 	update_debug_textbox9(message9)
 	update_debug_textbox10(message10)
 	update_debug_textbox11(message11)
+	update_debug_textbox12(message12)	
 	
 	time = time + dt
-	
+	iteration = iteration + 1 
 		# Compute one step
 	pressure_atm()
 	air()
-	airways()
-	alveolar()
-	alveolar_blood()
-	arterial_blood()
-	venous_blood()
-	capilar_blood_CE()
-	tissue_CE()
-	#capilar_blood_ME()
-	#tissue_ME()
-	capilar_blood_TA()
-	tissue_TA()
-	capilar_blood_MH()
-	tissue_MH()
-	capilar_blood_M()
-	tissue_M()
-	capilar_blood_R()
-	tissue_R()
-	capilar_blood_O()
-	tissue_O()
-	capilar_blood_TGI()
-	tissue_TGI()
-	capilar_blood_F()
-	tissue_F()
-	capilar_blood_RDC()
-	tissue_RDC()
+	airways_rk4()
+	alveolar_blood_rk4()
+	alveolar_blood_rk4()
+	arterial_blood_rk4()
+	venous_blood_rk4()
+	capilar_blood_CE_rk4()
+	tissue_CE_rk4()
+	capilar_blood_ME_rk6()
+	tissue_ME_rk6()
+	capilar_blood_TA_rk4()
+	tissue_TA_rk4()
+	capilar_blood_MH_rk4()
+	tissue_MH_rk4()
+	capilar_blood_M_rk4()
+	tissue_M_rk4()
+	capilar_blood_R_rk4()
+	tissue_R_rk4()
+	capilar_blood_O_rk4()
+	tissue_O_rk4()
+	capilar_blood_TGI_rk4()
+	tissue_TGI_rk4()
+	capilar_blood_F_rk4()
+	tissue_F_rk4()
+	capilar_blood_RDC_rk4()
+	tissue_RDC_rk4()
 	verifier_et_stocker_temps_seuil()
 	
 		# Preparer le prochain step
@@ -543,8 +1098,8 @@ func step():
 		# Variables tissus
 	pp_N2_tiCE_t0		= pp_N2_tiCE_t1
 	pp_N2_cCE_t0		= pp_N2_cCE_t1
-	#pp_N2_tiME_t0 	= pp_N2_tiME_t1
-	#pp_N2_cME_t0		= pp_N2_cME_t1
+	pp_N2_tiME_t0 	= pp_N2_tiME_t1
+	pp_N2_cME_t0		= pp_N2_cME_t1
 	pp_N2_tiTA_t0 	= pp_N2_tiTA_t1
 	pp_N2_cTA_t0		= pp_N2_cTA_t1
 	pp_N2_tiMH_t0 	= pp_N2_tiMH_t1
@@ -578,7 +1133,78 @@ func step():
 		debug_textbox9.text = ""  # Vide la zone de texte de débogage 9 toutes les 100 itérations
 		debug_textbox10.text = ""  # Vide la zone de texte de débogage 10 toutes les 100 itérations
 		debug_textbox11.text = ""  # Vide la zone de texte de débogage 11 toutes les 100 itérations
+		debug_textbox12.text = ""  # Vide la zone de texte de débogage 12 toutes les 100 itérations
 		k = 0
+
+
+
+## Execute 1 step (dt) du modèle pour le graphe
+func step2():
+
+	time = time + dt
+	iteration = iteration + 1 
+		# Compute one step
+	pressure_atm()
+	air()
+	airways_rk4()
+	alveolar_rk4()
+	alveolar_blood_rk4()
+	arterial_blood_rk4()
+	venous_blood_rk4()
+	capilar_blood_CE_rk4()
+	tissue_CE_rk4()
+	capilar_blood_ME_rk6()
+	tissue_ME_rk6()
+	capilar_blood_TA_rk4()
+	tissue_TA_rk4()
+	capilar_blood_MH_rk4()
+	tissue_MH_rk4()
+	capilar_blood_M_rk4()
+	tissue_M_rk4()
+	capilar_blood_R_rk4()
+	tissue_R_rk4()
+	capilar_blood_O_rk4()
+	tissue_O_rk4()
+	capilar_blood_TGI_rk4()
+	tissue_TGI_rk4()
+	capilar_blood_F_rk4()
+	tissue_F_rk4()
+	capilar_blood_RDC_rk4()
+	tissue_RDC_rk4()
+	
+		# Preparer le prochain step
+	pp_N2_aw_t0 	= pp_N2_aw_t1
+	pp_N2_alv_t0	= pp_N2_alv_t1
+	pp_N2_alb_t0	 = pp_N2_alb_t1
+	pp_N2_a_t0		= pp_N2_a_t1
+	pp_N2_v_t0		= pp_N2_v_t1
+	
+		# Variables tissus
+	pp_N2_tiCE_t0		= pp_N2_tiCE_t1
+	pp_N2_cCE_t0		= pp_N2_cCE_t1
+	pp_N2_tiME_t0 	= pp_N2_tiME_t1
+	pp_N2_cME_t0		= pp_N2_cME_t1
+	pp_N2_tiTA_t0 	= pp_N2_tiTA_t1
+	pp_N2_cTA_t0		= pp_N2_cTA_t1
+	pp_N2_tiMH_t0 	= pp_N2_tiMH_t1
+	pp_N2_cMH_t0		= pp_N2_cMH_t1
+	pp_N2_cM_t0		= pp_N2_cM_t1
+	pp_N2_tiM_t0 	= pp_N2_tiM_t1
+	pp_N2_cR_t0		= pp_N2_cR_t1
+	pp_N2_tiR_t0 	= pp_N2_tiR_t1
+	pp_N2_cO_t0		= pp_N2_cO_t1
+	pp_N2_tiO_t0 	= pp_N2_tiO_t1
+	pp_N2_cTGI_t0		= pp_N2_cTGI_t1
+	pp_N2_tiTGI_t0 	= pp_N2_tiTGI_t1
+	pp_N2_cF_t0		= pp_N2_cF_t1
+	pp_N2_tiF_t0 	= pp_N2_tiF_t1
+	pp_N2_cRDC_t0		= pp_N2_cRDC_t1
+	pp_N2_tiRDC_t0 	= pp_N2_tiRDC_t1
+	
+	
+	k = k + 1
+	
+
 
 # ***********************
 # Fonctions de simulation
@@ -600,6 +1226,7 @@ func _ready():
 	debug_textbox9 = get_node("TabContainer/Simulation/Results9")
 	debug_textbox10 = get_node("TabContainer/Simulation/Results10")
 	debug_textbox11 = get_node("TabContainer/Simulation/Results11")
+	debug_textbox12 = get_node("TabContainer/Simulation/Results12")
 	$RichTextLabel_N2.bbcode_enabled = true
 	$RichTextLabel_N2.bbcode_text = "[center]Application to compute Partial Pressure of N2 in human body[/center]"
 
@@ -611,6 +1238,7 @@ func _process(_delta):
 func _on_play_button_down():
 	play = true
 	set_text_editable(false)
+	$TabContainer/Simulation/RichTextLabel_N14.visible = true
 	$TabContainer/Simulation/RichTextLabel_N13.visible = true
 	$TabContainer/Simulation/RichTextLabel_N12.visible = true
 	$TabContainer/Simulation/RichTextLabel_N11.visible = true
@@ -620,6 +1248,7 @@ func _on_play_button_down():
 	$TabContainer/Simulation/RichTextLabel_N7.visible = true
 	$TabContainer/Simulation/RichTextLabel_N6.visible = true
 	$TabContainer/Simulation/RichTextLabel_N5.visible = true
+	$TabContainer/Simulation/RichTextLabel_N4.visible = true
 	$TabContainer/Simulation/RichTextLabel_N3.visible = true
 
 func _on_pause_button_down():
@@ -629,6 +1258,7 @@ func _on_stop_pressed():
 	play = false
 	_reset_values()
 	set_text_editable(true)
+	$TabContainer/Simulation/RichTextLabel_N14.visible = false
 	$TabContainer/Simulation/RichTextLabel_N13.visible = false
 	$TabContainer/Simulation/RichTextLabel_N12.visible = false
 	$TabContainer/Simulation/RichTextLabel_N11.visible = false
@@ -638,6 +1268,7 @@ func _on_stop_pressed():
 	$TabContainer/Simulation/RichTextLabel_N7.visible = false
 	$TabContainer/Simulation/RichTextLabel_N6.visible = false
 	$TabContainer/Simulation/RichTextLabel_N5.visible = false
+	$TabContainer/Simulation/RichTextLabel_N4.visible = false
 	$TabContainer/Simulation/RichTextLabel_N3.visible = false
 	
 	
@@ -681,6 +1312,341 @@ func set_text_editable(editable: bool):
 			get_node(text_edit).editable = editable
 
 # ***********************
+# Fonctions de Graph
+# ***********************
+var my_plotCE : PlotItem = null
+var my_plotTA : PlotItem = null
+var my_plotME : PlotItem = null
+var my_plotR : PlotItem = null
+var my_plotO : PlotItem = null
+var my_plotMH : PlotItem = null
+var my_plotM : PlotItem = null
+var my_plotRDC : PlotItem = null
+var my_plotTGI : PlotItem = null
+var swapCE: bool = true
+var swapME: bool = true
+var swapTA: bool = true
+var swapMH: bool = true
+var swapR: bool = true
+var swapO: bool = true
+var swapTGI: bool = true
+var swapRDC: bool = true
+var swapM: bool = true
+#play
+func _on_add_Play_pressed() -> void:
+	_on_add_plot_CE_pressed()
+	_on_add_plot_pressedM()
+	_on_add_plot_pressedME()
+	_on_add_plot_pressedMH()
+	_on_add_plot_pressedOS()
+	_on_add_plot_pressedR()
+	_on_add_plot_pressedRDC()
+	_on_add_plot_pressedTA()
+	_on_add_plot_pressedTGI()
+	#graphe cerveau
+
+func _on_add_plot_CE_pressed() -> void:
+	
+
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotCE = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.RED][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add CE!")
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 #or pp_N2_tiCE_t1>yt0*0.1
+			x = time  # Increment x 
+			y = pp_N2_tiCE_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotCE.add_point(Vector2(x, y))
+
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+
+
+func _swapCE() -> void:#passage de l'état visible a invisible de la courbe
+	if swapCE :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.TRANSPARENT)
+		swapCE=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.RED)	
+		swapCE=true
+
+
+
+#graphe tissue adipeux
+func _on_add_plot_pressedTA() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotTA = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.GREEN][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add TA!")
+	
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiTA_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotTA.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+func _swapTA() -> void:
+	
+	if swapTA :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.TRANSPARENT)
+		swapTA=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.GREEN)	
+		swapTA=true
+
+
+
+
+#graph muscle haut du corp
+func _on_add_plot_pressedMH() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotMH = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.BLUE][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add MH!")
+	
+	
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiMH_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotMH.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+func _swapMH() -> void:
+	if swapMH :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.TRANSPARENT)
+		swapMH=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.BLUE)	
+		swapMH=true
+
+
+
+#graphe muscle bas du corp
+func _on_add_plot_pressedM() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotM = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.YELLOW][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add M!")
+	
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiM_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotM.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+func _swapM() -> void:
+	if swapM :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.TRANSPARENT)
+		swapM=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.YELLOW)	
+		swapM=true
+
+#graphe rein
+func _on_add_plot_pressedR() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotR = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.REBECCA_PURPLE][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add R!")
+	
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiR_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotR.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+	
+
+func _swapR() -> void:
+	if swapR :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.TRANSPARENT)
+		swapR=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.REBECCA_PURPLE)	
+		swapR=true
+
+#graphe OS		
+func _on_add_plot_pressedOS() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotO = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.ORANGE][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add OS!")
+	
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiO_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotO.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+	
+func _swapO() -> void:
+	if swapO :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.TRANSPARENT)
+		swapO=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.ORANGE)	
+		swapO=true
+
+		
+#graphe du transit gastro-intestinal
+func _on_add_plot_pressedTGI() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotTGI = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.TEAL][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add TGI!")
+
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiTGI_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotTGI.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+
+func _swapTGI() -> void:
+	if swapTGI :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TRANSPARENT)
+		swapTGI=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TEAL)	
+		swapTGI=true
+
+
+#graphe ME
+func _on_add_plot_pressedME() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotME = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.BLACK][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add ME !")
+
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiME_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotME.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+
+func _swapME() -> void:
+	if swapME :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.TRANSPARENT)
+		swapME=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.BLACK)	
+		swapME=true
+
+
+
+#graph rest du corp
+func _on_add_plot_pressedRDC() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotRDC = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.FLORAL_WHITE][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add RDC!")
+
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <120:
+		step2()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_tiRDC_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotRDC.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+
+func _swapRDC() -> void:
+	if swapRDC :
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.TRANSPARENT)
+		swapRDC=false
+	else:
+		$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.FLORAL_WHITE)	
+		swapRDC=true
+
+
+func _on_remove_all_plots_pressed() -> void:
+	$TabContainer/Graph/Graph2D.remove_all()
+	print("press remove !")
+	
+	
+	
+
+
+# ***********************
 # Fonction de reset quand stop est pressé
 # ***********************
 func _reset_values(): 
@@ -706,15 +1672,17 @@ func _reset_values():
 	pp_N2_tiCE_t1 = 0.0
 	pp_N2_cCE_t0 = 75112.41
 	pp_N2_cCE_t1 = 0.0
-	#vtiME = 0.03
-	#vcME = 0.006
-	#mo2ME = 1.596
-	#kn2ME = 0.00214
-	#QME = 0.015
-	#pp_N2_tiME_t0 = 150224.82
-	#pp_N2_tiME_t1 = 0.0
-	#pp_N2_cME_t0 = 150224.82
-	#pp_N2_cME_t1 = 0.0
+	
+	vtiME = 0.03
+	vcME = 0.006
+	mo2ME = 1.596
+	kn2ME = 0.00214
+	QME = 0.15#TODO a verifier
+	pp_N2_tiME_t0 = 75112.41
+	pp_N2_tiME_t1 = 0.0
+	pp_N2_cME_t0 = 75112.41
+	pp_N2_cME_t1 = 0.0
+	
 	vtiTA = 16
 	vcTA = 0.011
 	mo2TA = 0.026
@@ -798,9 +1766,11 @@ func _reset_values():
 	vv = 3.0
 	patm = 101325.0
 	fn2 = 0.79
-	dt = 0.001
+	dt = dtINI
 	t = [null,null,null,null,null,null,null,null,null,null]
 	s = [null,null,null,null,null,null,null,null,null,null]
+	
+	
 	
 	# Vider les cases de l'interface utilisateur
 	var text_edits = [
@@ -851,8 +1821,131 @@ func _reset_values():
 	debug_textbox9.text = ""  # Vide la zone de texte de débogage 9
 	debug_textbox10.text = ""  # Vide la zone de texte de débogage 10
 	debug_textbox11.text = ""  # Vide la zone de texte de débogage 11
+	debug_textbox12.text = ""  # Vide la zone de texte de débogage 12
 	
 	print("Valeurs remises à zéro !")
+# ***********************
+# Fonction de reset Pour les courbes
+# ***********************
+func _reset_valuesCourbe(): 
+	iteration =0
+	time = 0.0
+	patm = 101325.0
+	pp_N2_air = 0.0
+	pp_N2_aw_t0 = 75112.41
+	pp_N2_aw_t1 = 0.0
+	pp_N2_alv_t0 = 75112.41
+	pp_N2_alv_t1 = 0.0
+	pp_N2_alb_t0 = 75112.41
+	pp_N2_alb_t1 = 0.0
+	pp_N2_v_t0 = 75112.41
+	pp_N2_v_t1 = 0.0
+	pp_N2_a_t0 = 75112.41
+	pp_N2_a_t1 = 0.0
+	vtiCE = 1.35
+	vcCE = 0.027
+	mo2CE = 1.596
+	kn2CE = 0.00214
+	QCE = 0.63
+	pp_N2_tiCE_t0 = 75112.41
+	pp_N2_tiCE_t1 = 0.0
+	pp_N2_cCE_t0 = 75112.41
+	pp_N2_cCE_t1 = 0.0
+	
+	vtiME = 0.03
+	vcME = 0.006
+	mo2ME = 1.596
+	kn2ME = 0.00214
+	QME = 0.15#TODO a verifier
+	pp_N2_tiME_t0 = 75112.41
+	pp_N2_tiME_t1 = 0.0
+	pp_N2_cME_t0 = 75112.41
+	pp_N2_cME_t1 = 0.0
+	
+	vtiTA = 16
+	vcTA = 0.011
+	mo2TA = 0.026
+	kn2TA = 0.0000214
+	QTA = 0.419
+	pp_N2_tiTA_t0 = 75112.41
+	pp_N2_tiTA_t1 = 0.0
+	pp_N2_cTA_t0 = 75112.41
+	pp_N2_cTA_t1 = 0.0
+	vtiMH = 6.72
+	vcMH = 0.0095
+	mo2MH = 0.087
+	kn2MH = 0.000022
+	QMH = 0.07
+	pp_N2_tiMH_t0 = 75112.41
+	pp_N2_tiMH_t1 = 0.0
+	pp_N2_cMH_t0 = 75112.41
+	pp_N2_cMH_t1 = 0.0
+	vtiM = 20.17
+	vcM = 0.0285
+	mo2M = 0.087
+	kn2M = 0.000021
+	QM = 0.21
+	pp_N2_tiM_t0 = 75112.41
+	pp_N2_tiM_t1 = 0.0
+	pp_N2_cM_t0 = 75112.41
+	pp_N2_cM_t1 = 0.0
+	vtiR = 0.30
+	vcR = 0.042
+	mo2R = 2.95
+	kn2R = 0.002
+	QR = 1.2
+	pp_N2_tiR_t0 = 75112.41
+	pp_N2_tiR_t1 = 0.0
+	pp_N2_cR_t0 = 75112.41
+	pp_N2_cR_t1 = 0.0
+	vtiO = 6.81
+	vcO = 0.011
+	mo2O = 0.113
+	kn2O = 0.0000535
+	QO = 0.5
+	pp_N2_tiO_t0 = 75112.41
+	pp_N2_tiO_t1 = 0.0
+	pp_N2_cO_t0 = 75112.41
+	pp_N2_cO_t1 = 0.0
+	vtiTGI = 1.28
+	vcTGI = 0.040
+	mo2TGI = 0.0806
+	kn2TGI = 0.000043
+	QTGI = 0.065
+	pp_N2_tiTGI_t0 = 75112.41
+	pp_N2_tiTGI_t1 = 0.0
+	pp_N2_cTGI_t0 = 75112.41
+	pp_N2_cTGI_t1 = 0.0
+	vtiF = 1.71
+	vcF = 0.054
+	mo2F = 1.3507
+	kn2F = 0.00107
+	QF = 0.8
+	pp_N2_tiF_t0 = 75112.41
+	pp_N2_tiF_t1 = 0.0
+	pp_N2_cF_t0 = 75112.41
+	pp_N2_cF_t1 = 0.0
+	vtiRDC = 6.04
+	vcRDC = 0.039
+	mo2RDC = 5.0965
+	kn2RDC = 0.00107
+	QRDC = 0.3
+	pp_N2_tiRDC_t0 = 75112.41
+	pp_N2_tiRDC_t1 = 0.0
+	pp_N2_cRDC_t0 = 75112.41
+	pp_N2_cRDC_t1 = 0.0
+	tmp_t = 0.0
+	tmp_s = 0.0
+	vent = 8.1
+	vaw = 1.5
+	valg = 1.0
+	valb = 0.5
+	q = 4.2
+	va = 1.7
+	vv = 3.0
+	patm = 101325.0
+	fn2 = 0.79
+	dt = dtINI
 # ***********************
 # Variable change functions
 # *********************** 
@@ -1062,7 +2155,7 @@ func _on_text_t10(new_text):
 
 func _on_text_dt(new_text):
 	if(new_text==""):
-		dt = 0.001
+		dt = dtINI
 	else:
 		dt = float(new_text)
 	print("Nouvelle valeur de dt: " +str(dt))
