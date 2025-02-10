@@ -110,7 +110,7 @@ var pp_N2_cMH_t1: float = 0.0
 # Variables des muscles 
 
 var vtiM: float = 20.17 # Volume en L
-var vcM: float = 0.0285 # Cap Vol en L
+var vcM: float = 0.0285 # Cap Vol en Lal
 var mo2M: float = 0.087 # MO2 en mMol/kg/min
 var kn2M: float = 0.000021 # diff coef N2
 var QM: float = 0.21 # débit sangin en L/min

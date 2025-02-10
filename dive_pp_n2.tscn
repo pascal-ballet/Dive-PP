@@ -16,10 +16,9 @@ offset_bottom = 53.0
 offset_left = -7.0
 offset_right = 309.0
 offset_bottom = 31.0
-current_tab = 2
+current_tab = 0
 
 [node name="Simulation" type="Control" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -811,6 +810,7 @@ placeholder_text = "Value of QRDC"
 alignment = 1
 
 [node name="Graph" type="Control" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
