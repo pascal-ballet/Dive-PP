@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dvwt5odf7oxps"]
 
-[ext_resource type="Script" path="res://dive_pp_n2.gd" id="1_d2c84"]
-[ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
+[ext_resource type="Script" uid="uid://clid3xn4754e1" path="res://dive_pp_n2.gd" id="1_d2c84"]
+[ext_resource type="Script" uid="uid://bgfbgq52un1be" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
 
 [node name="Dive-PP-N2" type="Node2D"]
 script = ExtResource("1_d2c84")
