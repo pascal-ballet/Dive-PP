@@ -15,7 +15,7 @@ offset_bottom = 50.0
 offset_left = -7.0
 offset_right = 309.0
 offset_bottom = 31.0
-current_tab = 2
+current_tab = 1
 
 [node name="Simulation" type="Control" parent="TabContainer"]
 visible = false
@@ -283,7 +283,6 @@ theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
 text = "T 1/2"
 
 [node name="Paramètres" type="Control" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -293,6 +292,14 @@ offset_right = 45.0
 
 [node name="Control" type="Control" parent="TabContainer/Paramètres/Paramètres"]
 layout_mode = 2
+
+[node name="RichTextLabel_N3" type="RichTextLabel" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 475.0
+offset_top = 394.0
+offset_right = 611.0
+offset_bottom = 444.0
+text = "profil de plongée"
 
 [node name="TabTime1" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
 layout_mode = 2
@@ -810,6 +817,7 @@ placeholder_text = "Value of QRDC"
 alignment = 1
 
 [node name="Graph" type="Control" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
