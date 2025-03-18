@@ -110,7 +110,7 @@ var pp_N2_cMH_t1: float = 0.0
 # Variables des muscles 
 
 var vtiM: float = 20.17 # Volume en L
-var vcM: float = 0.0285 # Cap Vol en Lal
+var vcM: float = 0.0285 # Cap Vol en L
 var mo2M: float = 0.087 # MO2 en mMol/kg/min
 var kn2M: float = 0.000021 # diff coef N2
 var QM: float = 0.21 # débit sangin en L/min
@@ -1369,14 +1369,15 @@ func _on_add_plot_CE_pressed() -> void:
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
 
-
+ 
 func _swapCE() -> void:#passage de l'état visible a invisible de la courbe
-	if swapCE :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.TRANSPARENT)
-		swapCE=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.RED)	
-		swapCE=true
+	if my_plotCE :
+		if swapCE :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.TRANSPARENT)
+			swapCE=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotCE, Color.RED)	
+			swapCE=true
 
 
 
@@ -1403,13 +1404,13 @@ func _on_add_plot_pressedTA() -> void:
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
 func _swapTA() -> void:
-	
-	if swapTA :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.TRANSPARENT)
-		swapTA=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.GREEN)	
-		swapTA=true
+	if my_plotTA :
+		if swapTA :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.TRANSPARENT)
+			swapTA=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotTA, Color.GREEN)	
+			swapTA=true
 
 
 
@@ -1438,12 +1439,13 @@ func _on_add_plot_pressedMH() -> void:
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
 func _swapMH() -> void:
-	if swapMH :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.TRANSPARENT)
-		swapMH=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.BLUE)	
-		swapMH=true
+	if my_plotMH :
+		if swapMH :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.TRANSPARENT)
+			swapMH=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotMH, Color.BLUE)	
+			swapMH=true
 
 
 
@@ -1470,12 +1472,13 @@ func _on_add_plot_pressedM() -> void:
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
 func _swapM() -> void:
-	if swapM :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.TRANSPARENT)
-		swapM=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.YELLOW)	
-		swapM=true
+	if my_plotM :
+		if swapM :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.TRANSPARENT)
+			swapM=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotM, Color.YELLOW)	
+			swapM=true
 
 #graphe rein
 func _on_add_plot_pressedR() -> void:
@@ -1502,12 +1505,13 @@ func _on_add_plot_pressedR() -> void:
 	
 
 func _swapR() -> void:
-	if swapR :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.TRANSPARENT)
-		swapR=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.REBECCA_PURPLE)	
-		swapR=true
+	if my_plotR :
+		if swapR :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.TRANSPARENT)
+			swapR=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotR, Color.REBECCA_PURPLE)	
+			swapR=true
 
 #graphe OS		
 func _on_add_plot_pressedOS() -> void:
@@ -1533,12 +1537,13 @@ func _on_add_plot_pressedOS() -> void:
 	print("Plot updated with points!")
 	
 func _swapO() -> void:
-	if swapO :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.TRANSPARENT)
-		swapO=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.ORANGE)	
-		swapO=true
+	if my_plotO :
+		if swapO :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.TRANSPARENT)
+			swapO=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotO, Color.ORANGE)	
+			swapO=true
 
 		
 #graphe du transit gastro-intestinal
@@ -1565,12 +1570,13 @@ func _on_add_plot_pressedTGI() -> void:
 	print("Plot updated with points!")
 
 func _swapTGI() -> void:
-	if swapTGI :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TRANSPARENT)
-		swapTGI=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TEAL)	
-		swapTGI=true
+	if my_plotTGI :
+		if swapTGI :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TRANSPARENT)
+			swapTGI=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotTGI, Color.TEAL)	
+			swapTGI=true
 
 
 #graphe ME
@@ -1597,12 +1603,13 @@ func _on_add_plot_pressedME() -> void:
 	print("Plot updated with points!")
 
 func _swapME() -> void:
-	if swapME :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.TRANSPARENT)
-		swapME=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.BLACK)	
-		swapME=true
+	if my_plotME :
+		if swapME :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.TRANSPARENT)
+			swapME=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotME, Color.BLACK)	
+			swapME=true
 
 
 
@@ -1630,12 +1637,13 @@ func _on_add_plot_pressedRDC() -> void:
 	print("Plot updated with points!")
 
 func _swapRDC() -> void:
-	if swapRDC :
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.TRANSPARENT)
-		swapRDC=false
-	else:
-		$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.FLORAL_WHITE)	
-		swapRDC=true
+	if my_plotRDC :
+		if swapRDC :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.TRANSPARENT)
+			swapRDC=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.FLORAL_WHITE)	
+			swapRDC=true
 
 
 func _on_remove_all_plots_pressed() -> void:
@@ -2348,3 +2356,155 @@ func _on_text_qrdc(new_text):
 	else:
 		QRDC = float(new_text)
 	print("Nouvelle valeur de QRDC: " +str(QRDC))
+
+
+############################################
+#Afficher ce que signifie les boutons
+#
+############################################
+func _on_me_mouse_entered() -> void:
+	
+	$TabContainer/Graph/RichTextLabelME.visible = true
+
+
+func _on_me_mouse_exited() -> void:
+		$TabContainer/Graph/RichTextLabelME.visible = false
+
+
+func _on_tissu_adipeux_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelTA.visible = true
+
+
+func _on_tissu_adipeux_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelTA.visible = false
+
+
+func _on_muscle_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelM.visible = true
+
+
+func _on_muscle_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelM.visible = false
+
+
+func _on_mh_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelMH.visible = true
+
+
+func _on_mh_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelMH.visible = false
+
+
+func _on_rein_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelR.visible = true
+
+
+func _on_rein_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelR.visible = false
+
+
+func _on_os_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelOS.visible = true
+
+
+func _on_os_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelOS.visible = false
+
+
+func _on_tgi_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelTGI.visible = true
+
+
+func _on_tgi_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelTGI.visible = false
+
+
+func _on_rdc_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelRDC.visible = true
+
+
+func _on_rdc_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelRDC.visible = false
+
+
+func _on_add_plot_ce_mouse_entered() -> void:
+	$TabContainer/Graph/RichTextLabelCE.visible = true
+
+
+func _on_add_plot_ce_mouse_exited() -> void:
+	$TabContainer/Graph/RichTextLabelCE.visible = false
+
+
+
+
+func _on_me_mouse_entered2() -> void:
+	
+	$TabContainer/Graph/RichTextLabelME.visible = true
+
+
+func _on_me_mouse_exited2() -> void:
+		$TabContainer/Graph/RichTextLabelME.visible = false
+
+
+func _on_tissu_adipeux_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelTA.visible = true
+
+
+func _on_tissu_adipeux_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelTA.visible = false
+
+
+func _on_muscle_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelM.visible = true
+
+
+func _on_muscle_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelM.visible = false
+
+
+func _on_mh_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelMH.visible = true
+
+
+func _on_mh_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelMH.visible = false
+
+
+func _on_rein_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelR.visible = true
+
+
+func _on_rein_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelR.visible = false
+
+
+func _on_os_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelOS.visible = true
+
+
+func _on_os_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelOS.visible = false
+
+
+func _on_tgi_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelTGI.visible = true
+
+
+func _on_tgi_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelTGI.visible = false
+
+
+func _on_rdc_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelRDC.visible = true
+
+
+func _on_rdc_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelRDC.visible = false
+
+
+func _on_add_plot_ce_mouse_entered2() -> void:
+	$TabContainer/Graph/RichTextLabelCE.visible = true
+
+
+func _on_add_plot_ce_mouse_exited2() -> void:
+	$TabContainer/Graph/RichTextLabelCE.visible = false
