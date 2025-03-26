@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dwuptr3eos1kt"]
 
-[ext_resource type="Script" path="res://examples/plot_sint.gd" id="1_nl7wu"]
-[ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_o0pag"]
+[ext_resource type="Script" uid="uid://co206uhyu6a3y" path="res://examples/plot_sint.gd" id="1_nl7wu"]
+[ext_resource type="Script" uid="uid://dj8qys8h6tv8p" path="res://addons/graph_2d/graph_2d.gd" id="2_o0pag"]
 
 [node name="PlotSint" type="Control"]
 layout_mode = 3

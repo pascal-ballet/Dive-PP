@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b0h147ybrxij8"]
 
-[ext_resource type="Script" path="res://dive_pp.gd" id="1_vi5rk"]
+[ext_resource type="Script" uid="uid://cfgs4hwnjdvxt" path="res://dive_pp.gd" id="1_vi5rk"]
 
 [node name="Dive-PP" type="Node2D"]
 script = ExtResource("1_vi5rk")

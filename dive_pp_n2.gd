@@ -12,8 +12,8 @@ var va: float = 1.7 #volume artériel
 var vv: float = 3.0 #volume veineux
 var patm: float = 101325.0 # presion ambiante
 var fn2: float = 0.79 #fraction d azote dans le gaz respiré 
-var t = [null,null,null,null,null,null,null,null,null,null]
-var s = [null,null,null,null,null,null,null,null,null,null]
+var t = [1,null,null,null,null,null,null,null,null,null]
+var s = [10,null,null,null,null,null,null,null,null,null]
 
 ######################################################################################################################################
 # LISTE DES VARIABLES QU'ON VEUT POUVOIR MODIFIER ? Q et volume pour chaque + dt
@@ -1215,18 +1215,18 @@ var play:bool = false
 
 # Appelé à l'initialisation.
 func _ready():
-	debug_textbox = get_node("TabContainer/Simulation/Results")
-	debug_textbox2 = get_node("TabContainer/Simulation/Results2")
-	debug_textbox3 = get_node("TabContainer/Simulation/Results3")
-	debug_textbox4 = get_node("TabContainer/Simulation/Results4")
-	debug_textbox5 = get_node("TabContainer/Simulation/Results5")
-	debug_textbox6 = get_node("TabContainer/Simulation/Results6")
-	debug_textbox7 = get_node("TabContainer/Simulation/Results7")
-	debug_textbox8 = get_node("TabContainer/Simulation/Results8")
-	debug_textbox9 = get_node("TabContainer/Simulation/Results9")
-	debug_textbox10 = get_node("TabContainer/Simulation/Results10")
-	debug_textbox11 = get_node("TabContainer/Simulation/Results11")
-	debug_textbox12 = get_node("TabContainer/Simulation/Results12")
+	debug_textbox = get_node("TabContainer/Valeur/Results")
+	debug_textbox2 = get_node("TabContainer/Valeur/Results2")
+	debug_textbox3 = get_node("TabContainer/Valeur/Results3")
+	debug_textbox4 = get_node("TabContainer/Valeur/Results4")
+	debug_textbox5 = get_node("TabContainer/Valeur/Results5")
+	debug_textbox6 = get_node("TabContainer/Valeur/Results6")
+	debug_textbox7 = get_node("TabContainer/Valeur/Results7")
+	debug_textbox8 = get_node("TabContainer/Valeur/Results8")
+	debug_textbox9 = get_node("TabContainer/Valeur/Results9")
+	debug_textbox10 = get_node("TabContainer/Valeur/Results10")
+	debug_textbox11 = get_node("TabContainer/Valeur/Results11")
+	debug_textbox12 = get_node("TabContainer/Valeur/Results12")
 	$RichTextLabel_N2.bbcode_enabled = true
 	$RichTextLabel_N2.bbcode_text = "[center]Application to compute Partial Pressure of N2 in human body[/center]"
 
@@ -1238,18 +1238,18 @@ func _process(_delta):
 func _on_play_button_down():
 	play = true
 	set_text_editable(false)
-	$TabContainer/Simulation/RichTextLabel_N14.visible = true
-	$TabContainer/Simulation/RichTextLabel_N13.visible = true
-	$TabContainer/Simulation/RichTextLabel_N12.visible = true
-	$TabContainer/Simulation/RichTextLabel_N11.visible = true
-	$TabContainer/Simulation/RichTextLabel_N10.visible = true
-	$TabContainer/Simulation/RichTextLabel_N9.visible = true
-	$TabContainer/Simulation/RichTextLabel_N8.visible = true
-	$TabContainer/Simulation/RichTextLabel_N7.visible = true
-	$TabContainer/Simulation/RichTextLabel_N6.visible = true
-	$TabContainer/Simulation/RichTextLabel_N5.visible = true
-	$TabContainer/Simulation/RichTextLabel_N4.visible = true
-	$TabContainer/Simulation/RichTextLabel_N3.visible = true
+	$TabContainer/Valeur/RichTextLabel_N14.visible = true
+	$TabContainer/Valeur/RichTextLabel_N13.visible = true
+	$TabContainer/Valeur/RichTextLabel_N12.visible = true
+	$TabContainer/Valeur/RichTextLabel_N11.visible = true
+	$TabContainer/Valeur/RichTextLabel_N10.visible = true
+	$TabContainer/Valeur/RichTextLabel_N9.visible = true
+	$TabContainer/Valeur/RichTextLabel_N8.visible = true
+	$TabContainer/Valeur/RichTextLabel_N7.visible = true
+	$TabContainer/Valeur/RichTextLabel_N6.visible = true
+	$TabContainer/Valeur/RichTextLabel_N5.visible = true
+	$TabContainer/Valeur/RichTextLabel_N4.visible = true
+	$TabContainer/Valeur/RichTextLabel_N3.visible = true
 
 func _on_pause_button_down():
 	play = false
@@ -1258,18 +1258,18 @@ func _on_stop_pressed():
 	play = false
 	_reset_values()
 	set_text_editable(true)
-	$TabContainer/Simulation/RichTextLabel_N14.visible = false
-	$TabContainer/Simulation/RichTextLabel_N13.visible = false
-	$TabContainer/Simulation/RichTextLabel_N12.visible = false
-	$TabContainer/Simulation/RichTextLabel_N11.visible = false
-	$TabContainer/Simulation/RichTextLabel_N10.visible = false
-	$TabContainer/Simulation/RichTextLabel_N9.visible = false
-	$TabContainer/Simulation/RichTextLabel_N8.visible = false
-	$TabContainer/Simulation/RichTextLabel_N7.visible = false
-	$TabContainer/Simulation/RichTextLabel_N6.visible = false
-	$TabContainer/Simulation/RichTextLabel_N5.visible = false
-	$TabContainer/Simulation/RichTextLabel_N4.visible = false
-	$TabContainer/Simulation/RichTextLabel_N3.visible = false
+	$TabContainer/Valeur/RichTextLabel_N14.visible = false
+	$TabContainer/Valeur/RichTextLabel_N13.visible = false
+	$TabContainer/Valeur/RichTextLabel_N12.visible = false
+	$TabContainer/Valeur/RichTextLabel_N11.visible = false
+	$TabContainer/Valeur/RichTextLabel_N10.visible = false
+	$TabContainer/Valeur/RichTextLabel_N9.visible = false
+	$TabContainer/Valeur/RichTextLabel_N8.visible = false
+	$TabContainer/Valeur/RichTextLabel_N7.visible = false
+	$TabContainer/Valeur/RichTextLabel_N6.visible = false
+	$TabContainer/Valeur/RichTextLabel_N5.visible = false
+	$TabContainer/Valeur/RichTextLabel_N4.visible = false
+	$TabContainer/Valeur/RichTextLabel_N3.visible = false
 	
 	
 # Désactive ou active les champs de texte en fonction de l'état du booléen play
@@ -1349,6 +1349,8 @@ func _on_add_plot_CE_pressed() -> void:
 	
 
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	Input.set_default_cursor_shape(Input.CURSOR_IBEAM)  # Change le curseur en IBeameur
+	await get_tree().process_frame  # Met à jour l'affichage
 	my_plotCE = $TabContainer/Graph/Graph2D.add_plot_item(  
 			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
 			[Color.RED][$TabContainer/Graph/Graph2D.count() % 1],
@@ -1359,6 +1361,7 @@ func _on_add_plot_CE_pressed() -> void:
 	var y: float = 0.0  # Initialize the y value
 	
 	while time <120:
+
 		step2()#met a jour lest valeur
 		if iteration % 500 == 0: #recupere 1 valeur toute les 500 #or pp_N2_tiCE_t1>yt0*0.1
 			x = time  # Increment x 
@@ -1368,6 +1371,7 @@ func _on_add_plot_CE_pressed() -> void:
 
 	_reset_valuesCourbe()
 	print("Plot updated with points!")
+	Input.set_default_cursor_shape(Input.CURSOR_ARROW)
 
  
 func _swapCE() -> void:#passage de l'état visible a invisible de la courbe
