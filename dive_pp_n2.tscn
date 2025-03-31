@@ -16,9 +16,10 @@ offset_bottom = 50.0
 offset_left = -7.0
 offset_right = 309.0
 offset_bottom = 31.0
-current_tab = 0
+current_tab = 2
 
 [node name="Graph" type="Control" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -599,7 +600,6 @@ offset_right = -1768.0
 offset_bottom = -1967.0
 
 [node name="Paramètres" type="Control" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
@@ -814,7 +814,7 @@ offset_left = 963.0
 offset_top = 25.0
 offset_right = 1115.0
 offset_bottom = 65.0
-placeholder_text = "Value of fN₂"
+placeholder_text = "Value of fN2"
 alignment = 1
 
 [node name="Ventilatory" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
@@ -832,7 +832,7 @@ offset_left = 378.0
 offset_top = 25.0
 offset_right = 493.0
 offset_bottom = 65.0
-placeholder_text = "Value of V𝑨𝒘"
+placeholder_text = "Value of V aw"
 alignment = 1
 
 [node name="MeanFunctionalResidualVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
@@ -841,7 +841,7 @@ offset_left = 245.0
 offset_top = 25.0
 offset_right = 358.0
 offset_bottom = 65.0
-placeholder_text = "Value of V𝑨𝒍𝒈"
+placeholder_text = "Value of V alg"
 alignment = 1
 
 [node name="AlveolarBloodVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
@@ -851,7 +851,7 @@ offset_left = 630.0
 offset_top = 25.0
 offset_right = 696.32
 offset_bottom = 65.0
-placeholder_text = "Value of V𝑨𝒍𝒃"
+placeholder_text = "Value of Valb "
 alignment = 1
 metadata/_edit_use_anchors_ = true
 
@@ -870,7 +870,7 @@ offset_left = 513.0
 offset_top = 25.0
 offset_right = 610.0
 offset_bottom = 65.0
-placeholder_text = "Value of V𝑨"
+placeholder_text = "Value of V A"
 alignment = 1
 
 [node name="VenousBloodVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
@@ -879,7 +879,7 @@ offset_left = 768.0
 offset_top = 25.0
 offset_right = 939.0
 offset_bottom = 65.0
-placeholder_text = "Value of V𝒗"
+placeholder_text = "Value of Vv"
 alignment = 1
 
 [node name="PressionAtmospherique" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
@@ -888,7 +888,7 @@ offset_left = 30.0
 offset_top = 100.0
 offset_right = 148.0
 offset_bottom = 140.0
-placeholder_text = "Value of P𝘼𝙩𝙢"
+placeholder_text = "Value of Patm"
 alignment = 1
 
 [node name="DeltaTime" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
