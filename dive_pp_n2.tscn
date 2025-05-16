@@ -1,8 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://dvwt5odf7oxps"]
+[gd_scene load_steps=5 format=3 uid="uid://dvwt5odf7oxps"]
 
 [ext_resource type="Script" path="res://dive_pp_n2.gd" id="1_d2c84"]
 [ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
 [ext_resource type="Texture2D" uid="uid://cw6fsw88ma7hb" path="res://N2.jpg" id="3_k71is"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
+bg_color = Color(0.933333, 0.933333, 0.933333, 1)
+border_color = Color(0.169664, 0.359643, 0.828517, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
 
 [node name="Dive-PP-N2" type="Node2D"]
 script = ExtResource("1_d2c84")
@@ -16,10 +28,9 @@ offset_bottom = 50.0
 offset_left = -7.0
 offset_right = 309.0
 offset_bottom = 31.0
-current_tab = 2
+current_tab = 0
 
 [node name="Graph" type="Control" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -203,6 +214,33 @@ offset_top = -24.0
 offset_right = 1230.0
 offset_bottom = 7.0
 text = "Remove All Plots"
+
+[node name="Sobol" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1287.0
+offset_top = -25.0
+offset_right = 1338.0
+offset_bottom = 6.0
+text = "Sobol"
+
+[node name="Control" type="Control" parent="TabContainer/Graph"]
+anchors_preset = 0
+offset_left = 860.0
+offset_top = 361.0
+offset_right = 900.0
+offset_bottom = 401.0
+
+[node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/Control"]
+visible = false
+layout_mode = 0
+offset_top = -37.0
+offset_right = 508.0
+offset_bottom = 148.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
+
+[node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/Control/ResultBox"]
+layout_mode = 2
+bbcode_enabled = true
 
 [node name="RichTextLabelME" type="RichTextLabel" parent="TabContainer/Graph"]
 visible = false
@@ -600,6 +638,7 @@ offset_right = -1768.0
 offset_bottom = -1967.0
 
 [node name="Paramètres" type="Control" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
@@ -1210,6 +1249,7 @@ offset_bottom = -1967.0
 [connection signal="mouse_exited" from="TabContainer/Graph/RDC_bool" to="." method="_on_rdc_mouse_exited2"]
 [connection signal="pressed" from="TabContainer/Graph/RDC_bool" to="." method="_swapRDC"]
 [connection signal="pressed" from="TabContainer/Graph/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
+[connection signal="pressed" from="TabContainer/Graph/Sobol" to="." method="_ready_s"]
 [connection signal="button_down" from="TabContainer/Valeur/Simulation/Control/Play" to="." method="_on_play_button_down"]
 [connection signal="button_down" from="TabContainer/Valeur/Simulation/Control/Pause" to="." method="_on_pause_button_down"]
 [connection signal="pressed" from="TabContainer/Valeur/Simulation/Control/Stop" to="." method="_on_stop_pressed"]

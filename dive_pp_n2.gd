@@ -2512,3 +2512,139 @@ func _on_add_plot_ce_mouse_entered2() -> void:
 
 func _on_add_plot_ce_mouse_exited2() -> void:
 	$TabContainer/Graph/RichTextLabelCE.visible = false
+	
+###############################################################
+#Analyse de sobole 1 tissue
+###############################################################
+
+func _ready_s() -> void:
+	var panel := get_node("TabContainer/Graph/Control/ResultBox")
+	panel.visible = !panel.visible
+	var d := 3                               # nombre de variables
+	var N := 100_000                         # taille d’échantillon
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()   # graine aléatoire basée sur l’horloge
+	#rng.seed = 1                             # reproductibilité
+
+	# ─────────────────────────────────────────────────────────────
+	# 1) Génération des échantillons  A  et  B  (séparés par variable)
+	# ─────────────────────────────────────────────────────────────
+	var ax1 : Array[float] = [];  var bx1 : Array[float] = []
+	var ax2 : Array[float] = [];  var bx2 : Array[float] = []
+	var ax3 : Array[float] = [];  var bx3 : Array[float] = []
+	ax1.resize(N); ax2.resize(N); ax3.resize(N)
+	bx1.resize(N); bx2.resize(N); bx3.resize(N)
+
+	for k in range(N):
+		ax1[k] = 70 + rng.randf_range(-10, 10);   bx1[k] = 70 + rng.randf_range(-10, 10)
+		ax2[k] = 75112.41 + rng.randf_range(-10000, 10000);   bx2[k] = 75112.41 + rng.randf_range(-10000, 10000)
+		ax3[k] = 75112.41 + rng.randf_range(-10000, 10000);   bx3[k] = 75112.41 + rng.randf_range(-10000, 10000)
+	#Vt=70L
+	#pp_N2_ti_t0: float = 75112.41
+	#pp_N2_c_t0: float = 75112.41
+	# ─────────────────────────────────────────────────────────────
+	# 2) Évaluations du modèle  f(A)  et  f(B)
+	# ─────────────────────────────────────────────────────────────
+	var YA : Array[float] = [];  YA.resize(N)
+	var YB : Array[float] = [];  YB.resize(N)
+
+	for k in range(N):
+		YA[k] = mon_model(ax1[k], ax2[k], ax3[k])
+		YB[k] = mon_model(bx1[k], bx2[k], bx3[k])
+
+	# ─────────────────────────────────────────────────────────────
+	# 3) Matrices mixtes  A_Bi  (pick & freeze)
+	# ─────────────────────────────────────────────────────────────
+	var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []
+	YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)
+
+	for k in range(N):
+		# i = 0 : on prend x1 de B, les autres de A
+		YAB0[k] = mon_model(bx1[k], ax2[k], ax3[k])
+		# i = 1
+		YAB1[k] = mon_model(ax1[k], bx2[k], ax3[k])
+		# i = 2
+		YAB2[k] = mon_model(ax1[k], ax2[k], bx3[k])
+
+	# ─────────────────────────────────────────────────────────────
+	# 4) Variance totale de la sortie
+	# ─────────────────────────────────────────────────────────────
+	var all_Y : Array[float] = YA.duplicate()
+	all_Y.append_array(YB)
+	var VY := variance(all_Y)
+
+	# ─────────────────────────────────────────────────────────────
+	# 5) Indices de Sobol  S_i  et  S_Ti
+	# ─────────────────────────────────────────────────────────────
+	var S  : Array[float] = [0.0, 0.0, 0.0]
+	var ST : Array[float] = [0.0, 0.0, 0.0]
+
+	var acc_S0 := 0.0; var acc_S1 := 0.0; var acc_S2 := 0.0
+	var acc_ST0 := 0.0; var acc_ST1 := 0.0; var acc_ST2 := 0.0
+
+	for k in range(N):
+		acc_S0  += YB[k] * (YAB0[k] - YA[k])
+		acc_S1  += YB[k] * (YAB1[k] - YA[k])
+		acc_S2  += YB[k] * (YAB2[k] - YA[k])
+
+		var d0 := YA[k] - YAB0[k];  acc_ST0 += d0 * d0
+		var d1 := YA[k] - YAB1[k];  acc_ST1 += d1 * d1
+		var d2 := YA[k] - YAB2[k];  acc_ST2 += d2 * d2
+
+	S [0] = acc_S0  / N / VY;     ST[0] = 0.5 * acc_ST0 / N / VY
+	S [1] = acc_S1  / N / VY;     ST[1] = 0.5 * acc_ST1 / N / VY
+	S [2] = acc_S2  / N / VY;     ST[2] = 0.5 * acc_ST2 / N / VY
+
+	# ─────────────────────────────────────────────────────────────
+	# 6) Affichage
+	# ─────────────────────────────────────────────────────────────
+	var names := ["x₁", "x₂", "x₃"]
+	#print("\nIndices de Sobol — fonction de mon_model (N =", N, ")")
+	#print("────────────────────────────────────────────────────────")
+	#for i in range(d):
+		#print("%s :  Sᵢ = %.4f   |   Sₜᵢ = %.4f" % [names[i], S[i], ST[i]])
+	var display_text := "[color=#003366]Indices de Sobol — fonction de mon_model (N = %d)\n" % N
+	display_text += "────────────────────────────────────────────────────────────\n"
+	display_text += "Variable                |   Sᵢ (effet direct)   |   Sₜᵢ (effet total)\n"
+	display_text += "────────────────────────────────────────────────────────────\n"
+	display_text += "Volume du tissu (x₁)    :   %.4f               |   %.4f\n" % [S[0], ST[0]]
+	display_text += "PP du tissu (x₂)        :   %.4f               |   %.4f\n" % [S[1], ST[1]]
+	display_text += "PP du capillaire (x₃)   :   %.4f               |   %.4f\n" % [S[2], ST[2]]
+
+
+	# Affiche le texte dans le RichTextLabel
+	get_node("TabContainer/Graph/Control/ResultBox/SobolResults").text = display_text
+
+	#get_tree().quit()  # ferme l’application Godot
+#Sᵢ : Indice de Sobol de premier ordre
+#Part de la variance de la sortie due uniquement à la variable xᵢ prise seule.
+
+#Sₜᵢ : Indice de Sobol total
+#Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
+
+
+# ────────────────────────────────────────────────────────────────────
+# Fonctions utilitaires
+# ────────────────────────────────────────────────────────────────────
+func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float, ) -> float: #cerveau
+	var K3: float=0.00267
+	var alpha_ti:float=0.0000619
+	return (K3/(alpha_ti*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))
+	
+
+	
+	#x1 + x2/10.0 + x3/2
+	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
+
+func mean(arr: Array[float]) -> float:
+	var s := 0.0
+	for v in arr: s += v
+	return s / arr.size()
+
+func variance(arr: Array[float]) -> float:
+	var m := mean(arr)
+	var s2 := 0.0
+	for v in arr:
+		var d := v - m
+		s2 += d * d
+	return s2 / arr.size()
