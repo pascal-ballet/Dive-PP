@@ -39,9 +39,9 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 42.0
+offset_left = 23.0
 offset_top = 82.0
-offset_right = 1086.0
+offset_right = 1067.0
 offset_bottom = 602.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -225,17 +225,18 @@ text = "Sobol"
 
 [node name="Control" type="Control" parent="TabContainer/Graph"]
 anchors_preset = 0
-offset_left = 860.0
-offset_top = 361.0
-offset_right = 900.0
-offset_bottom = 401.0
+offset_left = 1419.0
+offset_top = 401.0
+offset_right = 1831.0
+offset_bottom = 516.0
 
 [node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/Control"]
 visible = false
 layout_mode = 0
+offset_left = -13.0
 offset_top = -37.0
-offset_right = 508.0
-offset_bottom = 148.0
+offset_right = 465.0
+offset_bottom = 174.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
 
 [node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/Control/ResultBox"]

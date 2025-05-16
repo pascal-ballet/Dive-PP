@@ -2603,7 +2603,8 @@ func _ready_s() -> void:
 	#print("────────────────────────────────────────────────────────")
 	#for i in range(d):
 		#print("%s :  Sᵢ = %.4f   |   Sₜᵢ = %.4f" % [names[i], S[i], ST[i]])
-	var display_text := "[color=#003366]Indices de Sobol — fonction de mon_model (N = %d)\n" % N
+	var display_text := "[color=#003366][center]" 
+	display_text +="		Indices de Sobol — fonction de mon_model (N = %d)\n" % N
 	display_text += "────────────────────────────────────────────────────────────\n"
 	display_text += "Variable                |   Sᵢ (effet direct)   |   Sₜᵢ (effet total)\n"
 	display_text += "────────────────────────────────────────────────────────────\n"
