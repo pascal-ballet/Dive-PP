@@ -367,7 +367,7 @@ var pp_N2_ti_t0 :float = pp_N2_tiCE_t0
 func capilar_blood_ti():
 	var delta = (1/(vc*alpha_n2)*(Q*alpha_n2*pp_N2_a_t0-(alpha_n2*Q+kn2)*pp_N2_c_t0+kn2*pp_N2_ti_t0))*dt
 	#print("delta_cap_CE = ",delta)
-	pp_N2_cCE_t1 = pp_N2_cCE_t0 + delta
+	pp_N2_c_t1 = pp_N2_c_t0 + delta
 	
 ## Compute the partial pressure of c methode euler
 func capilar_blood_CE():
@@ -2644,7 +2644,7 @@ func _ready_s() -> void:
 # ────────────────────────────────────────────────────────────────────
 func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float, ) -> float: #1 tissue
 	var K3: float=0.00267
-	#var alpha_n2 :float=0.0000619
+	var alpha_n2 :float=0.0000619
 	step_ti()
 	return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
 	
