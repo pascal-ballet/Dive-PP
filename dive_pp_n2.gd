@@ -359,11 +359,11 @@ func venous_blood_rk4():
 	# Mise à jour de la variable
 	pp_N2_v_t1 = pp_N2_v_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
 
-var vc=0.5
-var Q=4.2
-var kn2=0.0000619
-var pp_N2_c_t0 = pp_N2_cCE_t0 
-var pp_N2_ti_t0 = pp_N2_tiCE_t0 
+var vc:float =0.5
+var Q: float =4.2
+var kn2 :float =0.0000619
+var pp_N2_c_t0 : float = pp_N2_cCE_t0 
+var pp_N2_ti_t0 :float = pp_N2_tiCE_t0 
 func capilar_blood_ti():
 	var delta = (1/(vc*alpha_n2)*(Q*alpha_n2*pp_N2_a_t0-(alpha_n2*Q+kn2)*pp_N2_c_t0+kn2*pp_N2_ti_t0))*dt
 	#print("delta_cap_CE = ",delta)
