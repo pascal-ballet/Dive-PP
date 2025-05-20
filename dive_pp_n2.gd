@@ -359,7 +359,16 @@ func venous_blood_rk4():
 	# Mise à jour de la variable
 	pp_N2_v_t1 = pp_N2_v_t0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
 
-
+var vc=0.5
+var Q=4.2
+var kn2=0.0000619
+var pp_N2_c_t0 = pp_N2_cCE_t0 
+var pp_N2_ti_t0 = pp_N2_tiCE_t0 
+func capilar_blood_ti():
+	var delta = (1/(vc*alpha_n2)*(Q*alpha_n2*pp_N2_a_t0-(alpha_n2*Q+kn2)*pp_N2_c_t0+kn2*pp_N2_ti_t0))*dt
+	#print("delta_cap_CE = ",delta)
+	pp_N2_cCE_t1 = pp_N2_cCE_t0 + delta
+	
 ## Compute the partial pressure of c methode euler
 func capilar_blood_CE():
 	var delta = (1/(vcCE*alpha_n2)*(QCE*alpha_n2*pp_N2_a_t0-(alpha_n2*QCE+kn2CE)*pp_N2_cCE_t0+kn2CE*pp_N2_tiCE_t0))*dt
@@ -635,6 +644,10 @@ func capilar_blood_RDC_rk4():
 
 ## Compute the partial pressure of ti
 ##methode euler
+var Vt = 70
+func tissue_ti():
+	var delta =(kn2/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
+	pp_N2_ti_t1 = pp_N2_ti_t0 + delta
 func tissue_CE():
 	var delta = (kn2CE/(alpha_n2*vtiCE)*(pp_N2_cCE_t0-pp_N2_tiCE_t0))*dt
 	#print("delta_tissue_CE = ",delta)
@@ -2516,13 +2529,15 @@ func _on_add_plot_ce_mouse_exited2() -> void:
 ###############################################################
 #Analyse de sobole 1 tissue
 ###############################################################
-
+var pp_N2_ti_t1 = 0
+var pp_N2_c_t1 = 0
 func _ready_s() -> void:
 	var panel := get_node("TabContainer/Graph/Control/ResultBox")
 	panel.visible = !panel.visible
 	var d := 3                               # nombre de variables
 	var N := 100_000                         # taille d’échantillon
 	var rng := RandomNumberGenerator.new()
+	
 	rng.randomize()   # graine aléatoire basée sur l’horloge
 	#rng.seed = 1                             # reproductibilité
 
@@ -2603,11 +2618,11 @@ func _ready_s() -> void:
 	#print("────────────────────────────────────────────────────────")
 	#for i in range(d):
 		#print("%s :  Sᵢ = %.4f   |   Sₜᵢ = %.4f" % [names[i], S[i], ST[i]])
-	var display_text := "[color=#003366][center]" 
+	var display_text := "[color=#003366]" 
 	display_text +="		Indices de Sobol — fonction de mon_model (N = %d)\n" % N
-	display_text += "────────────────────────────────────────────────────────────\n"
+	display_text += "──────────────────────────────────────────────────────────\n"
 	display_text += "Variable                |   Sᵢ (effet direct)   |   Sₜᵢ (effet total)\n"
-	display_text += "────────────────────────────────────────────────────────────\n"
+	display_text += "──────────────────────────────────────────────────────────\n"
 	display_text += "Volume du tissu (x₁)    :   %.4f               |   %.4f\n" % [S[0], ST[0]]
 	display_text += "PP du tissu (x₂)        :   %.4f               |   %.4f\n" % [S[1], ST[1]]
 	display_text += "PP du capillaire (x₃)   :   %.4f               |   %.4f\n" % [S[2], ST[2]]
@@ -2627,15 +2642,40 @@ func _ready_s() -> void:
 # ────────────────────────────────────────────────────────────────────
 # Fonctions utilitaires
 # ────────────────────────────────────────────────────────────────────
-func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float, ) -> float: #cerveau
+func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float, ) -> float: #1 tissue
 	var K3: float=0.00267
-	var alpha_ti:float=0.0000619
-	return (K3/(alpha_ti*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))
-	
-
+	#var alpha_n2 :float=0.0000619
+	step_ti()
+	return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
 	
 	#x1 + x2/10.0 + x3/2
 	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
+	
+	## fonction step pour 1 seul tissue
+func step_ti() :
+	while time<120 :
+		time = time + dt
+		iteration = iteration + 1 
+			# Compute one step
+		pressure_atm()
+		air()
+		airways_rk4()
+		alveolar_rk4()
+		alveolar_blood_rk4()
+		arterial_blood_rk4()
+		venous_blood_rk4()
+		capilar_blood_ti()
+		tissue_ti()
+		# Preparer le prochain step
+		pp_N2_aw_t0 	= pp_N2_aw_t1
+		pp_N2_alv_t0	= pp_N2_alv_t1
+		pp_N2_alb_t0	= pp_N2_alb_t1
+		pp_N2_a_t0		= pp_N2_a_t1
+		pp_N2_v_t0		= pp_N2_v_t1
+		
+			# Variables tissus
+		pp_N2_ti_t0	= pp_N2_ti_t1
+		pp_N2_c_t0		= pp_N2_c_t1
 
 func mean(arr: Array[float]) -> float:
 	var s := 0.0

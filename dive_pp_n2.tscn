@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dvwt5odf7oxps"]
+[gd_scene load_steps=6 format=3 uid="uid://dvwt5odf7oxps"]
 
 [ext_resource type="Script" path="res://dive_pp_n2.gd" id="1_d2c84"]
 [ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
@@ -15,6 +15,13 @@ expand_margin_left = 10.0
 expand_margin_top = 10.0
 expand_margin_right = 10.0
 expand_margin_bottom = 10.0
+
+[sub_resource type="FontFile" id="FontFile_0resv"]
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
 
 [node name="Dive-PP-N2" type="Node2D"]
 script = ExtResource("1_d2c84")
@@ -241,6 +248,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
 
 [node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/Control/ResultBox"]
 layout_mode = 2
+theme_override_fonts/normal_font = SubResource("FontFile_0resv")
 bbcode_enabled = true
 
 [node name="RichTextLabelME" type="RichTextLabel" parent="TabContainer/Graph"]
