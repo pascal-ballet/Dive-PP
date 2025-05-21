@@ -278,7 +278,7 @@ func alveolar():
 func f_alveolar(pp_N2_alv):
 	return (-R * T / valg * (K1 + K2) * pp_N2_alv + R * T / valg * (K1 * pp_N2_aw_t0 + K2 * pp_N2_alb_t0))
 
-func alveolar_rk4():
+func alveolar_rk4(): #alveolagaz
 		# Étapes de Runge-Kutta
 	var k1 = dt * f_alveolar(pp_N2_alv_t0)
 	var k2 = dt * f_alveolar(pp_N2_alv_t0 + 0.5 * k1)
@@ -348,6 +348,10 @@ func f_venous_blood(pp_N2_v):
 		(QCE * pp_N2_cCE_t0 + QTA * pp_N2_cTA_t0 + QMH * pp_N2_cMH_t0 + QM * pp_N2_cM_t0 + QR * pp_N2_cR_t0 + QO * pp_N2_cO_t0 + QF * pp_N2_cF_t0 + QRDC * pp_N2_cRDC_t0) - 
 		(QCE + QTA + QMH + QM + QR + QO + QF + QRDC) * pp_N2_v
 	))
+	#
+func venous_blood_mono():
+	var delta =q/vv*(pp_N2_c_t0 - pp_N2_v_t0)*dt
+	pp_N2_v_t1 = pp_N2_v_t0 + delta
 
 func venous_blood_rk4():
 		# Étapes de Runge-Kutta
@@ -364,8 +368,10 @@ var Q: float =4.2
 var kn2 :float =0.0000619
 var pp_N2_c_t0 : float = pp_N2_cCE_t0 
 var pp_N2_ti_t0 :float = pp_N2_tiCE_t0 
-func capilar_blood_ti():
-	var delta = (1/(vc*alpha_n2)*(Q*alpha_n2*pp_N2_a_t0-(alpha_n2*Q+kn2)*pp_N2_c_t0+kn2*pp_N2_ti_t0))*dt
+
+
+func capilar_blood_mono():
+	var delta = (1/(vc*alpha_n2)*(Q*alpha_n2*pp_N2_a_t0-(alpha_n2*Q+K3_N2_mono)*pp_N2_c_t0+K3_N2_mono*pp_N2_ti_t0))*dt
 	#print("delta_cap_CE = ",delta)
 	pp_N2_c_t1 = pp_N2_c_t0 + delta
 	
@@ -645,9 +651,12 @@ func capilar_blood_RDC_rk4():
 ## Compute the partial pressure of ti
 ##methode euler
 var Vt = 70
-func tissue_ti():
-	var delta =(kn2/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
+var K3_N2_mono=0.00267
+
+func tissue_mono():
+	var delta =(K3_N2_mono/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
 	pp_N2_ti_t1 = pp_N2_ti_t0 + delta
+	
 func tissue_CE():
 	var delta = (kn2CE/(alpha_n2*vtiCE)*(pp_N2_cCE_t0-pp_N2_tiCE_t0))*dt
 	#print("delta_tissue_CE = ",delta)
@@ -1154,8 +1163,7 @@ func step():
 ## Execute 1 step (dt) du modèle pour le graphe
 func step2():
 
-	time = time + dt
-	iteration = iteration + 1 
+
 		# Compute one step
 	pressure_atm()
 	air()
@@ -1216,7 +1224,9 @@ func step2():
 	
 	
 	k = k + 1
-	
+	#next step
+	time = time + dt
+	iteration = iteration + 1 
 
 
 # ***********************
@@ -1336,6 +1346,7 @@ var my_plotMH : PlotItem = null
 var my_plotM : PlotItem = null
 var my_plotRDC : PlotItem = null
 var my_plotTGI : PlotItem = null
+var my_plotti : PlotItem = null
 var swapCE: bool = true
 var swapME: bool = true
 var swapTA: bool = true
@@ -1345,6 +1356,7 @@ var swapO: bool = true
 var swapTGI: bool = true
 var swapRDC: bool = true
 var swapM: bool = true
+var swapti: bool = true
 #play
 func _on_add_Play_pressed() -> void:
 	_on_add_plot_CE_pressed()
@@ -1661,6 +1673,42 @@ func _swapRDC() -> void:
 		else:
 			$TabContainer/Graph/Graph2D.change_plot_color(my_plotRDC, Color.FLORAL_WHITE)	
 			swapRDC=true
+
+
+
+
+func _on_add_plot_pressedti() -> void:
+	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	my_plotti = $TabContainer/Graph/Graph2D.add_plot_item(  
+			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
+			[Color.YELLOW][$TabContainer/Graph/Graph2D.count() % 1],
+			[1.0, 1.0, 1.0].pick_random()
+			)
+	print("press add 1 tissue !")
+	
+	var x: float = 0.0  # Initialize the x value
+	var y: float = 0.0  # Initialize the y value
+	
+	while time <60:
+		step_mono()#met a jour lest valeur
+		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+			x = time  # Increment x 
+			y = pp_N2_ti_t0  # increment  y 
+			# Add the point (x, y) to the plot
+			my_plotti.add_point(Vector2(x, y))
+	_reset_valuesCourbe()
+	print("Plot updated with points!")
+func _swapti() -> void:
+	if my_plotti :
+		if swapti :
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotti, Color.TRANSPARENT)
+			swapM=false
+		else:
+			$TabContainer/Graph/Graph2D.change_plot_color(my_plotti, Color.YELLOW)	
+			swapM=true
+
+
+
 
 
 func _on_remove_all_plots_pressed() -> void:
@@ -2531,11 +2579,15 @@ func _on_add_plot_ce_mouse_exited2() -> void:
 ###############################################################
 var pp_N2_ti_t1 = 0
 var pp_N2_c_t1 = 0
+
+
 func _ready_s() -> void:
+	print("Sobol Analysis start at " + str(Time.get_ticks_msec() ) )
+
 	var panel := get_node("TabContainer/Graph/Control/ResultBox")
 	panel.visible = !panel.visible
-	var d := 3                               # nombre de variables
-	var N := 100_000                         # taille d’échantillon
+	#var d := 3                               # nombre de variables
+	var N := 10000                         # taille d’échantillon
 	var rng := RandomNumberGenerator.new()
 	
 	rng.randomize()   # graine aléatoire basée sur l’horloge
@@ -2550,10 +2602,16 @@ func _ready_s() -> void:
 	ax1.resize(N); ax2.resize(N); ax3.resize(N)
 	bx1.resize(N); bx2.resize(N); bx3.resize(N)
 
-	for k in range(N):
-		ax1[k] = 70 + rng.randf_range(-10, 10);   bx1[k] = 70 + rng.randf_range(-10, 10)
-		ax2[k] = 75112.41 + rng.randf_range(-10000, 10000);   bx2[k] = 75112.41 + rng.randf_range(-10000, 10000)
-		ax3[k] = 75112.41 + rng.randf_range(-10000, 10000);   bx3[k] = 75112.41 + rng.randf_range(-10000, 10000)
+	print("Array creation at " + str(Time.get_ticks_msec() ) )
+
+
+	for l in range(N):
+		ax1[l] = 70 + rng.randf_range(-10, 10);   bx1[l] = 70 + rng.randf_range(-10, 10)
+		ax2[l] = 75112.41 + rng.randf_range(-10000, 10000);   bx2[l] = 75112.41 + rng.randf_range(-10000, 10000)
+		ax3[l] = 75112.41 + rng.randf_range(-10000, 10000);   bx3[l] = 75112.41 + rng.randf_range(-10000, 10000)
+
+	print("1 - " + str(Time.get_ticks_msec() ) )
+
 	#Vt=70L
 	#pp_N2_ti_t0: float = 75112.41
 	#pp_N2_c_t0: float = 75112.41
@@ -2563,23 +2621,34 @@ func _ready_s() -> void:
 	var YA : Array[float] = [];  YA.resize(N)
 	var YB : Array[float] = [];  YB.resize(N)
 
-	for k in range(N):
-		YA[k] = mon_model(ax1[k], ax2[k], ax3[k])
-		YB[k] = mon_model(bx1[k], bx2[k], bx3[k])
+	print("2 - " + str(Time.get_ticks_msec() ) )
+
+	for l in range(N):
+		YA[l] = mon_model(ax1[l], ax2[l], ax3[l])
+		YB[l] = mon_model(bx1[l], bx2[l], bx3[l])
+
+	print("3 - " + str(Time.get_ticks_msec() ) )
 
 	# ─────────────────────────────────────────────────────────────
-	# 3) Matrices mixtes  A_Bi  (pick & freeze)
+	## 3) Matrices mixtes  A_Bi  (pick & freeze) 
+	#La méthode vise à évaluer l'influence de chaque variable d’entrée sur la sortie du modèle, en ne changeant qu’une variable à la fois (on la "pick") tandis que les autres restent fixes (on les "freeze").
 	# ─────────────────────────────────────────────────────────────
 	var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []
 	YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)
 
-	for k in range(N):
+	print("4 - " + str(Time.get_ticks_msec() ) )
+
+
+	for l in range(N):
 		# i = 0 : on prend x1 de B, les autres de A
-		YAB0[k] = mon_model(bx1[k], ax2[k], ax3[k])
-		# i = 1
-		YAB1[k] = mon_model(ax1[k], bx2[k], ax3[k])
-		# i = 2
-		YAB2[k] = mon_model(ax1[k], ax2[k], bx3[k])
+		YAB0[l] = mon_model(bx1[l], ax2[l], ax3[l])
+		# i = 1 : on prend x2 de B, les autres de A
+		YAB1[l] = mon_model(ax1[l], bx2[l], ax3[l])
+		# i = 2 : on prend x3 de B, les autres de A
+		YAB2[l] = mon_model(ax1[l], ax2[l], bx3[l])
+
+	print("5 - " + str(Time.get_ticks_msec() ) )
+
 
 	# ─────────────────────────────────────────────────────────────
 	# 4) Variance totale de la sortie
@@ -2587,6 +2656,8 @@ func _ready_s() -> void:
 	var all_Y : Array[float] = YA.duplicate()
 	all_Y.append_array(YB)
 	var VY := variance(all_Y)
+
+	print("6 - " + str(Time.get_ticks_msec() ) )
 
 	# ─────────────────────────────────────────────────────────────
 	# 5) Indices de Sobol  S_i  et  S_Ti
@@ -2597,18 +2668,21 @@ func _ready_s() -> void:
 	var acc_S0 := 0.0; var acc_S1 := 0.0; var acc_S2 := 0.0
 	var acc_ST0 := 0.0; var acc_ST1 := 0.0; var acc_ST2 := 0.0
 
-	for k in range(N):
-		acc_S0  += YB[k] * (YAB0[k] - YA[k])
-		acc_S1  += YB[k] * (YAB1[k] - YA[k])
-		acc_S2  += YB[k] * (YAB2[k] - YA[k])
+	for l in range(N):
+		acc_S0  += YB[l] * (YAB0[l] - YA[l])
+		acc_S1  += YB[l] * (YAB1[l] - YA[l])
+		acc_S2  += YB[l] * (YAB2[l] - YA[l])
 
-		var d0 := YA[k] - YAB0[k];  acc_ST0 += d0 * d0
-		var d1 := YA[k] - YAB1[k];  acc_ST1 += d1 * d1
-		var d2 := YA[k] - YAB2[k];  acc_ST2 += d2 * d2
+		var d0 := YA[l] - YAB0[l];  acc_ST0 += d0 * d0
+		var d1 := YA[l] - YAB1[l];  acc_ST1 += d1 * d1
+		var d2 := YA[l] - YAB2[l];  acc_ST2 += d2 * d2
 
 	S [0] = acc_S0  / N / VY;     ST[0] = 0.5 * acc_ST0 / N / VY
 	S [1] = acc_S1  / N / VY;     ST[1] = 0.5 * acc_ST1 / N / VY
 	S [2] = acc_S2  / N / VY;     ST[2] = 0.5 * acc_ST2 / N / VY
+
+	print("Sobol Analysis end   at " + str(Time.get_ticks_msec() ) )
+
 
 	# ─────────────────────────────────────────────────────────────
 	# 6) Affichage
@@ -2642,40 +2716,45 @@ func _ready_s() -> void:
 # ────────────────────────────────────────────────────────────────────
 # Fonctions utilitaires
 # ────────────────────────────────────────────────────────────────────
-func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float, ) -> float: #1 tissue
+func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float ) -> float: #1 tissue
 	var K3: float=0.00267
 	var alpha_n2 :float=0.0000619
-	step_ti()
-	return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
+	step_mono()
+	return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#*dt
 	
 	#x1 + x2/10.0 + x3/2
 	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
 	
 	## fonction step pour 1 seul tissue
-func step_ti() :
-	while time<120 :
-		time = time + dt
-		iteration = iteration + 1 
-			# Compute one step
-		pressure_atm()
-		air()
-		airways_rk4()
-		alveolar_rk4()
-		alveolar_blood_rk4()
-		arterial_blood_rk4()
-		venous_blood_rk4()
-		capilar_blood_ti()
-		tissue_ti()
-		# Preparer le prochain step
-		pp_N2_aw_t0 	= pp_N2_aw_t1
-		pp_N2_alv_t0	= pp_N2_alv_t1
-		pp_N2_alb_t0	= pp_N2_alb_t1
-		pp_N2_a_t0		= pp_N2_a_t1
-		pp_N2_v_t0		= pp_N2_v_t1
-		
-			# Variables tissus
-		pp_N2_ti_t0	= pp_N2_ti_t1
-		pp_N2_c_t0		= pp_N2_c_t1
+func sobol_step() :
+	while time < 60:
+		step_mono()
+
+func step_mono() :
+	# Compute one step
+	pressure_atm()
+	air()
+	airways_rk4()
+	alveolar_rk4()
+	alveolar_blood_rk4()
+	arterial_blood_rk4()
+	venous_blood_mono()
+	capilar_blood_mono()
+	tissue_mono()
+	# Preparer le prochain step
+	pp_N2_aw_t0 	= pp_N2_aw_t1
+	pp_N2_alv_t0	= pp_N2_alv_t1
+	pp_N2_alb_t0	= pp_N2_alb_t1
+	pp_N2_a_t0		= pp_N2_a_t1
+	pp_N2_v_t0		= pp_N2_v_t1
+	
+		# Variables tissus
+	pp_N2_ti_t0	= pp_N2_ti_t1
+	pp_N2_c_t0		= pp_N2_c_t1
+
+	# Next step
+	time = time + dt
+	iteration = iteration + 1 
 
 func mean(arr: Array[float]) -> float:
 	var s := 0.0
@@ -2689,3 +2768,10 @@ func variance(arr: Array[float]) -> float:
 		var d := v - m
 		s2 += d * d
 	return s2 / arr.size()
+	
+	#TODO lse parametre a varier 
+		#var V debi ventilatoire
+		#Q debit qaurdiaque
+		#K1 K2 K3
+		#tous les volume 7 
+		#
