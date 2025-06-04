@@ -1,8 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://dvwt5odf7oxps"]
+[gd_scene load_steps=6 format=3 uid="uid://c2leoa4cehu8f"]
 
-[ext_resource type="Script" path="res://dive_pp_n2.gd" id="1_d2c84"]
-[ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
-[ext_resource type="Texture2D" uid="uid://cw6fsw88ma7hb" path="res://N2.jpg" id="3_k71is"]
+[ext_resource type="Script" path="res://dive_pp_n2_pluri.gd" id="1_33aq4"]
+[ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_foqvu"]
+[ext_resource type="Texture2D" uid="uid://cw6fsw88ma7hb" path="res://N2.jpg" id="3_gxjf1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
 bg_color = Color(0.933333, 0.933333, 0.933333, 1)
@@ -24,12 +24,16 @@ cache/0/16/0/underline_thickness = 0.0
 cache/0/16/0/scale = 1.0
 
 [node name="Dive-PP-N2" type="Node2D"]
-script = ExtResource("1_d2c84")
+script = ExtResource("1_33aq4")
 
 [node name="RichTextLabel_N2" type="RichTextLabel" parent="."]
-offset_left = 507.0
-offset_right = 1047.0
-offset_bottom = 50.0
+offset_left = 825.0
+offset_top = -1.0
+offset_right = 1074.0
+offset_bottom = 64.0
+theme_override_font_sizes/bold_italics_font_size = 1
+theme_override_font_sizes/normal_font_size = 40
+text = "Mono Tissue"
 
 [node name="TabContainer" type="TabContainer" parent="."]
 offset_left = -7.0
@@ -52,7 +56,7 @@ offset_right = 1067.0
 offset_bottom = 602.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("2_k4g8n")
+script = ExtResource("2_foqvu")
 x_max = 120.0
 x_label = "Time(s)"
 y_max = 180000.0
@@ -61,189 +65,36 @@ background_color = Color(0.0941176, 0.227451, 0.4, 1)
 grid_horizontal_visible = true
 grid_vertical_visible = true
 
-[node name="Play" type="Button" parent="TabContainer/Graph"]
+[node name="PlayMono" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
-offset_left = 309.0
-offset_top = -26.0
-offset_right = 520.0
-offset_bottom = 8.0
-text = "Afficher toutes les courbes "
-
-[node name="AddPlotCE" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 272.0
-offset_top = 12.0
-offset_right = 385.0
-offset_bottom = 43.0
-text = "CE"
-
-[node name="CE_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 271.0
-offset_top = 49.0
-offset_right = 384.0
-offset_bottom = 80.0
-text = "CE"
-
-[node name="Tissu adipeux" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 397.0
-offset_top = 12.0
-offset_right = 511.0
-offset_bottom = 43.0
-text = "TA"
-
-[node name="TA_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 399.0
-offset_top = 50.0
-offset_right = 512.0
-offset_bottom = 81.0
-text = "TA"
-
-[node name="MH" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 639.0
-offset_top = 12.0
-offset_right = 753.0
-offset_bottom = 43.0
-text = "MH"
-
-[node name="MH_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 640.0
-offset_top = 49.0
-offset_right = 753.0
-offset_bottom = 80.0
-text = "MH"
-
-[node name="muscle" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 521.0
-offset_top = 12.0
-offset_right = 635.0
-offset_bottom = 43.0
-rotation = -0.00133966
-text = "MB"
-
-[node name="M_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 520.0
-offset_top = 50.0
-offset_right = 633.0
-offset_bottom = 81.0
-text = "MB"
-
-[node name="rein" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 761.0
-offset_top = 11.0
-offset_right = 875.0
-offset_bottom = 42.0
-text = "R"
-
-[node name="R_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 762.0
-offset_top = 50.0
-offset_right = 875.0
-offset_bottom = 81.0
-text = "R"
-
-[node name="os" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 888.0
-offset_top = 11.0
-offset_right = 1002.0
-offset_bottom = 42.0
-text = "OS"
-
-[node name="O_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 890.0
-offset_top = 49.0
-offset_right = 1003.0
-offset_bottom = 80.0
-text = "OS"
-
-[node name="tgi" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1016.0
-offset_top = 12.0
-offset_right = 1130.0
-offset_bottom = 43.0
-text = "TGI"
-
-[node name="TGI_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1017.0
-offset_top = 49.0
-offset_right = 1130.0
-offset_bottom = 80.0
-text = "TGI"
-
-[node name="me" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1139.0
-offset_top = 11.0
-offset_right = 1253.0
-offset_bottom = 42.0
-text = "ME"
-
-[node name="ME_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1142.0
-offset_top = 49.0
-offset_right = 1255.0
-offset_bottom = 80.0
-text = "ME"
-
-[node name="RDC" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1265.0
-offset_top = 11.0
-offset_right = 1379.0
-offset_bottom = 42.0
-text = "RDC"
-
-[node name="Mono" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1370.0
-offset_top = -25.0
-offset_right = 1438.0
-offset_bottom = 6.0
-text = "Mono"
-
-[node name="RDC_bool" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 1267.0
-offset_top = 49.0
-offset_right = 1380.0
-offset_bottom = 80.0
-text = "RDC"
+offset_left = 545.0
+offset_top = -19.0
+offset_right = 613.0
+offset_bottom = 12.0
+text = "Play"
 
 [node name="RemoveAllPlots" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
-offset_left = 1093.0
-offset_top = -24.0
-offset_right = 1230.0
-offset_bottom = 7.0
+offset_left = 281.0
+offset_top = 1.0
+offset_right = 478.0
+offset_bottom = 32.0
 text = "Remove All Plots"
 
-[node name="Sobol" type="Button" parent="TabContainer/Graph"]
+[node name="SobolMono" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
-offset_left = 1287.0
-offset_top = -25.0
-offset_right = 1338.0
-offset_bottom = 6.0
+offset_left = 657.0
+offset_top = -21.0
+offset_right = 764.0
+offset_bottom = 62.0
 text = "Sobol"
 
 [node name="Control" type="Control" parent="TabContainer/Graph"]
 anchors_preset = 0
 offset_left = 1419.0
-offset_top = 401.0
+offset_top = 190.0
 offset_right = 1831.0
-offset_bottom = 516.0
+offset_bottom = 611.0
 
 [node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/Control"]
 visible = false
@@ -251,7 +102,7 @@ layout_mode = 0
 offset_left = -13.0
 offset_top = -37.0
 offset_right = 465.0
-offset_bottom = 174.0
+offset_bottom = 404.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
 
 [node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/Control/ResultBox"]
@@ -370,7 +221,7 @@ text = "reste du corp"
 [node name="Sprite2D" type="Sprite2D" parent="TabContainer/Graph"]
 position = Vector2(84.5578, 43.5)
 scale = Vector2(0.144438, 0.0932432)
-texture = ExtResource("3_k71is")
+texture = ExtResource("3_gxjf1")
 
 [node name="Label" type="Label" parent="TabContainer/Graph/Sprite2D"]
 offset_left = -1884.0
@@ -646,7 +497,7 @@ text = "T 1/2"
 [node name="Sprite2D" type="Sprite2D" parent="TabContainer/Valeur"]
 position = Vector2(1336, 13)
 scale = Vector2(0.144438, 0.0932432)
-texture = ExtResource("3_k71is")
+texture = ExtResource("3_gxjf1")
 
 [node name="Label" type="Label" parent="TabContainer/Valeur/Sprite2D"]
 offset_left = -1884.0
@@ -1202,7 +1053,7 @@ alignment = 1
 [node name="Sprite2D" type="Sprite2D" parent="TabContainer/Paramètres"]
 position = Vector2(1336, 13)
 scale = Vector2(0.144438, 0.0932432)
-texture = ExtResource("3_k71is")
+texture = ExtResource("3_gxjf1")
 
 [node name="Label" type="Label" parent="TabContainer/Paramètres/Sprite2D"]
 offset_left = -1884.0
@@ -1210,64 +1061,9 @@ offset_top = -2202.0
 offset_right = -1768.0
 offset_bottom = -1967.0
 
-[connection signal="pressed" from="TabContainer/Graph/Play" to="." method="_on_add_Play_pressed"]
-[connection signal="mouse_entered" from="TabContainer/Graph/AddPlotCE" to="." method="_on_add_plot_ce_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/AddPlotCE" to="." method="_on_add_plot_ce_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/AddPlotCE" to="." method="_on_add_plot_CE_pressed"]
-[connection signal="mouse_entered" from="TabContainer/Graph/CE_bool" to="." method="_on_add_plot_ce_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/CE_bool" to="." method="_on_add_plot_ce_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/CE_bool" to="." method="_swapCE"]
-[connection signal="mouse_entered" from="TabContainer/Graph/Tissu adipeux" to="." method="_on_tissu_adipeux_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/Tissu adipeux" to="." method="_on_tissu_adipeux_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/Tissu adipeux" to="." method="_on_add_plot_pressedTA"]
-[connection signal="mouse_entered" from="TabContainer/Graph/TA_bool" to="." method="_on_tissu_adipeux_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/TA_bool" to="." method="_on_tissu_adipeux_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/TA_bool" to="." method="_swapTA"]
-[connection signal="mouse_entered" from="TabContainer/Graph/MH" to="." method="_on_mh_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/MH" to="." method="_on_mh_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/MH" to="." method="_on_add_plot_pressedMH"]
-[connection signal="mouse_entered" from="TabContainer/Graph/MH_bool" to="." method="_on_mh_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/MH_bool" to="." method="_on_mh_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/MH_bool" to="." method="_swapMH"]
-[connection signal="mouse_entered" from="TabContainer/Graph/muscle" to="." method="_on_muscle_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/muscle" to="." method="_on_muscle_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/muscle" to="." method="_on_add_plot_pressedM"]
-[connection signal="mouse_entered" from="TabContainer/Graph/M_bool" to="." method="_on_muscle_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/M_bool" to="." method="_on_muscle_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/M_bool" to="." method="_swapM"]
-[connection signal="mouse_entered" from="TabContainer/Graph/rein" to="." method="_on_rein_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/rein" to="." method="_on_rein_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/rein" to="." method="_on_add_plot_pressedR"]
-[connection signal="mouse_entered" from="TabContainer/Graph/R_bool" to="." method="_on_rein_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/R_bool" to="." method="_on_rein_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/R_bool" to="." method="_swapR"]
-[connection signal="mouse_entered" from="TabContainer/Graph/os" to="." method="_on_os_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/os" to="." method="_on_os_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/os" to="." method="_on_add_plot_pressedOS"]
-[connection signal="mouse_entered" from="TabContainer/Graph/O_bool" to="." method="_on_os_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/O_bool" to="." method="_on_os_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/O_bool" to="." method="_swapO"]
-[connection signal="mouse_entered" from="TabContainer/Graph/tgi" to="." method="_on_tgi_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/tgi" to="." method="_on_tgi_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/tgi" to="." method="_on_add_plot_pressedTGI"]
-[connection signal="mouse_entered" from="TabContainer/Graph/TGI_bool" to="." method="_on_tgi_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/TGI_bool" to="." method="_on_tgi_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/TGI_bool" to="." method="_swapTGI"]
-[connection signal="mouse_entered" from="TabContainer/Graph/me" to="." method="_on_me_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/me" to="." method="_on_me_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/me" to="." method="_on_add_plot_pressedME"]
-[connection signal="mouse_entered" from="TabContainer/Graph/ME_bool" to="." method="_on_me_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/ME_bool" to="." method="_on_me_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/ME_bool" to="." method="_swapME"]
-[connection signal="mouse_entered" from="TabContainer/Graph/RDC" to="." method="_on_rdc_mouse_entered"]
-[connection signal="mouse_exited" from="TabContainer/Graph/RDC" to="." method="_on_rdc_mouse_exited"]
-[connection signal="pressed" from="TabContainer/Graph/RDC" to="." method="_on_add_plot_pressedRDC"]
-[connection signal="pressed" from="TabContainer/Graph/Mono" to="." method="_on_add_plot_pressedti"]
-[connection signal="mouse_entered" from="TabContainer/Graph/RDC_bool" to="." method="_on_rdc_mouse_entered2"]
-[connection signal="mouse_exited" from="TabContainer/Graph/RDC_bool" to="." method="_on_rdc_mouse_exited2"]
-[connection signal="pressed" from="TabContainer/Graph/RDC_bool" to="." method="_swapRDC"]
+[connection signal="pressed" from="TabContainer/Graph/PlayMono" to="." method="_on_add_plot_pressedti"]
 [connection signal="pressed" from="TabContainer/Graph/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
-[connection signal="pressed" from="TabContainer/Graph/Sobol" to="." method="_ready_s"]
+[connection signal="pressed" from="TabContainer/Graph/SobolMono" to="." method="_ready_s"]
 [connection signal="button_down" from="TabContainer/Valeur/Simulation/Control/Play" to="." method="_on_play_button_down"]
 [connection signal="button_down" from="TabContainer/Valeur/Simulation/Control/Pause" to="." method="_on_pause_button_down"]
 [connection signal="pressed" from="TabContainer/Valeur/Simulation/Control/Stop" to="." method="_on_stop_pressed"]

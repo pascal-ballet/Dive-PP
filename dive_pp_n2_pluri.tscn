@@ -1,0 +1,1330 @@
+[gd_scene load_steps=6 format=3 uid="uid://dvwt5odf7oxps"]
+
+[ext_resource type="Script" path="res://dive_pp_n2_pluri.gd" id="1_d2c84"]
+[ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
+[ext_resource type="Texture2D" uid="uid://cw6fsw88ma7hb" path="res://N2.jpg" id="3_k71is"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
+bg_color = Color(0.933333, 0.933333, 0.933333, 1)
+border_color = Color(0.169664, 0.359643, 0.828517, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="FontFile" id="FontFile_0resv"]
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+
+[node name="Dive-PP-N2" type="Node2D"]
+script = ExtResource("1_d2c84")
+
+[node name="RichTextLabel_N2" type="RichTextLabel" parent="."]
+offset_left = 507.0
+offset_right = 1047.0
+offset_bottom = 50.0
+
+[node name="TabContainer" type="TabContainer" parent="."]
+offset_left = -7.0
+offset_right = 309.0
+offset_bottom = 31.0
+current_tab = 0
+
+[node name="Graph" type="Control" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Graph2D" type="Control" parent="TabContainer/Graph"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 23.0
+offset_top = 82.0
+offset_right = 1067.0
+offset_bottom = 602.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_k4g8n")
+x_max = 120.0
+x_label = "Time(s)"
+y_max = 180000.0
+y_label = "Y"
+background_color = Color(0.0941176, 0.227451, 0.4, 1)
+grid_horizontal_visible = true
+grid_vertical_visible = true
+
+[node name="Play" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 309.0
+offset_top = -26.0
+offset_right = 520.0
+offset_bottom = 8.0
+text = "Afficher toutes les courbes "
+
+[node name="AddPlotCE" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 272.0
+offset_top = 12.0
+offset_right = 385.0
+offset_bottom = 43.0
+text = "CE"
+
+[node name="CE_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 271.0
+offset_top = 49.0
+offset_right = 384.0
+offset_bottom = 80.0
+text = "CE"
+
+[node name="Tissu adipeux" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 397.0
+offset_top = 12.0
+offset_right = 511.0
+offset_bottom = 43.0
+text = "TA"
+
+[node name="TA_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 399.0
+offset_top = 50.0
+offset_right = 512.0
+offset_bottom = 81.0
+text = "TA"
+
+[node name="MH" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 639.0
+offset_top = 12.0
+offset_right = 753.0
+offset_bottom = 43.0
+text = "MH"
+
+[node name="MH_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 640.0
+offset_top = 49.0
+offset_right = 753.0
+offset_bottom = 80.0
+text = "MH"
+
+[node name="muscle" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 521.0
+offset_top = 12.0
+offset_right = 635.0
+offset_bottom = 43.0
+rotation = -0.00133966
+text = "MB"
+
+[node name="M_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 520.0
+offset_top = 50.0
+offset_right = 633.0
+offset_bottom = 81.0
+text = "MB"
+
+[node name="rein" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 761.0
+offset_top = 11.0
+offset_right = 875.0
+offset_bottom = 42.0
+text = "R"
+
+[node name="R_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 762.0
+offset_top = 50.0
+offset_right = 875.0
+offset_bottom = 81.0
+text = "R"
+
+[node name="os" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 888.0
+offset_top = 11.0
+offset_right = 1002.0
+offset_bottom = 42.0
+text = "OS"
+
+[node name="O_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 890.0
+offset_top = 49.0
+offset_right = 1003.0
+offset_bottom = 80.0
+text = "OS"
+
+[node name="tgi" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1016.0
+offset_top = 12.0
+offset_right = 1130.0
+offset_bottom = 43.0
+text = "TGI"
+
+[node name="TGI_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1017.0
+offset_top = 49.0
+offset_right = 1130.0
+offset_bottom = 80.0
+text = "TGI"
+
+[node name="me" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1139.0
+offset_top = 11.0
+offset_right = 1253.0
+offset_bottom = 42.0
+text = "ME"
+
+[node name="ME_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1142.0
+offset_top = 49.0
+offset_right = 1255.0
+offset_bottom = 80.0
+text = "ME"
+
+[node name="RDC" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1265.0
+offset_top = 11.0
+offset_right = 1379.0
+offset_bottom = 42.0
+text = "RDC"
+
+[node name="Mono" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1370.0
+offset_top = -25.0
+offset_right = 1438.0
+offset_bottom = 6.0
+text = "Mono"
+
+[node name="RDC_bool" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1267.0
+offset_top = 49.0
+offset_right = 1380.0
+offset_bottom = 80.0
+text = "RDC"
+
+[node name="RemoveAllPlots" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1093.0
+offset_top = -24.0
+offset_right = 1230.0
+offset_bottom = 7.0
+text = "Remove All Plots"
+
+[node name="Sobol" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1287.0
+offset_top = -25.0
+offset_right = 1338.0
+offset_bottom = 6.0
+text = "Sobol"
+
+[node name="Control" type="Control" parent="TabContainer/Graph"]
+anchors_preset = 0
+offset_left = 1419.0
+offset_top = 190.0
+offset_right = 1831.0
+offset_bottom = 611.0
+
+[node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/Control"]
+visible = false
+layout_mode = 0
+offset_left = -13.0
+offset_top = -37.0
+offset_right = 465.0
+offset_bottom = 404.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
+
+[node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/Control/ResultBox"]
+layout_mode = 2
+theme_override_fonts/normal_font = SubResource("FontFile_0resv")
+bbcode_enabled = true
+
+[node name="RichTextLabelME" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 1141.0
+offset_top = 83.0
+offset_right = 1271.0
+offset_bottom = 123.0
+rotation = -0.0010152
+text = "moelle épinière"
+
+[node name="RichTextLabelTGI" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 981.0
+offset_top = 82.0
+offset_right = 1176.0
+offset_bottom = 112.0
+rotation = -0.0010152
+text = "transit gastro intestinal"
+
+[node name="RichTextLabelOS" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 932.0
+offset_top = 83.0
+offset_right = 1062.0
+offset_bottom = 133.0
+rotation = -0.0010152
+text = "OS"
+
+[node name="RichTextLabelR" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 795.0
+offset_top = 85.0
+offset_right = 925.0
+offset_bottom = 135.0
+rotation = 0.0051297
+text = "Rein"
+
+[node name="RichTextLabelMH" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 614.0
+offset_top = 84.0
+offset_right = 810.0
+offset_bottom = 134.0
+rotation = -0.0010152
+text = "muscle haut du corp"
+
+[node name="RichTextLabelM" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 495.0
+offset_top = 83.0
+offset_right = 682.0
+offset_bottom = 133.0
+rotation = -0.0010152
+text = "muscle bas du corp"
+
+[node name="RichTextLabelTA" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 394.0
+offset_top = 84.0
+offset_right = 524.0
+offset_bottom = 134.0
+rotation = -0.00320271
+text = "tissue adipeux"
+
+[node name="courbe" type="RichTextLabel" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 13.0
+offset_right = 282.0
+offset_bottom = 63.0
+rotation = -0.00320271
+text = "creer courbe "
+
+[node name="cacher" type="RichTextLabel" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 50.0
+offset_right = 280.0
+offset_bottom = 100.0
+rotation = -0.00320271
+text = "cacher courbe"
+
+[node name="RichTextLabelCE" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 290.0
+offset_top = 83.0
+offset_right = 420.0
+offset_bottom = 133.0
+rotation = -0.00320271
+text = "cerveau"
+
+[node name="RichTextLabelRDC" type="RichTextLabel" parent="TabContainer/Graph"]
+visible = false
+layout_mode = 0
+offset_left = 1271.0
+offset_top = 82.0
+offset_right = 1401.0
+offset_bottom = 122.0
+rotation = -0.0010152
+text = "reste du corp"
+
+[node name="Sprite2D" type="Sprite2D" parent="TabContainer/Graph"]
+position = Vector2(84.5578, 43.5)
+scale = Vector2(0.144438, 0.0932432)
+texture = ExtResource("3_k71is")
+
+[node name="Label" type="Label" parent="TabContainer/Graph/Sprite2D"]
+offset_left = -1884.0
+offset_top = -2202.0
+offset_right = -1768.0
+offset_bottom = -1967.0
+
+[node name="Valeur" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Simulation" type="PanelContainer" parent="TabContainer/Valeur"]
+layout_mode = 0
+
+[node name="Control" type="Control" parent="TabContainer/Valeur/Simulation"]
+layout_mode = 2
+
+[node name="Play" type="Button" parent="TabContainer/Valeur/Simulation/Control"]
+layout_mode = 2
+offset_left = 150.0
+offset_top = 80.0
+offset_right = 200.0
+offset_bottom = 111.0
+text = "Play"
+
+[node name="Pause" type="Button" parent="TabContainer/Valeur/Simulation/Control"]
+layout_mode = 2
+offset_left = 550.0
+offset_top = 80.0
+offset_right = 605.0
+offset_bottom = 111.0
+text = "Pause
+"
+
+[node name="Stop" type="Button" parent="TabContainer/Valeur/Simulation/Control"]
+layout_mode = 2
+offset_left = 950.0
+offset_top = 80.0
+offset_right = 1000.0
+offset_bottom = 111.0
+text = "Stop
+"
+
+[node name="Results" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 188.0
+offset_right = 197.0
+offset_bottom = 619.0
+scroll_following = true
+
+[node name="Results2" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 207.0
+offset_top = 177.0
+offset_right = 387.0
+offset_bottom = 367.0
+scroll_following = true
+
+[node name="Results3" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 1157.0
+offset_top = 188.0
+offset_right = 1394.0
+offset_bottom = 619.0
+scroll_following = true
+
+[node name="Results4" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 587.0
+offset_top = 177.0
+offset_right = 767.0
+offset_bottom = 367.0
+scroll_following = true
+
+[node name="Results5" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 777.0
+offset_top = 177.0
+offset_right = 957.0
+offset_bottom = 367.0
+scroll_following = true
+
+[node name="Results6" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 967.0
+offset_top = 177.0
+offset_right = 1147.0
+offset_bottom = 367.0
+scroll_following = true
+
+[node name="Results7" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 207.0
+offset_top = 420.0
+offset_right = 387.0
+offset_bottom = 620.0
+scroll_following = true
+
+[node name="Results8" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 397.0
+offset_top = 420.0
+offset_right = 577.0
+offset_bottom = 620.0
+scroll_following = true
+
+[node name="Results9" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 587.0
+offset_top = 420.0
+offset_right = 767.0
+offset_bottom = 620.0
+scroll_following = true
+
+[node name="Results10" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 777.0
+offset_top = 420.0
+offset_right = 957.0
+offset_bottom = 620.0
+scroll_following = true
+
+[node name="Results11" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 967.0
+offset_top = 420.0
+offset_right = 1147.0
+offset_bottom = 620.0
+scroll_following = true
+
+[node name="Results12" type="RichTextLabel" parent="TabContainer/Valeur"]
+layout_mode = 0
+offset_left = 397.0
+offset_top = 177.0
+offset_right = 577.0
+offset_bottom = 377.0
+scroll_following = true
+
+[node name="RichTextLabel_N3" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 263.0
+offset_top = 140.0
+offset_right = 327.0
+offset_bottom = 167.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Cerveau"
+
+[node name="RichTextLabel_N4" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 426.0
+offset_top = 140.0
+offset_right = 561.0
+offset_bottom = 167.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Moelle épinière"
+
+[node name="RichTextLabel_N5" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 619.0
+offset_top = 140.0
+offset_right = 735.0
+offset_bottom = 167.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Tissu adipeux"
+
+[node name="RichTextLabel_N6" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 812.0
+offset_top = 140.0
+offset_right = 918.0
+offset_bottom = 167.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Muscles Haut"
+
+[node name="RichTextLabel_N7" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 1025.0
+offset_top = 140.0
+offset_right = 1089.0
+offset_bottom = 167.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Muscles"
+
+[node name="RichTextLabel_N8" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 274.0
+offset_top = 384.0
+offset_right = 316.0
+offset_bottom = 411.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Reins"
+
+[node name="RichTextLabel_N9" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 473.0
+offset_top = 384.0
+offset_right = 495.0
+offset_bottom = 411.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Os"
+
+[node name="RichTextLabel_N10" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 575.0
+offset_top = 384.0
+offset_right = 777.0
+offset_bottom = 411.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Transit Gastro Intestinal"
+
+[node name="RichTextLabel_N11" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 848.0
+offset_top = 384.0
+offset_right = 889.0
+offset_bottom = 411.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Foie"
+
+[node name="RichTextLabel_N12" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 998.0
+offset_top = 384.0
+offset_right = 1116.0
+offset_bottom = 411.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Reste du corps"
+
+[node name="RichTextLabel_N13" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 31.0
+offset_top = 140.0
+offset_right = 168.0
+offset_bottom = 167.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "Données de base"
+
+[node name="RichTextLabel_N14" type="RichTextLabel" parent="TabContainer/Valeur"]
+visible = false
+layout_mode = 0
+offset_left = 1173.0
+offset_top = 140.0
+offset_right = 1310.0
+offset_bottom = 167.0
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+text = "T 1/2"
+
+[node name="Sprite2D" type="Sprite2D" parent="TabContainer/Valeur"]
+position = Vector2(1336, 13)
+scale = Vector2(0.144438, 0.0932432)
+texture = ExtResource("3_k71is")
+
+[node name="Label" type="Label" parent="TabContainer/Valeur/Sprite2D"]
+offset_left = -1884.0
+offset_top = -2202.0
+offset_right = -1768.0
+offset_bottom = -1967.0
+
+[node name="Paramètres" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="Paramètres" type="PanelContainer" parent="TabContainer/Paramètres"]
+layout_mode = 0
+offset_right = 45.0
+
+[node name="Control" type="Control" parent="TabContainer/Paramètres/Paramètres"]
+layout_mode = 2
+
+[node name="RichTextLabel_N3" type="RichTextLabel" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 62.0
+offset_top = 439.0
+offset_right = 172.0
+offset_bottom = 489.0
+text = "step"
+
+[node name="RichTextLabel_N4" type="RichTextLabel" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 62.0
+offset_top = 529.0
+offset_right = 172.0
+offset_bottom = 579.0
+text = "Time"
+
+[node name="TabProf1" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 140.0
+offset_top = 433.25
+offset_right = 208.563
+offset_bottom = 473.25
+text = "10"
+placeholder_text = "Step 1"
+alignment = 1
+
+[node name="TabTime1" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 140.0
+offset_top = 523.25
+offset_right = 208.563
+offset_bottom = 563.25
+text = "1"
+placeholder_text = "Time 1"
+alignment = 1
+
+[node name="TabProf2" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 253.0
+offset_top = 433.25
+offset_right = 321.563
+offset_bottom = 473.25
+placeholder_text = "Step 2"
+alignment = 1
+
+[node name="TabTime2" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 253.0
+offset_top = 523.25
+offset_right = 321.563
+offset_bottom = 563.25
+placeholder_text = "Time 2"
+alignment = 1
+
+[node name="TabProf3" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 366.0
+offset_top = 433.25
+offset_right = 434.563
+offset_bottom = 473.25
+placeholder_text = "Step 3"
+alignment = 1
+
+[node name="TabTime3" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 366.0
+offset_top = 523.25
+offset_right = 434.563
+offset_bottom = 563.25
+placeholder_text = "Time 3"
+alignment = 1
+
+[node name="TabProf4" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 479.0
+offset_top = 433.25
+offset_right = 547.563
+offset_bottom = 473.25
+placeholder_text = "Step 4"
+alignment = 1
+
+[node name="TabTime4" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 479.0
+offset_top = 523.25
+offset_right = 547.563
+offset_bottom = 563.25
+placeholder_text = "Time 4"
+alignment = 1
+
+[node name="TabProf5" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 592.0
+offset_top = 433.25
+offset_right = 660.563
+offset_bottom = 473.25
+placeholder_text = "Step 5"
+alignment = 1
+
+[node name="TabTime5" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 592.0
+offset_top = 523.25
+offset_right = 660.563
+offset_bottom = 563.25
+placeholder_text = "Time 5"
+alignment = 1
+
+[node name="TabProf6" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 705.0
+offset_top = 433.25
+offset_right = 773.563
+offset_bottom = 473.25
+placeholder_text = "Step 6"
+alignment = 1
+
+[node name="TabTime6" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 705.0
+offset_top = 523.25
+offset_right = 773.563
+offset_bottom = 563.25
+placeholder_text = "Time 6"
+alignment = 1
+
+[node name="TabProf7" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 818.0
+offset_top = 433.25
+offset_right = 886.563
+offset_bottom = 473.25
+placeholder_text = "Step 7"
+alignment = 1
+
+[node name="TabTime7" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 818.0
+offset_top = 523.25
+offset_right = 886.563
+offset_bottom = 563.25
+placeholder_text = "Time 7"
+alignment = 1
+
+[node name="TabProf8" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 931.0
+offset_top = 433.25
+offset_right = 999.563
+offset_bottom = 473.25
+placeholder_text = "Step 8"
+alignment = 1
+
+[node name="TabTime8" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 931.0
+offset_top = 523.25
+offset_right = 999.563
+offset_bottom = 563.25
+placeholder_text = "Time 8"
+alignment = 1
+
+[node name="TabProf9" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 1044.0
+offset_top = 433.25
+offset_right = 1112.56
+offset_bottom = 473.25
+placeholder_text = "Step 9"
+alignment = 1
+
+[node name="TabTime9" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 1044.0
+offset_top = 523.25
+offset_right = 1112.56
+offset_bottom = 563.25
+placeholder_text = "Time 9"
+alignment = 1
+
+[node name="TabProf10" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 1157.0
+offset_top = 433.25
+offset_right = 1225.56
+offset_bottom = 473.25
+placeholder_text = "Step 10"
+alignment = 1
+
+[node name="TabTime10" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 1157.0
+offset_top = 523.0
+offset_right = 1230.0
+offset_bottom = 563.0
+placeholder_text = "Time 10"
+alignment = 1
+
+[node name="Metabolism3" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 963.0
+offset_top = 25.0
+offset_right = 1115.0
+offset_bottom = 65.0
+placeholder_text = "Value of fN2"
+alignment = 1
+
+[node name="Ventilatory" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 30.0
+offset_top = 25.0
+offset_right = 116.0
+offset_bottom = 65.0
+placeholder_text = "Value of V̇"
+alignment = 1
+
+[node name="MeanExpiratoryReserveVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 378.0
+offset_top = 25.0
+offset_right = 493.0
+offset_bottom = 65.0
+placeholder_text = "Value of V aw"
+alignment = 1
+
+[node name="MeanFunctionalResidualVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 245.0
+offset_top = 25.0
+offset_right = 358.0
+offset_bottom = 65.0
+placeholder_text = "Value of V alg"
+alignment = 1
+
+[node name="AlveolarBloodVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+anchor_right = 1.14844
+offset_left = 630.0
+offset_top = 25.0
+offset_right = 696.32
+offset_bottom = 65.0
+placeholder_text = "Value of Valb "
+alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="CardiacOutput" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 136.0
+offset_top = 25.0
+offset_right = 225.0
+offset_bottom = 65.0
+placeholder_text = "Value of Q̇"
+alignment = 1
+
+[node name="ArterialBloodVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 513.0
+offset_top = 25.0
+offset_right = 610.0
+offset_bottom = 65.0
+placeholder_text = "Value of V A"
+alignment = 1
+
+[node name="VenousBloodVolume" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 768.0
+offset_top = 25.0
+offset_right = 939.0
+offset_bottom = 65.0
+placeholder_text = "Value of Vv"
+alignment = 1
+
+[node name="PressionAtmospherique" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 2
+offset_left = 30.0
+offset_top = 100.0
+offset_right = 148.0
+offset_bottom = 140.0
+placeholder_text = "Value of Patm"
+alignment = 1
+
+[node name="DeltaTime" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 168.0
+offset_top = 100.0
+offset_right = 263.0
+offset_bottom = 140.0
+placeholder_text = "Value of dt"
+alignment = 1
+
+[node name="VolumeTissueBrain" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 283.0
+offset_top = 100.0
+offset_right = 398.0
+offset_bottom = 140.0
+placeholder_text = "Value of VtiCE"
+alignment = 1
+
+[node name="VolumeCapilarBrain" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 418.0
+offset_top = 100.0
+offset_right = 530.0
+offset_bottom = 140.0
+placeholder_text = "Value of VcCE"
+alignment = 1
+
+[node name="QBrain" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 550.0
+offset_top = 100.0
+offset_right = 659.0
+offset_bottom = 140.0
+placeholder_text = "Value of QCE"
+alignment = 1
+
+[node name="VolumeTissueTA" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 679.0
+offset_top = 100.0
+offset_right = 796.0
+offset_bottom = 140.0
+placeholder_text = "Value of VtiTA"
+alignment = 1
+
+[node name="VolumeCapilarTA" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 816.0
+offset_top = 100.0
+offset_right = 930.0
+offset_bottom = 140.0
+placeholder_text = "Value of VcTA"
+alignment = 1
+
+[node name="QTA" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 950.0
+offset_top = 100.0
+offset_right = 1068.0
+offset_bottom = 140.0
+placeholder_text = "Value of QTA"
+alignment = 1
+
+[node name="VolumeTissueMH" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 175.0
+offset_right = 154.0
+offset_bottom = 215.0
+placeholder_text = "Value of VtiMH"
+alignment = 1
+
+[node name="VolumeCapilarMH" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 174.0
+offset_top = 175.0
+offset_right = 298.0
+offset_bottom = 215.0
+placeholder_text = "Value of VcMH"
+alignment = 1
+
+[node name="QMH" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 318.0
+offset_top = 175.0
+offset_right = 435.0
+offset_bottom = 215.0
+placeholder_text = "Value of QMH"
+alignment = 1
+
+[node name="VolumeTissueM" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 455.0
+offset_top = 175.0
+offset_right = 566.0
+offset_bottom = 215.0
+placeholder_text = "Value of VtiM"
+alignment = 1
+
+[node name="VolumeCapilarM" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 586.0
+offset_top = 175.0
+offset_right = 695.0
+offset_bottom = 215.0
+placeholder_text = "Value of VcM"
+alignment = 1
+
+[node name="QM" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 715.0
+offset_top = 175.0
+offset_right = 820.0
+offset_bottom = 215.0
+placeholder_text = "Value of QM"
+alignment = 1
+
+[node name="VolumeTissueR" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 840.0
+offset_top = 175.0
+offset_right = 946.0
+offset_bottom = 215.0
+placeholder_text = "Value of VtiR"
+alignment = 1
+
+[node name="VolumeCapilarR" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 966.0
+offset_top = 175.0
+offset_right = 1084.0
+offset_bottom = 215.0
+placeholder_text = "Value of VcR"
+alignment = 1
+
+[node name="QR" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 250.0
+offset_right = 129.0
+offset_bottom = 290.0
+placeholder_text = "Value of QR"
+alignment = 1
+
+[node name="VolumeTissueO" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 149.0
+offset_top = 250.0
+offset_right = 258.0
+offset_bottom = 290.0
+placeholder_text = "Value of VtiO"
+alignment = 1
+
+[node name="VolumeCapilarO" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 278.0
+offset_top = 250.0
+offset_right = 384.0
+offset_bottom = 290.0
+placeholder_text = "Value of VcO"
+alignment = 1
+
+[node name="QO" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 404.0
+offset_top = 250.0
+offset_right = 506.0
+offset_bottom = 290.0
+placeholder_text = "Value of QO"
+alignment = 1
+
+[node name="VolumeTissueTGI" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 526.0
+offset_top = 250.0
+offset_right = 648.0
+offset_bottom = 290.0
+placeholder_text = "Value of VtiTGI"
+alignment = 1
+
+[node name="VolumeCapilarTGI" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 668.0
+offset_top = 250.0
+offset_right = 787.0
+offset_bottom = 290.0
+placeholder_text = "Value of VcTGI"
+alignment = 1
+
+[node name="QTGI" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 807.0
+offset_top = 250.0
+offset_right = 921.0
+offset_bottom = 290.0
+placeholder_text = "Value of QTGI"
+alignment = 1
+
+[node name="VolumeTissueF" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 941.0
+offset_top = 250.0
+offset_right = 1050.0
+offset_bottom = 290.0
+placeholder_text = "Value of VtiF"
+alignment = 1
+
+[node name="VolumeCapilarF" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 325.0
+offset_right = 133.0
+offset_bottom = 365.0
+placeholder_text = "Value of VcF"
+alignment = 1
+
+[node name="QF" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 153.0
+offset_top = 325.0
+offset_right = 252.0
+offset_bottom = 365.0
+placeholder_text = "Value of QF"
+alignment = 1
+
+[node name="VolumeTissueRDC" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 272.0
+offset_top = 325.0
+offset_right = 403.0
+offset_bottom = 365.0
+placeholder_text = "Value of VtiRDC"
+alignment = 1
+
+[node name="VolumeCapilarRDC" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 423.0
+offset_top = 325.0
+offset_right = 553.0
+offset_bottom = 365.0
+placeholder_text = "Value of VcRDC"
+alignment = 1
+
+[node name="QRDC" type="LineEdit" parent="TabContainer/Paramètres/Paramètres/Control"]
+layout_mode = 0
+offset_left = 573.0
+offset_top = 325.0
+offset_right = 694.0
+offset_bottom = 365.0
+placeholder_text = "Value of QRDC"
+alignment = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="TabContainer/Paramètres"]
+position = Vector2(1336, 13)
+scale = Vector2(0.144438, 0.0932432)
+texture = ExtResource("3_k71is")
+
+[node name="Label" type="Label" parent="TabContainer/Paramètres/Sprite2D"]
+offset_left = -1884.0
+offset_top = -2202.0
+offset_right = -1768.0
+offset_bottom = -1967.0
+
+[connection signal="pressed" from="TabContainer/Graph/Play" to="." method="_on_add_Play_pressed"]
+[connection signal="mouse_entered" from="TabContainer/Graph/AddPlotCE" to="." method="_on_add_plot_ce_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/AddPlotCE" to="." method="_on_add_plot_ce_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/AddPlotCE" to="." method="_on_add_plot_CE_pressed"]
+[connection signal="mouse_entered" from="TabContainer/Graph/CE_bool" to="." method="_on_add_plot_ce_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/CE_bool" to="." method="_on_add_plot_ce_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/CE_bool" to="." method="_swapCE"]
+[connection signal="mouse_entered" from="TabContainer/Graph/Tissu adipeux" to="." method="_on_tissu_adipeux_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/Tissu adipeux" to="." method="_on_tissu_adipeux_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/Tissu adipeux" to="." method="_on_add_plot_pressedTA"]
+[connection signal="mouse_entered" from="TabContainer/Graph/TA_bool" to="." method="_on_tissu_adipeux_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/TA_bool" to="." method="_on_tissu_adipeux_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/TA_bool" to="." method="_swapTA"]
+[connection signal="mouse_entered" from="TabContainer/Graph/MH" to="." method="_on_mh_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/MH" to="." method="_on_mh_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/MH" to="." method="_on_add_plot_pressedMH"]
+[connection signal="mouse_entered" from="TabContainer/Graph/MH_bool" to="." method="_on_mh_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/MH_bool" to="." method="_on_mh_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/MH_bool" to="." method="_swapMH"]
+[connection signal="mouse_entered" from="TabContainer/Graph/muscle" to="." method="_on_muscle_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/muscle" to="." method="_on_muscle_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/muscle" to="." method="_on_add_plot_pressedM"]
+[connection signal="mouse_entered" from="TabContainer/Graph/M_bool" to="." method="_on_muscle_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/M_bool" to="." method="_on_muscle_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/M_bool" to="." method="_swapM"]
+[connection signal="mouse_entered" from="TabContainer/Graph/rein" to="." method="_on_rein_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/rein" to="." method="_on_rein_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/rein" to="." method="_on_add_plot_pressedR"]
+[connection signal="mouse_entered" from="TabContainer/Graph/R_bool" to="." method="_on_rein_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/R_bool" to="." method="_on_rein_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/R_bool" to="." method="_swapR"]
+[connection signal="mouse_entered" from="TabContainer/Graph/os" to="." method="_on_os_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/os" to="." method="_on_os_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/os" to="." method="_on_add_plot_pressedOS"]
+[connection signal="mouse_entered" from="TabContainer/Graph/O_bool" to="." method="_on_os_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/O_bool" to="." method="_on_os_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/O_bool" to="." method="_swapO"]
+[connection signal="mouse_entered" from="TabContainer/Graph/tgi" to="." method="_on_tgi_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/tgi" to="." method="_on_tgi_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/tgi" to="." method="_on_add_plot_pressedTGI"]
+[connection signal="mouse_entered" from="TabContainer/Graph/TGI_bool" to="." method="_on_tgi_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/TGI_bool" to="." method="_on_tgi_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/TGI_bool" to="." method="_swapTGI"]
+[connection signal="mouse_entered" from="TabContainer/Graph/me" to="." method="_on_me_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/me" to="." method="_on_me_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/me" to="." method="_on_add_plot_pressedME"]
+[connection signal="mouse_entered" from="TabContainer/Graph/ME_bool" to="." method="_on_me_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/ME_bool" to="." method="_on_me_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/ME_bool" to="." method="_swapME"]
+[connection signal="mouse_entered" from="TabContainer/Graph/RDC" to="." method="_on_rdc_mouse_entered"]
+[connection signal="mouse_exited" from="TabContainer/Graph/RDC" to="." method="_on_rdc_mouse_exited"]
+[connection signal="pressed" from="TabContainer/Graph/RDC" to="." method="_on_add_plot_pressedRDC"]
+[connection signal="pressed" from="TabContainer/Graph/Mono" to="." method="_on_add_plot_pressedti"]
+[connection signal="mouse_entered" from="TabContainer/Graph/RDC_bool" to="." method="_on_rdc_mouse_entered2"]
+[connection signal="mouse_exited" from="TabContainer/Graph/RDC_bool" to="." method="_on_rdc_mouse_exited2"]
+[connection signal="pressed" from="TabContainer/Graph/RDC_bool" to="." method="_swapRDC"]
+[connection signal="pressed" from="TabContainer/Graph/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
+[connection signal="pressed" from="TabContainer/Graph/Sobol" to="." method="_ready_s"]
+[connection signal="button_down" from="TabContainer/Valeur/Simulation/Control/Play" to="." method="_on_play_button_down"]
+[connection signal="button_down" from="TabContainer/Valeur/Simulation/Control/Pause" to="." method="_on_pause_button_down"]
+[connection signal="pressed" from="TabContainer/Valeur/Simulation/Control/Stop" to="." method="_on_stop_pressed"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf1" to="." method="_on_text_s1"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime1" to="." method="_on_text_t1"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf2" to="." method="_on_text_s2"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime2" to="." method="_on_text_t2"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf3" to="." method="_on_text_s3"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime3" to="." method="_on_text_t3"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf4" to="." method="_on_text_s4"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime4" to="." method="_on_text_t4"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf5" to="." method="_on_text_s5"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime5" to="." method="_on_text_t5"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf6" to="." method="_on_text_s6"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime6" to="." method="_on_text_t6"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf7" to="." method="_on_text_s7"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime7" to="." method="_on_text_t7"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf8" to="." method="_on_text_s8"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime8" to="." method="_on_text_t8"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf9" to="." method="_on_text_s9"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime9" to="." method="_on_text_t9"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabProf10" to="." method="_on_text_s10"]
+[connection signal="text_submitted" from="TabContainer/Paramètres/Paramètres/Control/TabTime10" to="." method="_on_text_t10"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/Metabolism3" to="." method="_on_text_fo2"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/Ventilatory" to="." method="_on_text_vent"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/MeanExpiratoryReserveVolume" to="." method="_on_text_vaw"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/MeanFunctionalResidualVolume" to="." method="_on_text_valg"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/AlveolarBloodVolume" to="." method="_on_text_valb"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/CardiacOutput" to="." method="_on_text_cardiac"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/ArterialBloodVolume" to="." method="_on_text_va"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VenousBloodVolume" to="." method="_on_text_vv"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/PressionAtmospherique" to="." method="_on_text_patm"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/DeltaTime" to="." method="_on_text_dt"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueBrain" to="." method="_on_text_vtice"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarBrain" to="." method="_on_text_vcce"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QBrain" to="." method="_on_text_qce"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueTA" to="." method="_on_text_vtita"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarTA" to="." method="_on_text_vcta"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QTA" to="." method="_on_text_qta"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueMH" to="." method="_on_text_vtimh"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarMH" to="." method="_on_text_vcmh"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QMH" to="." method="_on_text_qmh"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueM" to="." method="_on_text_vtim"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarM" to="." method="_on_text_vcm"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QM" to="." method="_on_text_qm"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueR" to="." method="_on_text_vtir"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarR" to="." method="_on_text_vcR"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QR" to="." method="_on_text_qr"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueO" to="." method="_on_text_vtio"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarO" to="." method="_on_text_vco"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QO" to="." method="_on_text_qo"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueTGI" to="." method="_on_text_vtitgi"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarTGI" to="." method="_on_text_vctgi"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QTGI" to="." method="_on_text_qtgi"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueF" to="." method="_on_text_vtif"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarF" to="." method="_on_text_vcf"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QF" to="." method="_on_text_qf"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeTissueRDC" to="." method="_on_text_vtirdc"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/VolumeCapilarRDC" to="." method="_on_text_vcrdc"]
+[connection signal="text_changed" from="TabContainer/Paramètres/Paramètres/Control/QRDC" to="." method="_on_text_qrdc"]

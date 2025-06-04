@@ -371,7 +371,7 @@ var pp_N2_ti_t0 :float = pp_N2_tiCE_t0
 
 
 func capilar_blood_mono():
-	var delta = (1/(vc*alpha_n2)*(Q*alpha_n2*pp_N2_a_t0-(alpha_n2*Q+K3_N2_mono)*pp_N2_c_t0+K3_N2_mono*pp_N2_ti_t0))*dt
+	var delta = (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3_N2_mono)*pp_N2_c_t0+K3_N2_mono*pp_N2_ti_t0))*dt
 	#print("delta_cap_CE = ",delta)
 	pp_N2_c_t1 = pp_N2_c_t0 + delta
 	
@@ -2579,8 +2579,22 @@ func _on_add_plot_ce_mouse_exited2() -> void:
 ###############################################################
 var pp_N2_ti_t1 = 0
 var pp_N2_c_t1 = 0
-
-
+var N = 10000 # Nombre d'échantillons Monte Carlo
+#var parametres = [
+	#{"nom": "Vt", "moyenne": 70.0, "variation": 10},
+	#{"nom": "vc", "moyenne": 0.5, "variation": 0.05},
+	#{"nom": "valg", "moyenne": 1.0, "variation": 0.1},
+	#{"nom": "valb", "moyenne": 0.5, "variation": 0.05},
+	#{"nom": "va", "moyenne": 1.7, "variation": 0.17},
+	#{"nom": "vv", "moyenne": 3.0, "variation": 0.3},
+	#{"nom": "vaw", "moyenne": 1.5, "variation": 0.15},
+	#{"nom": "q", "moyenne": 4.209, "variation": 0.4},
+	#{"nom": "k1", "moyenne": 0.00267, "variation": 0.000267},
+	#{"nom": "k2", "moyenne": 0.00748, "variation": 0.000748},
+	#{"nom": "k3", "moyenne": 0.00267, "variation": 0.000267},
+	#
+#]
+var l =0 
 func _ready_s() -> void:
 	print("Sobol Analysis start at " + str(Time.get_ticks_msec() ) )
 
@@ -2599,19 +2613,40 @@ func _ready_s() -> void:
 	var ax1 : Array[float] = [];  var bx1 : Array[float] = []
 	var ax2 : Array[float] = [];  var bx2 : Array[float] = []
 	var ax3 : Array[float] = [];  var bx3 : Array[float] = []
-	ax1.resize(N); ax2.resize(N); ax3.resize(N)
-	bx1.resize(N); bx2.resize(N); bx3.resize(N)
-
+	var ax4 : Array[float] = []; var bx4 : Array[float] = []
+	var ax5 : Array[float] = []; var bx5 : Array[float] = []
+	var ax6 : Array[float] = []; var bx6 : Array[float] = []
+	var ax7 : Array[float] = []; var bx7 : Array[float] = []
+	var ax8 : Array[float] = []; var bx8 : Array[float] = []
+	var ax9 : Array[float] = []; var bx9 : Array[float] = []
+	var ax10 : Array[float] = []; var bx10 : Array[float] = []
+	var ax11 : Array[float] = []; var bx11 : Array[float] = []
+	
+	ax1.resize(N); ax2.resize(N); ax3.resize(N); ax4.resize(N); ax5.resize(N); ax6.resize(N); ax7.resize(N); ax8.resize(N); ax9.resize(N); ax10.resize(N); ax11.resize(N)
+	bx1.resize(N); bx2.resize(N); bx3.resize(N); bx4.resize(N); bx5.resize(N); bx6.resize(N); bx7.resize(N); bx8.resize(N); bx9.resize(N); bx10.resize(N); bx11.resize(N)
+	
 	print("Array creation at " + str(Time.get_ticks_msec() ) )
 
 
 	for l in range(N):
-		ax1[l] = 70 + rng.randf_range(-10, 10);   bx1[l] = 70 + rng.randf_range(-10, 10)
-		ax2[l] = 75112.41 + rng.randf_range(-10000, 10000);   bx2[l] = 75112.41 + rng.randf_range(-10000, 10000)
-		ax3[l] = 75112.41 + rng.randf_range(-10000, 10000);   bx3[l] = 75112.41 + rng.randf_range(-10000, 10000)
-
+		ax1[l] = Vt + rng.randf_range(-100, 100);   bx1[l] = Vt + rng.randf_range(-100, 100)#vt
+		vc= vc + rng.randf_range(-0.5, 0.5)
+		ax2[l] = vc 
+		vc= vc + rng.randf_range(-0.5, 0.5)#vc
+		bx2[l] = vc
+		ax3[l] = valg + rng.randf_range(-1, 1);   bx3[l] = valg + rng.randf_range(-1, 1)#valg
+		ax4[l] = valb + rng.randf_range(-0.5, 0.5);    bx4[l] = valb + rng.randf_range(-0.5, 0.5)#valb
+		ax5[l] = va + rng.randf_range(-1.7, 1.7);    bx5[l] = va + rng.randf_range(-1.7, 1.7)#va
+		ax6[l] = vv + rng.randf_range(-3, 3);    bx6[l] = vv + rng.randf_range(-3, 3)#vv
+		ax7[l] = vaw + rng.randf_range(-1.5, 1.5);    bx7[l] = vaw + rng.randf_range(-1.5, 1.5)#vaw
+		ax8[l] = q + rng.randf_range(-4, 4);    bx8[l] = q + rng.randf_range(-4, 4)#q
+		ax9[l] = K1 + rng.randf_range(-0.00267, 0.00267);    bx9[l] = K1 + rng.randf_range(-0.00267, 0.00267)#k1
+		ax10[l] = K2 + rng.randf_range(-0.00748, 0.00748);    bx10[l] = K2 + rng.randf_range(-0.00748, 0.00748)#k2
+		ax11[l] = K3 + rng.randf_range(-0.00267, 0.00267);    bx11[l] = K3 + rng.randf_range(-0.00267, 0.00267)#k3
 	print("1 - " + str(Time.get_ticks_msec() ) )
-
+#Vt: float, vc: float, valg: float,valb: float,va: float,vv: float, vaw
+	#vaw =1.5	valg =1.0	valb =0.5	va =1.7 	vv =3.0 	vc =0.5 
+	#q 4.209
 	#Vt=70L
 	#pp_N2_ti_t0: float = 75112.41
 	#pp_N2_c_t0: float = 75112.41
@@ -2624,8 +2659,8 @@ func _ready_s() -> void:
 	print("2 - " + str(Time.get_ticks_msec() ) )
 
 	for l in range(N):
-		YA[l] = mon_model(ax1[l], ax2[l], ax3[l])
-		YB[l] = mon_model(bx1[l], bx2[l], bx3[l])
+		YA[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YB[l] = mon_model(bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l])
 
 	print("3 - " + str(Time.get_ticks_msec() ) )
 
@@ -2633,20 +2668,29 @@ func _ready_s() -> void:
 	## 3) Matrices mixtes  A_Bi  (pick & freeze) 
 	#La méthode vise à évaluer l'influence de chaque variable d’entrée sur la sortie du modèle, en ne changeant qu’une variable à la fois (on la "pick") tandis que les autres restent fixes (on les "freeze").
 	# ─────────────────────────────────────────────────────────────
-	var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []
-	YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)
-
+	var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []; var YAB3 : Array[float] = [];var YAB4 : Array[float] = []; var YAB5 : Array[float] = []; var YAB6 : Array[float] = []; var YAB7 : Array[float] = []; var YAB8 : Array[float] = []; var YAB9 : Array[float] = []; var YAB10 : Array[float] = []
+	YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)	;YAB3.resize(N);	YAB4.resize(N);	YAB5.resize(N);	YAB6.resize(N);	YAB7.resize(N);	YAB8.resize(N);	YAB9.resize(N);	YAB10.resize(N)
 	print("4 - " + str(Time.get_ticks_msec() ) )
 
 
 	for l in range(N):
-		# i = 0 : on prend x1 de B, les autres de A
-		YAB0[l] = mon_model(bx1[l], ax2[l], ax3[l])
-		# i = 1 : on prend x2 de B, les autres de A
-		YAB1[l] = mon_model(ax1[l], bx2[l], ax3[l])
-		# i = 2 : on prend x3 de B, les autres de A
-		YAB2[l] = mon_model(ax1[l], ax2[l], bx3[l])
-
+		## i = 0 : on prend x1 de B, les autres de A
+		#YAB0[l] = mon_model(bx1[l], ax2[l], ax3[l])
+		## i = 1 : on prend x2 de B, les autres de A
+		#YAB1[l] = mon_model(ax1[l], bx2[l], ax3[l])
+		## i = 2 : on prend x3 de B, les autres de A
+		#YAB2[l] = mon_model(ax1[l], ax2[l], bx3[l])
+		YAB0[l] = mon_model(bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YAB1[l] = mon_model(ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YAB2[l] = mon_model(ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YAB3[l] = mon_model(ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YAB4[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YAB5[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YAB6[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l])
+		YAB7[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l])
+		YAB8[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l])
+		YAB9[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l])
+		YAB10[l] = mon_model(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l])
 	print("5 - " + str(Time.get_ticks_msec() ) )
 
 
@@ -2662,32 +2706,56 @@ func _ready_s() -> void:
 	# ─────────────────────────────────────────────────────────────
 	# 5) Indices de Sobol  S_i  et  S_Ti
 	# ─────────────────────────────────────────────────────────────
-	var S  : Array[float] = [0.0, 0.0, 0.0]
-	var ST : Array[float] = [0.0, 0.0, 0.0]
+	var S : Array[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+	var ST : Array[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-	var acc_S0 := 0.0; var acc_S1 := 0.0; var acc_S2 := 0.0
-	var acc_ST0 := 0.0; var acc_ST1 := 0.0; var acc_ST2 := 0.0
+	var acc_S0 := 0.0; var acc_S1 := 0.0; var acc_S2 := 0.0; var acc_S3 := 0.0; var acc_S4 := 0.0; var acc_S5 := 0.0; var acc_S6 := 0.0; var acc_S7 := 0.0; var acc_S8 := 0.0; var acc_S9 := 0.0; var acc_S10 := 0.0
+	var acc_ST0 := 0.0; var acc_ST1 := 0.0; var acc_ST2 := 0.0; var acc_ST3 := 0.0; var acc_ST4 := 0.0; var acc_ST5 := 0.0; var acc_ST6 := 0.0; var acc_ST7 := 0.0; var acc_ST8 := 0.0; var acc_ST9 := 0.0; var acc_ST10 := 0.0
 
 	for l in range(N):
 		acc_S0  += YB[l] * (YAB0[l] - YA[l])
 		acc_S1  += YB[l] * (YAB1[l] - YA[l])
 		acc_S2  += YB[l] * (YAB2[l] - YA[l])
+		acc_S3  += YB[l] * (YAB3[l] - YA[l])
+		acc_S4  += YB[l] * (YAB4[l] - YA[l])
+		acc_S5  += YB[l] * (YAB5[l] - YA[l])
+		acc_S6  += YB[l] * (YAB6[l] - YA[l])
+		acc_S7  += YB[l] * (YAB7[l] - YA[l])
+		acc_S8  += YB[l] * (YAB8[l] - YA[l])
+		acc_S9  += YB[l] * (YAB9[l] - YA[l])
+		acc_S10  += YB[l] * (YAB10[l] - YA[l])
+
 
 		var d0 := YA[l] - YAB0[l];  acc_ST0 += d0 * d0
 		var d1 := YA[l] - YAB1[l];  acc_ST1 += d1 * d1
 		var d2 := YA[l] - YAB2[l];  acc_ST2 += d2 * d2
+		var d3 := YA[l] - YAB3[l];  acc_ST3 += d3 * d3
+		var d4 := YA[l] - YAB4[l];  acc_ST4 += d4 * d4
+		var d5 := YA[l] - YAB5[l];  acc_ST5 += d5 * d5
+		var d6 := YA[l] - YAB6[l];  acc_ST6 += d6 * d6
+		var d7 := YA[l] - YAB7[l];  acc_ST7 += d7 * d7
+		var d8 := YA[l] - YAB8[l];  acc_ST8 += d8 * d8
+		var d9 := YA[l] - YAB9[l];  acc_ST9 += d9 * d9
+		var d10 := YA[l] - YAB10[l];  acc_ST10 += d10 * d10
 
 	S [0] = acc_S0  / N / VY;     ST[0] = 0.5 * acc_ST0 / N / VY
 	S [1] = acc_S1  / N / VY;     ST[1] = 0.5 * acc_ST1 / N / VY
 	S [2] = acc_S2  / N / VY;     ST[2] = 0.5 * acc_ST2 / N / VY
-
+	S [3] = acc_S3  / N / VY;     ST[3] = 0.5 * acc_ST3 / N / VY
+	S [4] = acc_S4  / N / VY;     ST[4] = 0.5 * acc_ST4 / N / VY
+	S [5] = acc_S5  / N / VY;     ST[5] = 0.5 * acc_ST5 / N / VY
+	S [6] = acc_S6  / N / VY;     ST[6] = 0.5 * acc_ST6 / N / VY
+	S [7] = acc_S7  / N / VY;     ST[7] = 0.5 * acc_ST7 / N / VY
+	S [8] = acc_S8  / N / VY;     ST[8] = 0.5 * acc_ST8 / N / VY
+	S [9] = acc_S9  / N / VY;     ST[9] = 0.5 * acc_ST9 / N / VY
+	S [10] = acc_S10  / N / VY;     ST[10] = 0.5 * acc_ST10 / N / VY
 	print("Sobol Analysis end   at " + str(Time.get_ticks_msec() ) )
 
 
 	# ─────────────────────────────────────────────────────────────
 	# 6) Affichage
 	# ─────────────────────────────────────────────────────────────
-	var names := ["x₁", "x₂", "x₃"]
+	#var names := ["x₁", "x₂", "x₃"]
 	#print("\nIndices de Sobol — fonction de mon_model (N =", N, ")")
 	#print("────────────────────────────────────────────────────────")
 	#for i in range(d):
@@ -2698,8 +2766,16 @@ func _ready_s() -> void:
 	display_text += "Variable                |   Sᵢ (effet direct)   |   Sₜᵢ (effet total)\n"
 	display_text += "──────────────────────────────────────────────────────────\n"
 	display_text += "Volume du tissu (x₁)    :   %.4f               |   %.4f\n" % [S[0], ST[0]]
-	display_text += "PP du tissu (x₂)        :   %.4f               |   %.4f\n" % [S[1], ST[1]]
-	display_text += "PP du capillaire (x₃)   :   %.4f               |   %.4f\n" % [S[2], ST[2]]
+	display_text += "Volume du capillaire (x₂)        :   %.4f               |   %.4f\n" % [S[1], ST[1]]
+	display_text += "Volume alveolar gaz (x₃)   :   %.4f               |   %.4f\n" % [S[2], ST[2]]
+	display_text += "Volume alveolar blood (x4)   :   %.4f               |   %.4f\n" % [S[3], ST[3]]
+	display_text += "Volume arterial blood  (x5)   :   %.4f               |   %.4f\n" % [S[4], ST[4]]
+	display_text += "Volume veinous blood (x6)   :   %.4f               |   %.4f\n" % [S[5], ST[5]]
+	display_text += "Volume airways (x7)   :   %.4f               |   %.4f\n" % [S[6], ST[6]]
+	display_text += "Q (x8)   :   %.4f               |   %.4f\n" % [S[7], ST[7]]
+	display_text += "K1 (x9)   :   %.4f               |   %.4f\n" % [S[8], ST[8]]
+	display_text += "K2 (x10)   :   %.4f               |   %.4f\n" % [S[9], ST[9]]
+	display_text += "K3 (11)   :   %.4f               |   %.4f\n" % [S[10], ST[10]]
 
 
 	# Affiche le texte dans le RichTextLabel
@@ -2716,11 +2792,28 @@ func _ready_s() -> void:
 # ────────────────────────────────────────────────────────────────────
 # Fonctions utilitaires
 # ────────────────────────────────────────────────────────────────────
-func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float ) -> float: #1 tissue
-	var K3: float=0.00267
-	var alpha_n2 :float=0.0000619
-	step_mono()
-	return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#*dt
+func mon_model(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float ) -> float: #1 tissue
+	_reset_mono()
+	Vt=Vt_
+	vc=vc_
+	valg=valg_
+	valb = valb_
+	va=va_
+	vv=vv_
+	vaw=vaw_
+	q=q_
+	K1=K1_
+	K2=K2_
+	K3=K3_
+	#var K3: float=0.00267
+	var alpha_n2 :float=0.000061
+	#step_mono()
+	sobol_step()
+	print (str(l)+":"+str(pp_N2_ti_t0))
+
+	return pp_N2_ti_t0
+	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
+	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3_N2_mono)*pp_N2_c_t0+K3_N2_mono*pp_N2_ti_t0))#capilaire
 	
 	#x1 + x2/10.0 + x3/2
 	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
@@ -2729,7 +2822,8 @@ func mon_model(Vt: float, pp_N2_c_t0: float, pp_N2_ti_t0: float ) -> float: #1 t
 func sobol_step() :
 	while time < 60:
 		step_mono()
-
+#
+var K3:float =0.00267
 func step_mono() :
 	# Compute one step
 	pressure_atm()
@@ -2769,9 +2863,67 @@ func variance(arr: Array[float]) -> float:
 		s2 += d * d
 	return s2 / arr.size()
 	
-	#TODO lse parametre a varier 
-		#var V debi ventilatoire
-		#Q debit qaurdiaque
-		#K1 K2 K3
-		#tous les volume 7 
-		#
+	##TODO lse parametre a varier 
+		##var V debi ventilatoire
+		##Q debit qaurdiaque
+		##K1 K2 K3
+		##tous les volume 7 
+		##
+		
+func _reset_mono():
+	time = 0.0
+	
+	vent = 8.1 # debit ventilatoire 
+	vaw = 1.5 #volume des voix aérienne
+	valg = 1.0 # volume du gaz alvéolaire
+	valb = 0.5 # volume de sang alvéolaire
+	q= 4.209 # debit cardiaque
+	va = 1.7 #volume artériel
+	vv = 3.0 #volume veineux
+	patm = 101325.0 # presion ambiante
+	fn2 = 0.79 #fraction d azote dans le gaz respiré 
+	
+	alpha_n2 = 0.0000619 #coef solubilite azote
+	ph2o = 6246.0 # presstion partiel de vapeur d eau
+	K1 = 0.00267 # coef de difusion respiratoire
+	K2 = 0.00748 # coef de difusion alveolo capilaire
+	R = 8.314 # constante des gaz parfait
+	T = 310.0 # Temperature en K
+	i = 1
+	k = 0
+	dt = dtINI
+	iteration = 0 
+
+	pp_N2_air = 0.0
+	
+	pp_N2_aw_t0 = 75112.41
+	pp_N2_aw_t1 = 0.0
+	
+	pp_N2_alv_t0 = 75112.41
+	pp_N2_alv_t1 = 0.0
+	
+	pp_N2_alb_t0 = 75112.41
+	pp_N2_alb_t1 = 0.0
+	
+	pp_N2_v_t0 = 75112.41
+	pp_N2_v_t1 = 0.0
+	
+	pp_N2_a_t0 = 75112.41
+	pp_N2_a_t1 = 0.0
+	
+	pp_N2_ti_t0 = 75112.41
+	pp_N2_ti_t1 = 0.0
+	
+	pp_N2_c_t0 = 75112.41
+	pp_N2_c_t1 = 0.0
+	
+	K3 = 0.000267
+	Vt = 70
+	vc = 0.5
+	mo2CE = 1.596
+	kn2CE = 0.00214
+
+
+
+
+	
