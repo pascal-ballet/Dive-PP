@@ -97,7 +97,6 @@ offset_right = 1831.0
 offset_bottom = 611.0
 
 [node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/Control"]
-visible = false
 layout_mode = 0
 offset_left = -13.0
 offset_top = -37.0
