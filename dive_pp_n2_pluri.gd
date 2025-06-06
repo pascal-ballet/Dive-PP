@@ -1202,14 +1202,14 @@ var ax9 : Array[float] = []; var bx9 : Array[float] = []
 var ax10 : Array[float] = []; var bx10 : Array[float] = []
 var ax11 : Array[float] = []; var bx11 : Array[float] = []
 var ax12 : Array[float] = []; var bx12 : Array[float] = []
-var N : int = 10
+var N : int = 20000 ## Nombre d'echantillon
 var start_time:int=0
 var end_time:int=0
 var histo:Array = []
 var compteur:int = 0
 
 func _ready_s() -> void:
-	while compteur<5:
+	while compteur<7:# repetition du programmes
 		for i in range(101):
 			histo.append(0)
 		start_time = Time.get_ticks_msec()
@@ -1288,8 +1288,8 @@ func _ready_s() -> void:
 				histo[p]+=1
 				
 			YB[l] = mon_model(bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l])
-			if YA[l]>= 10 and YA[l]<=20:
-				var p:int = int(((YA[l]-10)*10))
+			if YB[l]>= 10 and YB[l]<=20:
+				var p:int = int(((YB[l]-10)*10))
 				histo[p]+=1
 				
 
