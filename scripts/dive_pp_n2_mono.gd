@@ -36,31 +36,17 @@ var tmp_s:float = 0.0
 var time:float = 0.0
 var dtINI:float = 0.0009  #variable global de dt permet de changer tout les dt "0.0002 euler" "0.0004 rk4""0.0009 rk6" "RK8 0.0009"
 var dt:float = dtINI
-var i = 1
-var k = 0
-var iteration = 0 ## test
-var debug_textbox
-var debug_textbox2
-var debug_textbox3
-var debug_textbox4
-var debug_textbox5
-var debug_textbox6
-var debug_textbox7
-var debug_textbox8
-var debug_textbox9
-var debug_textbox10
-var debug_textbox11
-var debug_textbox12
-var seuil: float = 115007.41
-var temps_seuils = {
-	"pp_N2_aw": null,
-	"pp_N2_alv": null,
-	"pp_N2_alb": null,
-	"pp_N2_v": null,
-	"pp_N2_a": null
-}
-
-
+var diving_stage:int = 1  #iterateur pour le calcule du profil de plongé
+var iteration:int =0 # pas de simulation en cours
+var vc:float =0.5# colume capilaire
+var Q: float =4.2#debit sanguin
+var kn2 :float =0.0000619# coef solubiliter azote
+var pp_N2_c_t0 : float = 75112.41 #pression partiel initiale capilaire
+var pp_N2_c_t1 = 0#pression partiel courante capilaire
+var pp_N2_ti_t0 :float = 75112.41 # pression partiel initiale tissus
+var pp_N2_ti_t1 = 0# pression partiel courante tissus
+var Vt = 70
+var K3_N2_mono=0.00267
 
 
 # Air paramètres
@@ -99,16 +85,16 @@ func pressure_atm():
 			patm = patm + r2*10100
 			tmp_t = t[0]
 			tmp_s = s[0]
-	while (i < t.size() && (t[i] == null || s[i] == null)): i += 1 
-	if (i < t.size() && t[i] != null && s[i] != null):
-		if (time > tmp_t && time <= t[i] + dt):
-			var r1 = (t[i] - tmp_t) / dt
-			var r2 = (s[i] - tmp_s) / r1
+	while (diving_stage < t.size() && (t[diving_stage] == null || s[diving_stage] == null)): diving_stage += 1 
+	if (diving_stage < t.size() && t[diving_stage] != null && s[diving_stage] != null):
+		if (time > tmp_t && time <= t[diving_stage] + dt):
+			var r1 = (t[diving_stage] - tmp_t) / dt
+			var r2 = (s[diving_stage] - tmp_s) / r1
 			patm = patm + r2 * 10100
-	if(i < t.size() && time>t[i]):
-		tmp_t = t[i]
-		tmp_s = s[i]
-		i = i + 1
+	if(diving_stage < t.size() && time>t[diving_stage]):
+		tmp_t = t[diving_stage]
+		tmp_s = s[diving_stage]
+		diving_stage = diving_stage + 1
 
 ## Compute the partial pressure of air
 func air():
@@ -210,11 +196,7 @@ func venous_blood_mono():
 	var delta =q/vv*(pp_N2_c_t0 - pp_N2_v_t0)*dt
 	pp_N2_v_t1 = pp_N2_v_t0 + delta
 
-var vc:float =0.5
-var Q: float =4.2
-var kn2 :float =0.0000619
-var pp_N2_c_t0 : float = 75112.41
-var pp_N2_ti_t0 :float = 0
+
 
 
 func capilar_blood_mono():
@@ -232,8 +214,6 @@ func capilar_blood_mono():
 
 ## Compute the partial pressure of ti
 ##methode euler
-var Vt = 70
-var K3_N2_mono=0.00267
 
 func tissue_mono():
 	var delta =(K3_N2_mono/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
@@ -242,165 +222,8 @@ func tissue_mono():
 
 
 
-func update_debug_textbox(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox.text += debug_message + "\n"
-	
-func update_debug_textbox2(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox2.text += debug_message + "\n"
 
-func update_debug_textbox3(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox3.text += debug_message + "\n"
-	
-func update_debug_textbox4(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox4.text += debug_message + "\n"
-	
-func update_debug_textbox5(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox5.text += debug_message + "\n"
-	
-func update_debug_textbox6(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox6.text += debug_message + "\n"
-	
-func update_debug_textbox7(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox7.text += debug_message + "\n"
-	
-func update_debug_textbox8(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox8.text += debug_message + "\n"
-	
-func update_debug_textbox9(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox9.text += debug_message + "\n"
-	
-func update_debug_textbox10(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox10.text += debug_message + "\n"
-	
-func update_debug_textbox11(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox11.text += debug_message + "\n"
-	
-func update_debug_textbox12(debug_message):
-	# Ajoutez le message de débogage à la zone de texte
-	debug_textbox12.text += debug_message + "\n"
 
-func verifier_et_stocker_temps_seuil():
-	if pp_N2_aw_t1 >= seuil and temps_seuils["pp_N2_aw"] == null:
-		temps_seuils["pp_N2_aw"] = time
-	if pp_N2_alv_t1 >= seuil and temps_seuils["pp_N2_alv"] == null:
-		temps_seuils["pp_N2_alv"] = time
-	if pp_N2_alb_t1 >= seuil and temps_seuils["pp_N2_alb"] == null:
-		temps_seuils["pp_N2_alb"] = time
-	if pp_N2_v_t1 >= seuil and temps_seuils["pp_N2_v"] == null:
-		temps_seuils["pp_N2_v"] = time
-
-	if pp_N2_a_t1 >= seuil and temps_seuils["pp_N2_a"] == null:
-		temps_seuils["pp_N2_a"] = time
-		
-@export var file_path:String = ""
-func save_data_to_file():
-	#METTRE LE CHEMIN VOULU POUR L'EMPLACEMENT DU FICHIER DE DONNEES
-	#CHANGER LE NOM DU FICHIER AU BOUT POUR CREER UN NOUVEAU FICHIER
-
-	# Lire le contenu existant du fichier
-	var existing_data = ""
-	var file = FileAccess.open(file_path, FileAccess.READ)
-	if file:
-		existing_data = file.get_as_text()
-		file.close()
-	else:
-		print("File not found, creating new file.")
-
-	# Créez une chaîne pour stocker toutes les lignes sur une seule ligne
-	var line = ""
-	line += "Time = " + str(time) + ", "
-	line += "Pressure atm = " + str(patm) + ", "
-	line += "N2 in air in Pa = " + str(pp_N2_air) + ", "
-	line += "N2 in aw in Pa = " + str(pp_N2_aw_t0) + ", "
-	line += "N2 in alv in Pa = " + str(pp_N2_alv_t0) + ", "
-	line += "N2 in alb in Pa = " + str(pp_N2_alb_t0) + ", "
-	line += "N2 in a in Pa = " + str(pp_N2_a_t0) + ", "
-	line += "N2 in v in Pa = " + str(pp_N2_v_t0) + ", "
-	
-	line+="\n"
-
-	# Ajouter les nouvelles données au contenu existant
-	existing_data += line + "\n"
-
-	# Réécrire le fichier avec les nouvelles données
-	file = FileAccess.open(file_path, FileAccess.WRITE)
-	if file:
-		file.store_string(existing_data)
-		file.close()
-		print("Data successfully appended to file at: " + file_path)
-	else:
-		print("Error: Unable to open file for writing at: " + file_path)
-
-## Execute 1 step (dt) du modèle
-func step():
-	# parameters
-	print("Time = " + str(time))
-	print("    Pressure atm = " + str(patm))
-	print("    N2 in air in Pa = " + str(pp_N2_air))
-	print("    N2 in aw in Pa = " + str(pp_N2_aw_t0))
-	print("    N2 in alv in Pa = " + str(pp_N2_alv_t0))
-	print("    N2 in alb in Pa = " + str(pp_N2_alb_t0))
-	print("    N2 in a in Pa = " + str(pp_N2_a_t0))
-	print("    N2 in v in Pa = " + str(pp_N2_v_t0))
-	
-	var message = "Time = " + str(time) + "\n" + "Pressure atm = " + str(patm) + "\n" + "N2 in air in Pa = " + str(pp_N2_air) + "\n" + "N2 in aw in Pa = " + str(pp_N2_aw_t0) + "\n" + "N2 in alv in Pa = " + str(pp_N2_alv_t0) + "\n" + "N2 in alb in Pa = " + str(pp_N2_alb_t0) + "\n" +"N2 in a in Pa = " + str(pp_N2_a_t0) + "\n" +"N2 in v in Pa = " + str(pp_N2_v_t0) + "\n"
-	
-	var message3 = "Valeurs des t1/2 :" + str(temps_seuils) + "\n" 
-	
-	update_debug_textbox(message)
-
-	update_debug_textbox3(message3)
-	
-	time = time + dt
-	iteration = iteration + 1 
-		# Compute one step
-	pressure_atm()
-	air()
-	airways_rk4()
-	alveolar_blood_rk4()
-	alveolar_blood_rk4()
-	
-	verifier_et_stocker_temps_seuil()
-	
-		# Preparer le prochain step
-	pp_N2_aw_t0 	= pp_N2_aw_t1
-	pp_N2_alv_t0	= pp_N2_alv_t1
-	pp_N2_alb_t0	 = pp_N2_alb_t1
-	pp_N2_a_t0		= pp_N2_a_t1
-	pp_N2_v_t0		= pp_N2_v_t1
-	
-		# Variables tissus
-	
-	
-	save_data_to_file()
-	
-	k = k + 1
-	
-	if(k==99):
-		debug_textbox.text = ""  # Vide la zone de texte de débogage 1 toutes les 100 itérations
-		debug_textbox2.text = ""  # Vide la zone de texte de débogage 2 toutes les 100 itérations
-		debug_textbox3.text = ""  # Vide la zone de texte de débogage 3 toutes les 100 itérations
-		debug_textbox4.text = ""  # Vide la zone de texte de débogage 4 toutes les 100 itérations
-		debug_textbox5.text = ""  # Vide la zone de texte de débogage 5 toutes les 100 itérations
-		debug_textbox6.text = ""  # Vide la zone de texte de débogage 6 toutes les 100 itérations
-		debug_textbox7.text = ""  # Vide la zone de texte de débogage 7 toutes les 100 itérations
-		debug_textbox8.text = ""  # Vide la zone de texte de débogage 8 toutes les 100 itérations
-		debug_textbox9.text = ""  # Vide la zone de texte de débogage 9 toutes les 100 itérations
-		debug_textbox10.text = ""  # Vide la zone de texte de débogage 10 toutes les 100 itérations
-		debug_textbox11.text = ""  # Vide la zone de texte de débogage 11 toutes les 100 itérations
-		debug_textbox12.text = ""  # Vide la zone de texte de débogage 12 toutes les 100 itérations
-		k = 0
 
 
 
@@ -427,116 +250,13 @@ func step2():
 	
 	
 	
-	k = k + 1
 	#next step
 	time = time + dt
 	iteration = iteration + 1 
 
 
-# ***********************
-# Fonctions de simulation
-# ***********************
 
-# Paramètres de simulations
-var play:bool = false
 
-# Appelé à l'initialisation.
-func _ready():
-	debug_textbox = get_node("TabContainer/Valeur/Results")
-	debug_textbox2 = get_node("TabContainer/Valeur/Results2")
-	debug_textbox3 = get_node("TabContainer/Valeur/Results3")
-	debug_textbox4 = get_node("TabContainer/Valeur/Results4")
-	debug_textbox5 = get_node("TabContainer/Valeur/Results5")
-	debug_textbox6 = get_node("TabContainer/Valeur/Results6")
-	debug_textbox7 = get_node("TabContainer/Valeur/Results7")
-	debug_textbox8 = get_node("TabContainer/Valeur/Results8")
-	debug_textbox9 = get_node("TabContainer/Valeur/Results9")
-	debug_textbox10 = get_node("TabContainer/Valeur/Results10")
-	debug_textbox11 = get_node("TabContainer/Valeur/Results11")
-	debug_textbox12 = get_node("TabContainer/Valeur/Results12")
-	#$RichTextLabel_N2.bbcode_enabled = true
-	#$RichTextLabel_N2.bbcode_text = "[center]Application to compute Partial Pressure of N2 in human body[/center]"
-
-#Appelé toutes les frames. 'delta est le temps qui s'est écoulé depuis la dernière frame.
-func _process(_delta):
-	if play == true:
-		step()
-
-func _on_play_button_down():
-	play = true
-	set_text_editable(false)
-	$TabContainer/Valeur/RichTextLabel_N14.visible = true
-	$TabContainer/Valeur/RichTextLabel_N13.visible = true
-	$TabContainer/Valeur/RichTextLabel_N12.visible = true
-	$TabContainer/Valeur/RichTextLabel_N11.visible = true
-	$TabContainer/Valeur/RichTextLabel_N10.visible = true
-	$TabContainer/Valeur/RichTextLabel_N9.visible = true
-	$TabContainer/Valeur/RichTextLabel_N8.visible = true
-	$TabContainer/Valeur/RichTextLabel_N7.visible = true
-	$TabContainer/Valeur/RichTextLabel_N6.visible = true
-	$TabContainer/Valeur/RichTextLabel_N5.visible = true
-	$TabContainer/Valeur/RichTextLabel_N4.visible = true
-	$TabContainer/Valeur/RichTextLabel_N3.visible = true
-
-func _on_pause_button_down():
-	play = false
-
-func _on_stop_pressed():
-	play = false
-	_reset_values()
-	set_text_editable(true)
-	$TabContainer/Valeur/RichTextLabel_N14.visible = false
-	$TabContainer/Valeur/RichTextLabel_N13.visible = false
-	$TabContainer/Valeur/RichTextLabel_N12.visible = false
-	$TabContainer/Valeur/RichTextLabel_N11.visible = false
-	$TabContainer/Valeur/RichTextLabel_N10.visible = false
-	$TabContainer/Valeur/RichTextLabel_N9.visible = false
-	$TabContainer/Valeur/RichTextLabel_N8.visible = false
-	$TabContainer/Valeur/RichTextLabel_N7.visible = false
-	$TabContainer/Valeur/RichTextLabel_N6.visible = false
-	$TabContainer/Valeur/RichTextLabel_N5.visible = false
-	$TabContainer/Valeur/RichTextLabel_N4.visible = false
-	$TabContainer/Valeur/RichTextLabel_N3.visible = false
-	
-	
-# Désactive ou active les champs de texte en fonction de l'état du booléen play
-func set_text_editable(editable: bool):
-	var text_edits = [
-		"TabContainer/Paramètres/Paramètres/Control/TabProf1", "TabContainer/Paramètres/Paramètres/Control/TabProf2",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf3", "TabContainer/Paramètres/Paramètres/Control/TabProf4",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf5", "TabContainer/Paramètres/Paramètres/Control/TabProf6",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf7", "TabContainer/Paramètres/Paramètres/Control/TabProf8",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf9", "TabContainer/Paramètres/Paramètres/Control/TabProf10",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime1", "TabContainer/Paramètres/Paramètres/Control/TabTime2",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime3", "TabContainer/Paramètres/Paramètres/Control/TabTime4",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime5", "TabContainer/Paramètres/Paramètres/Control/TabTime6",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime7", "TabContainer/Paramètres/Paramètres/Control/TabTime8",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime9", "TabContainer/Paramètres/Paramètres/Control/TabTime10",
-		"TabContainer/Paramètres/Paramètres/Control/Ventilatory", "TabContainer/Paramètres/Paramètres/Control/MeanExpiratoryReserveVolume",
-		"TabContainer/Paramètres/Paramètres/Control/MeanFunctionalResidualVolume", "TabContainer/Paramètres/Paramètres/Control/AlveolarBloodVolume",
-		"TabContainer/Paramètres/Paramètres/Control/CardiacOutput", "TabContainer/Paramètres/Paramètres/Control/ArterialBloodVolume",
-		"TabContainer/Paramètres/Paramètres/Control/CapillaryBloodVolume", "TabContainer/Paramètres/Paramètres/Control/VenousBloodVolume",
-		"TabContainer/Paramètres/Paramètres/Control/TissueVolume", "TabContainer/Paramètres/Paramètres/Control/PressionAtmospherique",
-		"TabContainer/Paramètres/Paramètres/Control/Metabolism3", "TabContainer/Paramètres/Paramètres/Control/DeltaTime",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueBrain", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarBrain",
-		"TabContainer/Paramètres/Paramètres/Control/QBrain", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueTA",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarTA", "TabContainer/Paramètres/Paramètres/Control/QTA",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueMH", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarMH",
-		"TabContainer/Paramètres/Paramètres/Control/QMH", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueM",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarM", "TabContainer/Paramètres/Paramètres/Control/QM",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueR", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarR",
-		"TabContainer/Paramètres/Paramètres/Control/QR", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueO",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarO", "TabContainer/Paramètres/Paramètres/Control/QO",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueTGI", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarTGI",
-		"TabContainer/Paramètres/Paramètres/Control/QTGI", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueF",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarF", "TabContainer/Paramètres/Paramètres/Control/QF",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueRDC", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarRDC",
-		"TabContainer/Paramètres/Paramètres/Control/QRDC"
-	]
-
-	for text_edit in text_edits:
-		if has_node(text_edit):
-			get_node(text_edit).editable = editable
 
 # ***********************
 # Fonctions de Graph
@@ -716,58 +436,7 @@ func _reset_values():
 	
 	
 	
-	# Vider les cases de l'interface utilisateur
-	var text_edits = [
-		"TabContainer/Paramètres/Paramètres/Control/TabProf1", "TabContainer/Paramètres/Paramètres/Control/TabProf2",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf3", "TabContainer/Paramètres/Paramètres/Control/TabProf4",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf5", "TabContainer/Paramètres/Paramètres/Control/TabProf6",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf7", "TabContainer/Paramètres/Paramètres/Control/TabProf8",
-		"TabContainer/Paramètres/Paramètres/Control/TabProf9", "TabContainer/Paramètres/Paramètres/Control/TabProf10",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime1", "TabContainer/Paramètres/Paramètres/Control/TabTime2",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime3", "TabContainer/Paramètres/Paramètres/Control/TabTime4",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime5", "TabContainer/Paramètres/Paramètres/Control/TabTime6",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime7", "TabContainer/Paramètres/Paramètres/Control/TabTime8",
-		"TabContainer/Paramètres/Paramètres/Control/TabTime9", "TabContainer/Paramètres/Paramètres/Control/TabTime10",
-		"TabContainer/Paramètres/Paramètres/Control/Ventilatory", "TabContainer/Paramètres/Paramètres/Control/MeanExpiratoryReserveVolume",
-		"TabContainer/Paramètres/Paramètres/Control/MeanFunctionalResidualVolume", "TabContainer/Paramètres/Paramètres/Control/AlveolarBloodVolume",
-		"TabContainer/Paramètres/Paramètres/Control/CardiacOutput", "TabContainer/Paramètres/Paramètres/Control/ArterialBloodVolume",
-		"TabContainer/Paramètres/Paramètres/Control/CapillaryBloodVolume", "TabContainer/Paramètres/Paramètres/Control/VenousBloodVolume",
-		"TabContainer/Paramètres/Paramètres/Control/TissueVolume", "TabContainer/Paramètres/Paramètres/Control/PressionAtmospherique",
-		"TabContainer/Paramètres/Paramètres/Control/Metabolism3", "TabContainer/Paramètres/Paramètres/Control/DeltaTime",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueBrain", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarBrain",
-		"TabContainer/Paramètres/Paramètres/Control/QBrain", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueTA",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarTA", "TabContainer/Paramètres/Paramètres/Control/QTA",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueMH", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarMH",
-		"TabContainer/Paramètres/Paramètres/Control/QMH", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueM",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarM", "TabContainer/Paramètres/Paramètres/Control/QM",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueR", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarR",
-		"TabContainer/Paramètres/Paramètres/Control/QR", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueO",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarO", "TabContainer/Paramètres/Paramètres/Control/QO",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueTGI", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarTGI",
-		"TabContainer/Paramètres/Paramètres/Control/QTGI", "TabContainer/Paramètres/Paramètres/Control/VolumeTissueF",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeCapilarF", "TabContainer/Paramètres/Paramètres/Control/QF",
-		"TabContainer/Paramètres/Paramètres/Control/VolumeTissueRDC", "TabContainer/Paramètres/Paramètres/Control/VolumeCapilarRDC",
-		"TabContainer/Paramètres/Paramètres/Control/QRDC"
-	]
 	
-	for text_edit in text_edits:
-		if has_node(text_edit):
-			get_node(text_edit).text = ""
-	
-	debug_textbox.text = ""  # Vide la zone de texte de débogage 1
-	debug_textbox2.text = ""  # Vide la zone de texte de débogage 2
-	debug_textbox3.text = ""  # Vide la zone de texte de débogage 3
-	debug_textbox4.text = ""  # Vide la zone de texte de débogage 4
-	debug_textbox5.text = ""  # Vide la zone de texte de débogage 5
-	debug_textbox6.text = ""  # Vide la zone de texte de débogage 6
-	debug_textbox7.text = ""  # Vide la zone de texte de débogage 7
-	debug_textbox8.text = ""  # Vide la zone de texte de débogage 8
-	debug_textbox9.text = ""  # Vide la zone de texte de débogage 9
-	debug_textbox10.text = ""  # Vide la zone de texte de débogage 10
-	debug_textbox11.text = ""  # Vide la zone de texte de débogage 11
-	debug_textbox12.text = ""  # Vide la zone de texte de débogage 12
-	
-	print("Valeurs remises à zéro !")
 # ***********************
 # Fonction de reset Pour les courbes
 # ***********************
@@ -805,374 +474,15 @@ func _reset_valuesCourbe():
 # Variable change functions
 # *********************** 
 
-func _on_text_vent(new_text):
-	if(new_text==""):
-		vent = 8.1
-	else:
-		vent = float(new_text)
-	print("Nouvelle valeur de V̇: " +str(vent))
-	
-func _on_text_vaw(new_text):
-	if(new_text==""):
-		vaw = 1.0
-	else:
-		vaw = float(new_text)
-	print("Nouvelle valeur de V𝑨𝒘: " +str(vaw))
-	
-func _on_text_valg(new_text):
-	if(new_text==""):
-		valg = 1.5
-	else:
-		valg = float(new_text)
-	print("Nouvelle valeur de V𝑨𝒍𝒈: " +str(valg))
-	
-func _on_text_valb(new_text):
-	if(new_text==""):
-		valb = 0.5
-	else:
-		valb = float(new_text)
-	print("Nouvelle valeur de V𝑨𝒍𝒃: " +str(valb))
-	
-func _on_text_cardiac(new_text):
-	if(new_text==""):
-		q = 4.2
-	else:
-		q = float(new_text)
-	print("Nouvelle valeur de Q̇: " +str(q))
-	
-func _on_text_va(new_text):
-	if(new_text==""):
-		va = 1.7
-	else:
-		va = float(new_text)
-	print("Nouvelle valeur de V𝑨: " +str(va))
-	
-func _on_text_vv(new_text):
-	if(new_text==""):
-		vv = 3.0
-	else:
-		vv = float(new_text)
-	print("Nouvelle valeur de V𝒗: " +str(vv))
-	
-func _on_text_patm(new_text):
-	if(new_text==""):
-		patm = 101325
-	else:
-		patm = float(new_text)
-	print("Nouvelle valeur de P𝘼𝙩𝙢: " +str(patm))
-	
-func _on_text_fo2(new_text):
-	if(new_text==""):
-		fn2 = 0.79
-	else:
-		fn2 = float(new_text)
-	print("Nouvelle valeur de fN₂: " +str(fn2))
 
-func _on_text_s1(new_text):
-	if new_text == "":
-		s[0] = null
-	else:
-		s[0] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s2(new_text):
-	if new_text == "":
-		s[1] = null
-	else:
-		s[1] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s3(new_text):
-	if new_text == "":
-		s[2] = null
-	else:
-		s[2] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s4(new_text):
-	if new_text == "":
-		s[3] = null
-	else:
-		s[3] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s5(new_text):
-	if new_text == "":
-		s[4] = null
-	else:
-		s[4] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s6(new_text):
-	if new_text == "":
-		s[5] = null
-	else:
-		s[5] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s7(new_text):
-	if new_text == "":
-		s[6] = null
-	else:
-		s[6] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s8(new_text):
-	if new_text == "":
-		s[7] = null
-	else:
-		s[7] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s9(new_text):
-	if new_text == "":
-		s[8] = null
-	else:
-		s[8] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
-	
-func _on_text_s10(new_text):
-	if new_text == "":
-		s[9] = null
-	else:
-		s[9] = float(new_text)
-	print("Nouvelle valeur de la liste des étape: " + str(s))
 
-func _on_text_t1(new_text):
-	if(new_text==""):
-		t[0] = null
-	else:
-		t[0] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t2(new_text):
-	if(new_text==""):
-		t[1] = null
-	else:
-		t[1] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t3(new_text):
-	if(new_text==""):
-		t[2] = null
-	else:
-		t[2] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t4(new_text):
-	if(new_text==""):
-		t[3] = null
-	else:
-		t[3] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t5(new_text):
-	if(new_text==""):
-		t[4] = null
-	else:
-		t[4] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t6(new_text):
-	if(new_text==""):
-		t[5] = null
-	else:
-		t[5] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t7(new_text):
-	if(new_text==""):
-		t[6] = null
-	else:
-		t[6] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t8(new_text):
-	if(new_text==""):
-		t[7] = null
-	else:
-		t[7] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t9(new_text):
-	if(new_text==""):
-		t[8] = null
-	else:
-		t[8] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
-	
-func _on_text_t10(new_text):
-	if(new_text==""):
-		t[9] = null
-	else:
-		t[9] = float(new_text)
-	print("Nouvelle valeur de la liste des pas de temps: " +str(t))
 
-func _on_text_dt(new_text):
-	if(new_text==""):
-		dt = dtINI
-	else:
-		dt = float(new_text)
-	print("Nouvelle valeur de dt: " +str(dt))
-	
 
-
-############################################
-#Afficher ce que signifie les boutons
-#
-############################################
-func _on_me_mouse_entered() -> void:
-	
-	$TabContainer/Graph/RichTextLabelME.visible = true
-
-
-func _on_me_mouse_exited() -> void:
-		$TabContainer/Graph/RichTextLabelME.visible = false
-
-
-func _on_tissu_adipeux_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelTA.visible = true
-
-
-func _on_tissu_adipeux_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelTA.visible = false
-
-
-func _on_muscle_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelM.visible = true
-
-
-func _on_muscle_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelM.visible = false
-
-
-func _on_mh_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelMH.visible = true
-
-
-func _on_mh_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelMH.visible = false
-
-
-func _on_rein_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelR.visible = true
-
-
-func _on_rein_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelR.visible = false
-
-
-func _on_os_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelOS.visible = true
-
-
-func _on_os_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelOS.visible = false
-
-
-func _on_tgi_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelTGI.visible = true
-
-
-func _on_tgi_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelTGI.visible = false
-
-
-func _on_rdc_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelRDC.visible = true
-
-
-func _on_rdc_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelRDC.visible = false
-
-
-func _on_add_plot_ce_mouse_entered() -> void:
-	$TabContainer/Graph/RichTextLabelCE.visible = true
-
-
-func _on_add_plot_ce_mouse_exited() -> void:
-	$TabContainer/Graph/RichTextLabelCE.visible = false
-
-
-
-
-func _on_me_mouse_entered2() -> void:
-	
-	$TabContainer/Graph/RichTextLabelME.visible = true
-
-
-func _on_me_mouse_exited2() -> void:
-		$TabContainer/Graph/RichTextLabelME.visible = false
-
-
-func _on_tissu_adipeux_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelTA.visible = true
-
-
-func _on_tissu_adipeux_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelTA.visible = false
-
-
-func _on_muscle_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelM.visible = true
-
-
-func _on_muscle_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelM.visible = false
-
-
-func _on_mh_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelMH.visible = true
-
-
-func _on_mh_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelMH.visible = false
-
-
-func _on_rein_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelR.visible = true
-
-
-func _on_rein_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelR.visible = false
-
-
-func _on_os_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelOS.visible = true
-
-
-func _on_os_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelOS.visible = false
-
-
-func _on_tgi_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelTGI.visible = true
-
-
-func _on_tgi_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelTGI.visible = false
-
-
-func _on_rdc_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelRDC.visible = true
-
-
-func _on_rdc_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelRDC.visible = false
-
-
-func _on_add_plot_ce_mouse_entered2() -> void:
-	$TabContainer/Graph/RichTextLabelCE.visible = true
-
-
-func _on_add_plot_ce_mouse_exited2() -> void:
-	$TabContainer/Graph/RichTextLabelCE.visible = false
 	
 ###############################################################
 #Analyse de sobole 1 tissue
 ###############################################################
-var pp_N2_ti_t1 = 0
-var pp_N2_c_t1 = 0
+
 #var N = 100 # Nombre d'échantillons Monte Carlo (generalement 100 000)
 #var parametres = [
 	#{"nom": "Vt", "moyenne": 70.0, "variation": 10},
@@ -1202,14 +512,17 @@ var ax9 : Array[float] = []; var bx9 : Array[float] = []
 var ax10 : Array[float] = []; var bx10 : Array[float] = []
 var ax11 : Array[float] = []; var bx11 : Array[float] = []
 var ax12 : Array[float] = []; var bx12 : Array[float] = []
-var N : int = 20000 ## Nombre d'echantillon
+var N : int = 10 ## Nombre d'echantillon
 var start_time:int=0
 var end_time:int=0
 var histo:Array = []
 var compteur:int = 0
+func display_parameters() :
+	pass
 
 func _ready_s() -> void:
-	while compteur<7:# repetition du programmes
+	while compteur<5:# repetition du programmes
+		display_parameters()
 		for i in range(101):
 			histo.append(0)
 		start_time = Time.get_ticks_msec()
@@ -1587,8 +900,7 @@ func _reset_mono():
 	#K2 = 0.00748 # coef de difusion alveolo capilaire
 	R = 8.314 # constante des gaz parfait
 	T = 310.0 # Temperature en K
-	i = 1
-	k = 0
+	diving_stage = 1
 	dt = dtINI
 	iteration = 0 
 
