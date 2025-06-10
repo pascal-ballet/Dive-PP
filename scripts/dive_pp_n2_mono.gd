@@ -39,14 +39,13 @@ var dt:float = dtINI
 var diving_stage:int = 1  #iterateur pour le calcule du profil de plongé
 var iteration:int =0 # pas de simulation en cours
 var vc:float =0.5# colume capilaire
-var Q: float =4.2#debit sanguin
+#var Q: float =4.2#debit sanguin
 var kn2 :float =0.0000619# coef solubiliter azote
 var pp_N2_c_t0 : float = 75112.41 #pression partiel initiale capilaire
 var pp_N2_c_t1 = 0#pression partiel courante capilaire
 var pp_N2_ti_t0 :float = 75112.41 # pression partiel initiale tissus
 var pp_N2_ti_t1 = 0# pression partiel courante tissus
 var Vt = 70
-var K3_N2_mono=0.00267
 
 
 # Air paramètres
@@ -200,7 +199,7 @@ func venous_blood_mono():
 
 
 func capilar_blood_mono():
-	var delta = (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3_N2_mono)*pp_N2_c_t0+K3_N2_mono*pp_N2_ti_t0))*dt
+	var delta = (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))*dt
 	#print("delta_cap_CE = ",delta)
 	pp_N2_c_t1 = pp_N2_c_t0 + delta
 	
@@ -216,7 +215,7 @@ func capilar_blood_mono():
 ##methode euler
 
 func tissue_mono():
-	var delta =(K3_N2_mono/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
+	var delta =(K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))*dt
 	pp_N2_ti_t1 = pp_N2_ti_t0 + delta
 	
 
@@ -512,7 +511,7 @@ var ax9 : Array[float] = []; var bx9 : Array[float] = []
 var ax10 : Array[float] = []; var bx10 : Array[float] = []
 var ax11 : Array[float] = []; var bx11 : Array[float] = []
 var ax12 : Array[float] = []; var bx12 : Array[float] = []
-var N : int = 10 ## Nombre d'echantillon
+var N : int = 10000 ## Nombre d'echantillon
 var start_time:int=0
 var end_time:int=0
 var histo:Array = []
@@ -820,7 +819,7 @@ func my_model_parameters_for_sobol(Vt_: float, vc_: float, valg_: float,valb_: f
 	
 	return time
 	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
-	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3_N2_mono)*pp_N2_c_t0+K3_N2_mono*pp_N2_ti_t0))#capilaire
+	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))#capilaire
 	
 	#x1 + x2/10.0 + x3/2
 	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
@@ -885,8 +884,6 @@ func variance(arr: Array[float]) -> float:
 		##
 		
 func _reset_mono():
-	time = 0.0
-	
 	#vent = 8.1 # debit ventilatoire 
 	#vaw = 1.5 #volume des voix aérienne
 	#valg = 1.0 # volume du gaz alvéolaire
@@ -898,15 +895,21 @@ func _reset_mono():
 	fn2 = 0.79 #fraction d azote dans le gaz respiré 
 	
 	alpha_n2 = 0.0000619 #coef solubilite azote
-	ph2o = 6246.0 # presstion partiel de vapeur d eau
+	ph2o = 6246.0 # presstion partiel de vapeur d ea
 	#K1 = 0.00267 # coef de difusion respiratoire
 	#K2 = 0.00748 # coef de difusion alveolo capilaire
+	#K3 = 0.000267
 	R = 8.314 # constante des gaz parfait
 	T = 310.0 # Temperature en K
-	diving_stage = 1
+	tmp_t = 0.0
+	tmp_s = 0.0
+	time = 0.0
 	dt = dtINI
+	diving_stage = 1
 	iteration = 0 
-
+	#vc = 0.5
+	kn2 = 0.0000619# coef solubiliter azote
+	#Vt = 70
 	pp_N2_air = 0.0
 	
 	pp_N2_aw_t0 = 75112.41
@@ -930,9 +933,7 @@ func _reset_mono():
 	pp_N2_c_t0 = 75112.41
 	pp_N2_c_t1 = 0.0
 	
-	#K3 = 0.000267
-	#Vt = 70
-	#vc = 0.5
+
 
 
 #l=1579 l=1845 l=1853 l=1863 l=1947 l=2077 l=2278 l=2287 l=2314 l=2890
