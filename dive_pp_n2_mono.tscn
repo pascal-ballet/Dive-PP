@@ -81,12 +81,20 @@ offset_right = 478.0
 offset_bottom = 32.0
 text = "Remove All Plots"
 
-[node name="SobolMono" type="Button" parent="TabContainer/Graph"]
+[node name="SingleSobolMono" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
 offset_left = 657.0
 offset_top = -21.0
 offset_right = 764.0
 offset_bottom = 62.0
+text = "Sobol"
+
+[node name="MutipleSobolMono" type="Button" parent="TabContainer/Graph"]
+layout_mode = 0
+offset_left = 1144.0
+offset_top = -13.0
+offset_right = 1251.0
+offset_bottom = 70.0
 text = "Sobol"
 
 [node name="Control" type="Control" parent="TabContainer/Graph"]
@@ -230,4 +238,5 @@ offset_bottom = -1967.0
 
 [connection signal="pressed" from="TabContainer/Graph/PlayMono" to="." method="_on_add_plot_pressedti"]
 [connection signal="pressed" from="TabContainer/Graph/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
-[connection signal="pressed" from="TabContainer/Graph/SobolMono" to="." method="_ready_s"]
+[connection signal="pressed" from="TabContainer/Graph/SingleSobolMono" to="." method="one_sobol_experimentation"]
+[connection signal="pressed" from="TabContainer/Graph/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
