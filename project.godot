@@ -13,7 +13,7 @@ config_version=5
 config/name="dive_pp10v2"
 run/main_scene="uid://dvwt5odf7oxps"
 config/features=PackedStringArray("4.3", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://images/icon.svg"
 
 [display]
 

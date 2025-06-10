@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://dvwt5odf7oxps"]
 
-[ext_resource type="Script" path="res://dive_pp_n2_pluri.gd" id="1_d2c84"]
+[ext_resource type="Script" path="res://scripts/dive_pp_n2_pluri.gd" id="1_d2c84"]
 [ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_k4g8n"]
-[ext_resource type="Texture2D" uid="uid://cw6fsw88ma7hb" path="res://N2.jpg" id="3_k71is"]
+[ext_resource type="Texture2D" uid="uid://cw6fsw88ma7hb" path="res://images/N2.jpg" id="3_k71is"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
 bg_color = Color(0.933333, 0.933333, 0.933333, 1)
