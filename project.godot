@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="dive_pp10v2"
-run/main_scene="uid://dvwt5odf7oxps"
+run/main_scene="res://dive_pp_n2_mono.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://images/icon.svg"
 

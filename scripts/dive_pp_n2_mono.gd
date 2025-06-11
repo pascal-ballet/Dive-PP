@@ -1,4 +1,5 @@
 extends Node2D
+
 # ***********************
 # Variables modifiables
 # ***********************
@@ -12,8 +13,8 @@ var va: float = 1.7 #volume artériel
 var vv: float = 3.0 #volume veineux
 var patm: float = 101325.0 # presion ambiante
 var fn2: float = 0.79 #fraction d azote dans le gaz respiré 
-var t = [1,null,null,null,null,null,null,null,null,null]
-var s = [10,null,null,null,null,null,null,null,null,null]
+var diving_time = [1,null,null,null,null,null,null,null,null,null]
+var diving_deep = [10,null,null,null,null,null,null,null,null,null]
 
 ######################################################################################################################################
 # LISTE DES VARIABLES QU'ON VEUT POUVOIR MODIFIER ? Q et volume pour chaque + dt
@@ -77,22 +78,22 @@ var pp_N2_a_t1: float = 0.0
 # ***********************
 #profil de plonge
 func pressure_atm():
-	if(t[0]!=null&&s[0]!=null):
-		if(time<=t[0]+dt):
-			var r1 = t[0]/dt
-			var r2 = s[0]/r1
-			patm = patm + r2*10100
-			tmp_t = t[0]
-			tmp_s = s[0]
-	while (diving_stage < t.size() && (t[diving_stage] == null || s[diving_stage] == null)): diving_stage += 1 
-	if (diving_stage < t.size() && t[diving_stage] != null && s[diving_stage] != null):
-		if (time > tmp_t && time <= t[diving_stage] + dt):
-			var r1 = (t[diving_stage] - tmp_t) / dt
-			var r2 = (s[diving_stage] - tmp_s) / r1
+	if(diving_time[0] != null && diving_deep[0] != null):
+		if(time <= diving_time[0] + dt):
+			var r1 = diving_time[0] / dt
+			var r2 = diving_deep[0] / r1
 			patm = patm + r2 * 10100
-	if(diving_stage < t.size() && time>t[diving_stage]):
-		tmp_t = t[diving_stage]
-		tmp_s = s[diving_stage]
+			tmp_t = diving_time[0]
+			tmp_s = diving_deep[0]
+	while (diving_stage < diving_time.size() && (diving_time[diving_stage] == null || diving_deep[diving_stage] == null)): diving_stage += 1 
+	if (diving_stage < diving_time.size() && diving_time[diving_stage] != null && diving_deep[diving_stage] != null):
+		if (time > tmp_t && time <= diving_time[diving_stage] + dt):
+			var r1 = (diving_time[diving_stage] - tmp_t) / dt
+			var r2 = (diving_deep[diving_stage] - tmp_s) / r1
+			patm = patm + r2 * 10100
+	if(diving_stage < diving_time.size() && time > diving_time[diving_stage]):
+		tmp_t = diving_time[diving_stage]
+		tmp_s = diving_deep[diving_stage]
 		diving_stage = diving_stage + 1
 
 ## Compute the partial pressure of air
@@ -430,8 +431,8 @@ func _reset_values():
 	patm = 101325.0
 	fn2 = 0.79
 	dt = dtINI
-	t = [null,null,null,null,null,null,null,null,null,null]
-	s = [null,null,null,null,null,null,null,null,null,null]
+	diving_time = [1,null,null,null,null,null,null,null,null,null]
+	diving_deep = [10,null,null,null,null,null,null,null,null,null]
 	
 	
 	
@@ -511,20 +512,72 @@ var ax9 : Array[float] = []; var bx9 : Array[float] = []
 var ax10 : Array[float] = []; var bx10 : Array[float] = []
 var ax11 : Array[float] = []; var bx11 : Array[float] = []
 var ax12 : Array[float] = []; var bx12 : Array[float] = []
-var N : int = 10000 ## Nombre d'echantillon
+var N : int = 7 ## Nombre d'echantillon
 var start_time:int=0
 var end_time:int=0
 var histo:Array = []
 var compteur:int = 0
 func display_parameters() :
+	print("vent =", vent)
+	print("vaw =", vaw)
+	print("valg =", valg)
+	print("valb =", valb)
+	print("q =", q)
+	print("va =", va)
+	print("vv =", vv)
+	print("patm =", patm)
+	print("fn2 =", fn2)
+	print("diving_time =", diving_time)
+	print("diving_deep =", diving_deep)
+
+	print("alpha_n2 =", alpha_n2)
+	print("ph2o =", ph2o)
+	print("K1 =", K1)
+	print("K2 =", K2)
+	print("K3 =", K3)
+	print("R =", R)
+	print("T =", T)
+	print("tmp_t =", tmp_t)
+	print("tmp_s =", tmp_s)
+	print("time =", time)
+	print("dtINI =", dtINI)
+	print("dt =", dt)
+	print("diving_stage =", diving_stage)
+	print("iteration =", iteration)
+	print("vc =", vc)
+
+	print("kn2 =", kn2)
+	print("pp_N2_c_t0 =", pp_N2_c_t0)
+	print("pp_N2_c_t1 =", pp_N2_c_t1)
+	print("pp_N2_ti_t0 =", pp_N2_ti_t0)
+	print("pp_N2_ti_t1 =", pp_N2_ti_t1)
+	print("Vt =", Vt)
+
+	print("pp_N2_air =", pp_N2_air)
+
+	print("pp_N2_aw_t0 =", pp_N2_aw_t0)
+	print("pp_N2_aw_t1 =", pp_N2_aw_t1)
+
+	print("pp_N2_alv_t0 =", pp_N2_alv_t0)
+	print("pp_N2_alv_t1 =", pp_N2_alv_t1)
+
+	print("pp_N2_alb_t0 =", pp_N2_alb_t0)
+	print("pp_N2_alb_t1 =", pp_N2_alb_t1)
+
+	print("pp_N2_v_t0 =", pp_N2_v_t0)
+	print("pp_N2_v_t1 =", pp_N2_v_t1)
+
+	print("pp_N2_a_t0 =", pp_N2_a_t0)
+	print("pp_N2_a_t1 =", pp_N2_a_t1)
 	pass
 
 func multiple_sobol_experimentation() ->void:
 	while compteur<5: 
 		one_sobol_experimentation()
+		
 
 func one_sobol_experimentation() -> void:
-	display_parameters()
+	#display_parameters()
 	for i in range(101):
 		histo.append(0)
 	start_time = Time.get_ticks_msec()
@@ -595,7 +648,7 @@ func one_sobol_experimentation() -> void:
 
 	for l in range(N):
 		#print ("l="+str(l))
-		toto = l
+		#toto = l
 		YA[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
 		
 		if YA[l]>= 10 and YA[l]<=20:
@@ -738,15 +791,24 @@ func one_sobol_experimentation() -> void:
 	print(histo)
 	creer_dossier_si_absent(save_folder)
 	var chemin = get_chemin_fichier(compteur)
+	#get_node("TabContainer/Graph/Control/ResultBox/SobolResults").text = display_text
+	var sobol_node=get_node("TabContainer/Graph/Control/ResultBox/SobolResults")
+	sobol_node.bbcode_enabled = true
+	sobol_node.bbcode_text = display_text
+	#await get_tree().process_frame
+	#await get_tree().process_frame
+	capture_screenshot()
+	#get_node("TabContainer/Graph/Control/ResultBox/SobolResults").clear()
+	#get_node(".../SobolResults").queue_redraw()
+	#await get_tree().process_frame  #
 	
 	sauvegarder_resultats_json(chemin, histo)
 	histo=[]
 	compteur+=1
+	_reset_values()
+	#capture_screenshot()
 	# Affiche le texte dans le RichTextLabel
-	await get_tree().process_frame  
-	get_node("TabContainer/Graph/Control/ResultBox/SobolResults").text = display_text
-	await get_tree().process_frame  #
-	capture_screenshot()
+
 	#get_tree().quit()  # ferme l’application Godot
 	#Sᵢ : Indice de Sobol de premier ordre
 	#Part de la variance de la sortie due uniquement à la variable xᵢ prise seule.
@@ -754,6 +816,7 @@ func one_sobol_experimentation() -> void:
 	#Sₜᵢ : Indice de Sobol total
 	#Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
 ###################################################################################################	
+
 	##capture d'ecran des resultat
 var screenshot_count = 0
 var save_folder = "C:/Users/Bio/Documents/sobol_result/echantillon_"+str(N)+"/"# chemin a changer 
@@ -792,7 +855,7 @@ func creer_dossier_si_absent(chemin: String) -> void:
 # ────────────────────────────────────────────────────────────────────
 # Fonctions utilitaires
 # ────────────────────────────────────────────────────────────────────
-var toto: int =0
+#var toto: int =0
 var totoA: int =0
 var totoB: int =0
 func my_model_parameters_for_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
@@ -810,7 +873,7 @@ func my_model_parameters_for_sobol(Vt_: float, vc_: float, valg_: float,valb_: f
 	K3=K3_
 	vent=vent_
 	#var K3: float=0.00267
-	var alpha_n2 :float=0.000061
+	#var alpha_n2 :float=0.000061
 	#one_step_mono()
 	#_on_add_plot_sobol()
 	one_simulation_with_sobol()
@@ -826,11 +889,13 @@ func my_model_parameters_for_sobol(Vt_: float, vc_: float, valg_: float,valb_: f
 	
 	## fonction step pour 1 seul tissue
 func one_simulation_with_sobol() :
+	display_parameters()
 	#if toto < 100:
 		#print ("init="+str(pp_N2_ti_t0))
 	var half_pressure : float = 75112.41 *1.5 #TODO a changer par (pression init + pression final)/2 
 	while pp_N2_ti_t0 < half_pressure:
 		one_step_mono()
+		
 			#if toto ==1579:# and time>= 4.3 and time<6:
 				#print ("time =" + str(time))
 				#print (pp_N2_ti_t0)
@@ -933,7 +998,6 @@ func _reset_mono():
 	pp_N2_c_t0 = 75112.41
 	pp_N2_c_t1 = 0.0
 	
-
 
 
 #l=1579 l=1845 l=1853 l=1863 l=1947 l=2077 l=2278 l=2287 l=2314 l=2890
