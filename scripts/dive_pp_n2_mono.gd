@@ -433,6 +433,11 @@ func _reset_values():
 	dt = dtINI
 	diving_time = [1,null,null,null,null,null,null,null,null,null]
 	diving_deep = [10,null,null,null,null,null,null,null,null,null]
+	Vt=70
+	vc = 0.5
+	K1 = 0.00267 # coef de difusion respiratoire
+	K2 = 0.00748 # coef de difusion alveolo capilaire
+	K3 =0.00267
 	
 	
 	
@@ -512,12 +517,19 @@ var ax9 : Array[float] = []; var bx9 : Array[float] = []
 var ax10 : Array[float] = []; var bx10 : Array[float] = []
 var ax11 : Array[float] = []; var bx11 : Array[float] = []
 var ax12 : Array[float] = []; var bx12 : Array[float] = []
-var N : int = 7 ## Nombre d'echantillon
 var start_time:int=0
 var end_time:int=0
 var histo:Array = []
-var compteur:int = 0
+const nb_sobol_experiences:int = 20 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plein de Sobol)
+var num_sobol_experience:int = 0
+const  N : int = 2 ## Nombre d'echantillon
 func display_parameters() :
+	if num_sobol_experience > 0 and num_sobol_experience < nb_sobol_experiences-1:
+		return
+	print("***************************************************************************************")
+	print("nb_sobol_experiences =", nb_sobol_experiences)
+	print("N =", N)
+	print("num_sobol_experience =", num_sobol_experience)
 	print("vent =", vent)
 	print("vaw =", vaw)
 	print("valg =", valg)
@@ -572,9 +584,9 @@ func display_parameters() :
 	pass
 
 func multiple_sobol_experimentation() ->void:
-	while compteur<5: 
+	while num_sobol_experience < nb_sobol_experiences: 
 		one_sobol_experimentation()
-		
+		num_sobol_experience += 1
 
 func one_sobol_experimentation() -> void:
 	#display_parameters()
@@ -790,7 +802,7 @@ func one_sobol_experimentation() -> void:
 	display_text += "vent (12)   :   %.4f                          |   %.4f\n" % [S[11], ST[11]]
 	print(histo)
 	creer_dossier_si_absent(save_folder)
-	var chemin = get_chemin_fichier(compteur)
+	var chemin = get_chemin_fichier(nb_sobol_experiences)
 	#get_node("TabContainer/Graph/Control/ResultBox/SobolResults").text = display_text
 	var sobol_node=get_node("TabContainer/Graph/Control/ResultBox/SobolResults")
 	sobol_node.bbcode_enabled = true
@@ -804,7 +816,7 @@ func one_sobol_experimentation() -> void:
 	
 	sauvegarder_resultats_json(chemin, histo)
 	histo=[]
-	compteur+=1
+
 	_reset_values()
 	#capture_screenshot()
 	# Affiche le texte dans le RichTextLabel
