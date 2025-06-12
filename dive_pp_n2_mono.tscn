@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://c2leoa4cehu8f"]
+[gd_scene load_steps=5 format=3 uid="uid://c2leoa4cehu8f"]
 
-[ext_resource type="Script" path="res://scripts/dive_pp_n2_mono.gd" id="1_csnru"]
-[ext_resource type="Script" path="res://addons/graph_2d/graph_2d.gd" id="2_foqvu"]
-[ext_resource type="Texture2D" uid="uid://cw6fsw88ma7hb" path="res://images/N2.jpg" id="3_gxjf1"]
+[ext_resource type="Script" uid="uid://d03yu20c8bn4j" path="res://scripts/dive_pp_n2_mono.gd" id="1_csnru"]
+[ext_resource type="Script" uid="uid://dj8qys8h6tv8p" path="res://addons/graph_2d/graph_2d.gd" id="2_foqvu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
 bg_color = Color(0.933333, 0.933333, 0.933333, 1)
@@ -27,13 +26,13 @@ cache/0/16/0/scale = 1.0
 script = ExtResource("1_csnru")
 
 [node name="RichTextLabel_N2" type="RichTextLabel" parent="."]
-offset_left = 825.0
-offset_top = -1.0
-offset_right = 1074.0
-offset_bottom = 64.0
+offset_left = 20.0
+offset_top = 37.0
+offset_right = 637.0
+offset_bottom = 102.0
 theme_override_font_sizes/bold_italics_font_size = 1
 theme_override_font_sizes/normal_font_size = 40
-text = "Mono Tissue"
+text = "Dive-PP: Mono Tissue with N2"
 
 [node name="TabContainer" type="TabContainer" parent="."]
 offset_left = -7.0
@@ -67,37 +66,40 @@ grid_vertical_visible = true
 
 [node name="PlayMono" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
-offset_left = 545.0
-offset_top = -19.0
-offset_right = 613.0
-offset_bottom = 12.0
-text = "Play"
+offset_left = 641.0
+offset_top = 15.0
+offset_right = 770.0
+offset_bottom = 69.0
+tooltip_text = "Launch just ONE simulation to generate the N2 evolution in the single tissue."
+text = "Single Simulation"
 
 [node name="RemoveAllPlots" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
-offset_left = 281.0
-offset_top = 1.0
-offset_right = 478.0
-offset_bottom = 32.0
-text = "Remove All Plots"
+offset_left = 1256.0
+offset_top = 16.0
+offset_right = 1383.0
+offset_bottom = 69.0
+text = "Remove plots"
 
 [node name="SingleSobolMono" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
-offset_left = 657.0
-offset_top = -21.0
-offset_right = 764.0
-offset_bottom = 62.0
-text = "Sobol 1 teste
-"
+offset_left = 804.0
+offset_top = 15.0
+offset_right = 957.0
+offset_bottom = 69.0
+tooltip_text = "Launch N simulations to generate the Sobol test. There are 11 parameters. Their influence on the half-time saturation of N2 in the tissue is computed."
+text = "Single Sobol Test
+with N simulations"
 
 [node name="MutipleSobolMono" type="Button" parent="TabContainer/Graph"]
 layout_mode = 0
-offset_left = 1144.0
-offset_top = -13.0
-offset_right = 1251.0
-offset_bottom = 70.0
-text = "Sobol multi teste
-"
+offset_left = 978.0
+offset_top = 15.0
+offset_right = 1142.0
+offset_bottom = 69.0
+tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
+text = "Multiple Sobol Tests
+with M repetitions"
 
 [node name="Control" type="Control" parent="TabContainer/Graph"]
 anchors_preset = 0
@@ -189,24 +191,6 @@ offset_bottom = 134.0
 rotation = -0.00320271
 text = "tissue adipeux"
 
-[node name="courbe" type="RichTextLabel" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 152.0
-offset_top = 13.0
-offset_right = 282.0
-offset_bottom = 63.0
-rotation = -0.00320271
-text = "creer courbe "
-
-[node name="cacher" type="RichTextLabel" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 150.0
-offset_top = 50.0
-offset_right = 280.0
-offset_bottom = 100.0
-rotation = -0.00320271
-text = "cacher courbe"
-
 [node name="RichTextLabelCE" type="RichTextLabel" parent="TabContainer/Graph"]
 visible = false
 layout_mode = 0
@@ -226,17 +210,6 @@ offset_right = 1401.0
 offset_bottom = 122.0
 rotation = -0.0010152
 text = "reste du corp"
-
-[node name="Sprite2D" type="Sprite2D" parent="TabContainer/Graph"]
-position = Vector2(84.5578, 43.5)
-scale = Vector2(0.144438, 0.0932432)
-texture = ExtResource("3_gxjf1")
-
-[node name="Label" type="Label" parent="TabContainer/Graph/Sprite2D"]
-offset_left = -1884.0
-offset_top = -2202.0
-offset_right = -1768.0
-offset_bottom = -1967.0
 
 [connection signal="pressed" from="TabContainer/Graph/PlayMono" to="." method="_on_add_plot_pressedti"]
 [connection signal="pressed" from="TabContainer/Graph/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
