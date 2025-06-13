@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://c2leoa4cehu8f"]
+[gd_scene load_steps=6 format=3 uid="uid://c2leoa4cehu8f"]
 
 [ext_resource type="Script" uid="uid://d03yu20c8bn4j" path="res://scripts/dive_pp_n2_mono.gd" id="1_csnru"]
+[ext_resource type="Texture2D" uid="uid://dev3kr3ovimk" path="res://images/dive_pp_icon.png" id="2_de0hx"]
 [ext_resource type="Script" uid="uid://dj8qys8h6tv8p" path="res://addons/graph_2d/graph_2d.gd" id="2_foqvu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
@@ -28,17 +29,40 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_csnru")
 
-[node name="TabContainer" type="TabContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+alignment = 1
+
+[node name="DivePpIcon" type="Sprite2D" parent="VBoxContainer/HBoxContainer"]
+position = Vector2(178.75, 72.5)
+scale = Vector2(0.178223, 0.15918)
+texture = ExtResource("2_de0hx")
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Dive-PP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 current_tab = 0
 
-[node name="Graph" type="VBoxContainer" parent="TabContainer"]
+[node name="TabMono" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="RichTextLabel_N2" type="RichTextLabel" parent="TabContainer/Graph"]
+[node name="RichTextLabel_N2" type="RichTextLabel" parent="VBoxContainer/TabContainer/TabMono"]
 layout_mode = 2
 theme_override_font_sizes/bold_italics_font_size = 1
 theme_override_font_sizes/normal_font_size = 40
@@ -46,65 +70,67 @@ text = "Dive-PP: Mono Tissue with N2"
 fit_content = true
 horizontal_alignment = 1
 
-[node name="HFlowContainer" type="HFlowContainer" parent="TabContainer/Graph"]
+[node name="HFlowContainer" type="HFlowContainer" parent="VBoxContainer/TabContainer/TabMono"]
 layout_mode = 2
 alignment = 1
 
-[node name="PlayMono" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+[node name="PlayMono" type="Button" parent="VBoxContainer/TabContainer/TabMono/HFlowContainer"]
 layout_mode = 2
 tooltip_text = "Launch just ONE simulation to generate the N2 evolution in the single tissue."
 text = "Single Simulation"
 
-[node name="SingleSobolMono" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+[node name="SingleSobolMono" type="Button" parent="VBoxContainer/TabContainer/TabMono/HFlowContainer"]
 layout_mode = 2
 tooltip_text = "Launch N simulations to generate the Sobol test. There are 11 parameters. Their influence on the half-time saturation of N2 in the tissue is computed."
 text = "Single Sobol Test
 with N simulations"
 
-[node name="MutipleSobolMono" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+[node name="MutipleSobolMono" type="Button" parent="VBoxContainer/TabContainer/TabMono/HFlowContainer"]
 layout_mode = 2
 tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
 text = "Multiple Sobol Tests
 with M repetitions"
 
-[node name="RemoveAllPlots" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+[node name="RemoveAllPlots" type="Button" parent="VBoxContainer/TabContainer/TabMono/HFlowContainer"]
 layout_mode = 2
 text = "Remove plots"
 
-[node name="MainFrame" type="HBoxContainer" parent="TabContainer/Graph"]
+[node name="MainFrame" type="HBoxContainer" parent="VBoxContainer/TabContainer/TabMono"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MonoParameters" type="VBoxContainer" parent="VBoxContainer/TabContainer/TabMono/MainFrame"]
 layout_mode = 2
 
-[node name="MonoParameters" type="VBoxContainer" parent="TabContainer/Graph/MainFrame"]
+[node name="N" type="HBoxContainer" parent="VBoxContainer/TabContainer/TabMono/MainFrame/MonoParameters"]
 layout_mode = 2
 
-[node name="N" type="HBoxContainer" parent="TabContainer/Graph/MainFrame/MonoParameters"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="TabContainer/Graph/MainFrame/MonoParameters/N"]
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/TabMono/MainFrame/MonoParameters/N"]
 layout_mode = 2
 text = "N = "
 
-[node name="SpinBox" type="SpinBox" parent="TabContainer/Graph/MainFrame/MonoParameters/N"]
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/TabMono/MainFrame/MonoParameters/N"]
 layout_mode = 2
 value = 10.0
 custom_arrow_step = 1.0
 
-[node name="M" type="HBoxContainer" parent="TabContainer/Graph/MainFrame/MonoParameters"]
+[node name="M" type="HBoxContainer" parent="VBoxContainer/TabContainer/TabMono/MainFrame/MonoParameters"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="TabContainer/Graph/MainFrame/MonoParameters/M"]
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/TabMono/MainFrame/MonoParameters/M"]
 layout_mode = 2
 text = "M = "
 
-[node name="SpinBox" type="SpinBox" parent="TabContainer/Graph/MainFrame/MonoParameters/M"]
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/TabMono/MainFrame/MonoParameters/M"]
 layout_mode = 2
 value = 10.0
 custom_arrow_step = 1.0
 
-[node name="Graph2D" type="Control" parent="TabContainer/Graph/MainFrame"]
+[node name="Graph2D" type="Control" parent="VBoxContainer/TabContainer/TabMono/MainFrame"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(1000, 500)
+custom_minimum_size = Vector2(300, 350)
 layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("2_foqvu")
 x_max = 120.0
 x_label = "Time(s)"
@@ -114,23 +140,19 @@ background_color = Color(0.0941176, 0.227451, 0.4, 1)
 grid_horizontal_visible = true
 grid_vertical_visible = true
 
-[node name="Control" type="Control" parent="TabContainer/Graph/MainFrame"]
-layout_mode = 2
-
-[node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/MainFrame/Control"]
+[node name="ResultBox" type="PanelContainer" parent="VBoxContainer/TabContainer/TabMono/MainFrame"]
 unique_name_in_owner = true
-layout_mode = 0
-offset_right = 478.0
-offset_bottom = 500.0
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
 
-[node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/MainFrame/Control/ResultBox"]
+[node name="SobolResults" type="RichTextLabel" parent="VBoxContainer/TabContainer/TabMono/MainFrame/ResultBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/normal_font = SubResource("FontFile_0resv")
 bbcode_enabled = true
 
-[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/PlayMono" to="." method="_on_add_plot_pressedti"]
-[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/SingleSobolMono" to="." method="one_sobol_experimentation"]
-[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
-[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/TabMono/HFlowContainer/PlayMono" to="." method="_on_add_plot_pressedti"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/TabMono/HFlowContainer/SingleSobolMono" to="." method="one_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/TabMono/HFlowContainer/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/TabMono/HFlowContainer/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
