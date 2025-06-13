@@ -22,39 +22,89 @@ cache/0/16/0/underline_position = 0.0
 cache/0/16/0/underline_thickness = 0.0
 cache/0/16/0/scale = 1.0
 
-[node name="Dive-PP-N2" type="Node2D"]
-script = ExtResource("1_csnru")
-
-[node name="RichTextLabel_N2" type="RichTextLabel" parent="."]
-offset_left = 20.0
-offset_top = 37.0
-offset_right = 637.0
-offset_bottom = 102.0
-theme_override_font_sizes/bold_italics_font_size = 1
-theme_override_font_sizes/normal_font_size = 40
-text = "Dive-PP: Mono Tissue with N2"
-
-[node name="TabContainer" type="TabContainer" parent="."]
-offset_left = -7.0
-offset_right = 309.0
-offset_bottom = 31.0
-current_tab = 0
-
-[node name="Graph" type="Control" parent="TabContainer"]
-layout_mode = 2
-metadata/_tab_index = 0
-
-[node name="Graph2D" type="Control" parent="TabContainer/Graph"]
-layout_mode = 1
+[node name="Dive-PP-N2" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 23.0
-offset_top = 82.0
-offset_right = 1067.0
-offset_bottom = 602.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_csnru")
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 2
+current_tab = 0
+
+[node name="Graph" type="VBoxContainer" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="RichTextLabel_N2" type="RichTextLabel" parent="TabContainer/Graph"]
+layout_mode = 2
+theme_override_font_sizes/bold_italics_font_size = 1
+theme_override_font_sizes/normal_font_size = 40
+text = "Dive-PP: Mono Tissue with N2"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="HFlowContainer" type="HFlowContainer" parent="TabContainer/Graph"]
+layout_mode = 2
+alignment = 1
+
+[node name="PlayMono" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+layout_mode = 2
+tooltip_text = "Launch just ONE simulation to generate the N2 evolution in the single tissue."
+text = "Single Simulation"
+
+[node name="SingleSobolMono" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+layout_mode = 2
+tooltip_text = "Launch N simulations to generate the Sobol test. There are 11 parameters. Their influence on the half-time saturation of N2 in the tissue is computed."
+text = "Single Sobol Test
+with N simulations"
+
+[node name="MutipleSobolMono" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+layout_mode = 2
+tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
+text = "Multiple Sobol Tests
+with M repetitions"
+
+[node name="RemoveAllPlots" type="Button" parent="TabContainer/Graph/HFlowContainer"]
+layout_mode = 2
+text = "Remove plots"
+
+[node name="MainFrame" type="HBoxContainer" parent="TabContainer/Graph"]
+layout_mode = 2
+
+[node name="MonoParameters" type="VBoxContainer" parent="TabContainer/Graph/MainFrame"]
+layout_mode = 2
+
+[node name="N" type="HBoxContainer" parent="TabContainer/Graph/MainFrame/MonoParameters"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Graph/MainFrame/MonoParameters/N"]
+layout_mode = 2
+text = "N = "
+
+[node name="SpinBox" type="SpinBox" parent="TabContainer/Graph/MainFrame/MonoParameters/N"]
+layout_mode = 2
+value = 10.0
+custom_arrow_step = 1.0
+
+[node name="M" type="HBoxContainer" parent="TabContainer/Graph/MainFrame/MonoParameters"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Graph/MainFrame/MonoParameters/M"]
+layout_mode = 2
+text = "M = "
+
+[node name="SpinBox" type="SpinBox" parent="TabContainer/Graph/MainFrame/MonoParameters/M"]
+layout_mode = 2
+value = 10.0
+custom_arrow_step = 1.0
+
+[node name="Graph2D" type="Control" parent="TabContainer/Graph/MainFrame"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1000, 500)
+layout_mode = 2
 script = ExtResource("2_foqvu")
 x_max = 120.0
 x_label = "Time(s)"
@@ -64,154 +114,23 @@ background_color = Color(0.0941176, 0.227451, 0.4, 1)
 grid_horizontal_visible = true
 grid_vertical_visible = true
 
-[node name="PlayMono" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 641.0
-offset_top = 15.0
-offset_right = 770.0
-offset_bottom = 69.0
-tooltip_text = "Launch just ONE simulation to generate the N2 evolution in the single tissue."
-text = "Single Simulation"
+[node name="Control" type="Control" parent="TabContainer/Graph/MainFrame"]
+layout_mode = 2
 
-[node name="RemoveAllPlots" type="Button" parent="TabContainer/Graph"]
+[node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/MainFrame/Control"]
+unique_name_in_owner = true
 layout_mode = 0
-offset_left = 1256.0
-offset_top = 16.0
-offset_right = 1383.0
-offset_bottom = 69.0
-text = "Remove plots"
-
-[node name="SingleSobolMono" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 804.0
-offset_top = 15.0
-offset_right = 957.0
-offset_bottom = 69.0
-tooltip_text = "Launch N simulations to generate the Sobol test. There are 11 parameters. Their influence on the half-time saturation of N2 in the tissue is computed."
-text = "Single Sobol Test
-with N simulations"
-
-[node name="MutipleSobolMono" type="Button" parent="TabContainer/Graph"]
-layout_mode = 0
-offset_left = 978.0
-offset_top = 15.0
-offset_right = 1142.0
-offset_bottom = 69.0
-tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
-text = "Multiple Sobol Tests
-with M repetitions"
-
-[node name="Control" type="Control" parent="TabContainer/Graph"]
-anchors_preset = 0
-offset_left = 1419.0
-offset_top = 190.0
-offset_right = 1831.0
-offset_bottom = 611.0
-
-[node name="ResultBox" type="PanelContainer" parent="TabContainer/Graph/Control"]
-layout_mode = 0
-offset_left = -13.0
-offset_top = -37.0
-offset_right = 465.0
-offset_bottom = 404.0
+offset_right = 478.0
+offset_bottom = 500.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
 
-[node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/Control/ResultBox"]
+[node name="SobolResults" type="RichTextLabel" parent="TabContainer/Graph/MainFrame/Control/ResultBox"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/normal_font = SubResource("FontFile_0resv")
 bbcode_enabled = true
 
-[node name="RichTextLabelME" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 1141.0
-offset_top = 83.0
-offset_right = 1271.0
-offset_bottom = 123.0
-rotation = -0.0010152
-text = "moelle épinière"
-
-[node name="RichTextLabelTGI" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 981.0
-offset_top = 82.0
-offset_right = 1176.0
-offset_bottom = 112.0
-rotation = -0.0010152
-text = "transit gastro intestinal"
-
-[node name="RichTextLabelOS" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 932.0
-offset_top = 83.0
-offset_right = 1062.0
-offset_bottom = 133.0
-rotation = -0.0010152
-text = "OS"
-
-[node name="RichTextLabelR" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 795.0
-offset_top = 85.0
-offset_right = 925.0
-offset_bottom = 135.0
-rotation = 0.0051297
-text = "Rein"
-
-[node name="RichTextLabelMH" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 614.0
-offset_top = 84.0
-offset_right = 810.0
-offset_bottom = 134.0
-rotation = -0.0010152
-text = "muscle haut du corp"
-
-[node name="RichTextLabelM" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 495.0
-offset_top = 83.0
-offset_right = 682.0
-offset_bottom = 133.0
-rotation = -0.0010152
-text = "muscle bas du corp"
-
-[node name="RichTextLabelTA" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 394.0
-offset_top = 84.0
-offset_right = 524.0
-offset_bottom = 134.0
-rotation = -0.00320271
-text = "tissue adipeux"
-
-[node name="RichTextLabelCE" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 290.0
-offset_top = 83.0
-offset_right = 420.0
-offset_bottom = 133.0
-rotation = -0.00320271
-text = "cerveau"
-
-[node name="RichTextLabelRDC" type="RichTextLabel" parent="TabContainer/Graph"]
-visible = false
-layout_mode = 0
-offset_left = 1271.0
-offset_top = 82.0
-offset_right = 1401.0
-offset_bottom = 122.0
-rotation = -0.0010152
-text = "reste du corp"
-
-[connection signal="pressed" from="TabContainer/Graph/PlayMono" to="." method="_on_add_plot_pressedti"]
-[connection signal="pressed" from="TabContainer/Graph/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
-[connection signal="pressed" from="TabContainer/Graph/SingleSobolMono" to="." method="one_sobol_experimentation"]
-[connection signal="pressed" from="TabContainer/Graph/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
+[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/PlayMono" to="." method="_on_add_plot_pressedti"]
+[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/SingleSobolMono" to="." method="one_sobol_experimentation"]
+[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
+[connection signal="pressed" from="TabContainer/Graph/HFlowContainer/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]

@@ -1,4 +1,4 @@
-extends Node2D
+extends MarginContainer
 
 # ***********************
 # Variables modifiables
@@ -278,9 +278,9 @@ func _on_add_Play_pressed() -> void:
 func _on_add_plot_pressedti() -> void:
 	_reset_mono()
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	my_plotti = $TabContainer/Graph/Graph2D.add_plot_item(  
-			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
-			[Color(randf(), randf(), randf())][$TabContainer/Graph/Graph2D.count() % 1],
+	my_plotti = %Graph2D.add_plot_item(  
+			"Plot %d" % [%Graph2D.count()],
+			[Color(randf(), randf(), randf())][%Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
 			)
 	#print("press add 1 tissue !")
@@ -288,9 +288,12 @@ func _on_add_plot_pressedti() -> void:
 	var x: float = 0.0  # Initialize the x value
 	var y: float = 0.0  # Initialize the y value
 	
-	while time <60:
+	var duration:float  = 60
+	var max_points:float = duration / dt
+	var pt_dist:int = int(floor(max_points / 1360.0))
+	while time < duration:
 		one_step_mono()#met a jour lest valeur
-		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+		if iteration % pt_dist == 0: #recupere 1 valeur toute les 500 
 			x = time  # Increment x 
 			y = pp_N2_ti_t0  # increment  y 
 			# Add the point (x, y) to the plot
@@ -596,7 +599,7 @@ func one_sobol_experimentation() -> void:
 	#print("Sobol Analysis start at " + str(Time.get_ticks_msec() )+"in ms" )
 	print("Sobol Analysis start at " + str(start_time)+"in ms" )
 
-	var panel := get_node("TabContainer/Graph/Control/ResultBox")
+	var panel := %ResultBox
 	#panel.visible = !panel.visible
 	#var d := 3                               # nombre de variables
 	#var N := 5                         # taille d’échantillon
@@ -804,7 +807,7 @@ func one_sobol_experimentation() -> void:
 	creer_dossier_si_absent(save_folder)
 	var chemin = get_chemin_fichier(nb_sobol_experiences)
 	#get_node("TabContainer/Graph/Control/ResultBox/SobolResults").text = display_text
-	var sobol_node=get_node("TabContainer/Graph/Control/ResultBox/SobolResults")
+	var sobol_node=%SobolResults
 	sobol_node.bbcode_enabled = true
 	sobol_node.bbcode_text = display_text
 	#await get_tree().process_frame
@@ -831,7 +834,7 @@ func one_sobol_experimentation() -> void:
 
 	##capture d'ecran des resultat
 var screenshot_count = 0
-var save_folder = "C:/Users/Bio/Documents/sobol_result/echantillon_"+str(N)+"/"# chemin a changer 
+var save_folder = "../sobol_results_"+str(N)+"/"# chemin parent relatif 
 func capture_screenshot():
 	var filename = save_folder + "sobol_analyse" + str(screenshot_count) + ".png"#non de l'image a changer
 	screenshot_count += 1
@@ -855,9 +858,10 @@ func get_chemin_fichier(index: int) -> String:
 	##########################################################################################
 	
 func creer_dossier_si_absent(chemin: String) -> void:
-	var dir = DirAccess.open("C:/")
 	if not DirAccess.dir_exists_absolute(chemin):
-		dir.make_dir_recursive(chemin)
+		var dir = DirAccess.open(".")
+		if dir != null:
+			dir.make_dir_recursive(chemin)
 	
 	
 	
