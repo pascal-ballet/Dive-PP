@@ -46,7 +46,7 @@ var pp_N2_c_t0 : float = 75112.41 #pression partiel initiale capilaire
 var pp_N2_c_t1 = 0#pression partiel courante capilaire
 var pp_N2_ti_t0 :float = 75112.41 # pression partiel initiale tissus
 var pp_N2_ti_t1 = 0# pression partiel courante tissus
-var Vt = 70
+var Vt = 70 # Tissue Volume
 
 
 # Air paramètres
@@ -288,7 +288,7 @@ func _on_add_plot_pressedti() -> void:
 	var x: float = 0.0  # Initialize the x value
 	var y: float = 0.0  # Initialize the y value
 	
-	var duration:float  = 60
+	var duration:float  = 120
 	var max_points:float = duration / dt
 	var pt_dist:int = int(floor(max_points / 1360.0))
 	while time < duration:
@@ -972,11 +972,11 @@ func _reset_mono():
 	#q= 4.209 # debit cardiaque
 	#va = 1.7 #volume artériel
 	#vv = 3.0 #volume veineux
-	patm = 101325.0 # presion ambiante
+	patm = 101325.0 # pression ambiante
 	fn2 = 0.79 #fraction d azote dans le gaz respiré 
 	
 	alpha_n2 = 0.0000619 #coef solubilite azote
-	ph2o = 6246.0 # presstion partiel de vapeur d ea
+	ph2o = 6246.0 # pression partiel de vapeur d ea
 	#K1 = 0.00267 # coef de difusion respiratoire
 	#K2 = 0.00748 # coef de difusion alveolo capilaire
 	#K3 = 0.000267

@@ -1,9 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://c2leoa4cehu8f"]
+[gd_scene load_steps=10 format=3 uid="uid://c2leoa4cehu8f"]
 
 [ext_resource type="Script" uid="uid://d03yu20c8bn4j" path="res://scripts/dive_pp_n2_mono.gd" id="1_csnru"]
 [ext_resource type="Texture2D" uid="uid://dev3kr3ovimk" path="res://images/dive_pp_icon.png" id="2_de0hx"]
 [ext_resource type="Script" uid="uid://dj8qys8h6tv8p" path="res://addons/graph_2d/graph_2d.gd" id="2_foqvu"]
 [ext_resource type="Texture2D" uid="uid://bw2w6y5mx3gtg" path="res://images/logo_orphy.png" id="3_3ryuj"]
+[ext_resource type="Texture2D" uid="uid://bb8nj3u53ddsc" path="res://images/xN.png" id="4_7s50g"]
+[ext_resource type="Texture2D" uid="uid://b1e2naw588xoc" path="res://images/xM.png" id="5_fs0r4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_eovu1"]
+font_color = Color(0, 1, 1, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
 bg_color = Color(0.933333, 0.933333, 0.933333, 1)
@@ -76,28 +81,48 @@ text = "Mono Tissue with N2"
 fit_content = true
 horizontal_alignment = 1
 
-[node name="HFlowContainer" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
+[node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
 layout_mode = 2
 alignment = 1
 
-[node name="PlayMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer"]
+[node name="PlayMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
 layout_mode = 2
 tooltip_text = "Launch just ONE simulation to generate the N2 evolution in the single tissue."
 text = "Single Simulation"
 
-[node name="SingleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer"]
+[node name="xN" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/xN"]
+scale = Vector2(0.052, 0.052)
+texture = ExtResource("4_7s50g")
+centered = false
+offset = Vector2(104, 0)
+
+[node name="SingleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
 layout_mode = 2
 tooltip_text = "Launch N simulations to generate the Sobol test. There are 11 parameters. Their influence on the half-time saturation of N2 in the tissue is computed."
 text = "Single Sobol Test
 with N simulations"
 
-[node name="MutipleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer"]
+[node name="xM" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/xM"]
+scale = Vector2(0.052, 0.052)
+texture = ExtResource("5_fs0r4")
+centered = false
+offset = Vector2(104, 0)
+
+[node name="MutipleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
 layout_mode = 2
 tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
 text = "Multiple Sobol Tests
 with M repetitions"
 
-[node name="RemoveAllPlots" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer"]
+[node name="RemoveAllPlots" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
 layout_mode = 2
 text = "Remove plots"
 
@@ -108,27 +133,62 @@ size_flags_vertical = 3
 [node name="MonoParameters" type="VBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame"]
 layout_mode = 2
 
-[node name="N" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+text = "PARAMETERS"
+
+[node name="Label4" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+text = "Sobol"
+label_settings = SubResource("LabelSettings_eovu1")
+
+[node name="NM" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/N"]
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 layout_mode = 2
 text = "N = "
 
-[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/N"]
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+layout_mode = 2
+max_value = 100000.0
+value = 1000.0
+custom_arrow_step = 1.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+layout_mode = 2
+text = "M = "
+
+[node name="SpinBox2" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 layout_mode = 2
 value = 10.0
 custom_arrow_step = 1.0
 
-[node name="M" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+text = "Tissue"
+label_settings = SubResource("LabelSettings_eovu1")
+
+[node name="Vt" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/M"]
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
 layout_mode = 2
-text = "M = "
+text = "Vt = "
 
-[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/M"]
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
 layout_mode = 2
+max_value = 150.0
+value = 70.0
+custom_arrow_step = 1.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+layout_mode = 2
+text = "+/-"
+
+[node name="SpinBox2" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+layout_mode = 2
+max_value = 50.0
 value = 10.0
 custom_arrow_step = 1.0
 
@@ -158,7 +218,7 @@ layout_mode = 2
 theme_override_fonts/normal_font = SubResource("FontFile_0resv")
 bbcode_enabled = true
 
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer/PlayMono" to="." method="_on_add_plot_pressedti"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer/SingleSobolMono" to="." method="one_sobol_experimentation"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/HFlowContainer/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/PlayMono" to="." method="_on_add_plot_pressedti"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/SingleSobolMono" to="." method="one_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
