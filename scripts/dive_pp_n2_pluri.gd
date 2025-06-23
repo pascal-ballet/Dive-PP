@@ -1800,12 +1800,12 @@ func _on_text_patm(new_text):
 		patm = float(new_text)
 	print("Nouvelle valeur de P𝘼𝙩𝙢: " +str(patm))
 	
-func _on_text_fo2(new_text):
-	if(new_text==""):
-		fn2 = 0.79
-	else:
-		fn2 = float(new_text)
-	print("Nouvelle valeur de fN₂: " +str(fn2))
+#func _on_text_fo2(new_text):
+	#if(new_text==""):
+		#fn2 = 0.79
+	#else:
+		#fn2 = float(new_text)
+	#print("Nouvelle valeur de fN₂: " +str(fn2))
 
 func _on_text_s1(new_text):
 	if new_text == "":
@@ -2602,7 +2602,7 @@ func _reset_mono():
 	va = 1.7 #volume artériel
 	vv = 3.0 #volume veineux
 	patm = 101325.0 # presion ambiante
-	fn2 = 0.79 #fraction d azote dans le gaz respiré 
+	#fn2 = 0.79 #fraction d azote dans le gaz respiré 
 	
 	alpha_n2 = 0.0000619 #coef solubilite azote
 	ph2o = 6246.0 # presstion partiel de vapeur d eau

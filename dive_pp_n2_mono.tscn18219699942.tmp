@@ -1,0 +1,276 @@
+[gd_scene load_steps=10 format=3 uid="uid://c2leoa4cehu8f"]
+
+[ext_resource type="Script" uid="uid://d03yu20c8bn4j" path="res://scripts/dive_pp_n2_mono.gd" id="1_csnru"]
+[ext_resource type="Texture2D" uid="uid://dev3kr3ovimk" path="res://images/dive_pp_icon.png" id="2_de0hx"]
+[ext_resource type="Script" uid="uid://dj8qys8h6tv8p" path="res://addons/graph_2d/graph_2d.gd" id="2_foqvu"]
+[ext_resource type="Texture2D" uid="uid://bw2w6y5mx3gtg" path="res://images/logo_orphy.png" id="3_3ryuj"]
+[ext_resource type="Texture2D" uid="uid://bb8nj3u53ddsc" path="res://images/xN.png" id="4_7s50g"]
+[ext_resource type="Texture2D" uid="uid://b1e2naw588xoc" path="res://images/xM.png" id="5_fs0r4"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_eovu1"]
+font_color = Color(0, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
+bg_color = Color(0.933333, 0.933333, 0.933333, 1)
+border_color = Color(0.169664, 0.359643, 0.828517, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="FontFile" id="FontFile_0resv"]
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+
+[node name="Dive-PP-N2" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_csnru")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+alignment = 1
+
+[node name="LogoOrphy" type="Sprite2D" parent="VBoxContainer/HBoxContainer"]
+position = Vector2(129.75, 65.25)
+scale = Vector2(0.313063, 0.290509)
+texture = ExtResource("3_3ryuj")
+
+[node name="DivePpIcon" type="Sprite2D" parent="VBoxContainer/HBoxContainer"]
+position = Vector2(64.8125, 69)
+scale = Vector2(0.110962, 0.102051)
+texture = ExtResource("2_de0hx")
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Dive-PP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Mono Tissue" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="RichTextLabel_N2" type="RichTextLabel" parent="VBoxContainer/TabContainer/Mono Tissue"]
+layout_mode = 2
+theme_override_font_sizes/bold_italics_font_size = 1
+theme_override_font_sizes/normal_font_size = 40
+text = "Mono Tissue with N2"
+fit_content = true
+
+[node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
+layout_mode = 2
+alignment = 1
+
+[node name="PlayMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+layout_mode = 2
+tooltip_text = "Launch just ONE simulation to generate the N2 evolution in the single tissue."
+text = "Single Simulation"
+
+[node name="xN" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/xN"]
+scale = Vector2(0.052, 0.052)
+texture = ExtResource("4_7s50g")
+centered = false
+offset = Vector2(104, 0)
+
+[node name="SingleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+layout_mode = 2
+tooltip_text = "Launch N simulations to generate the Sobol test. There are 11 parameters. Their influence on the half-time saturation of N2 in the tissue is computed."
+text = "Single Sobol Test
+with N simulations"
+
+[node name="xM" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/xM"]
+scale = Vector2(0.052, 0.052)
+texture = ExtResource("5_fs0r4")
+centered = false
+offset = Vector2(104, 0)
+
+[node name="MutipleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+layout_mode = 2
+tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
+text = "Multiple Sobol Tests
+with M repetitions"
+
+[node name="RemoveAllPlots" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+layout_mode = 2
+text = "Remove plots"
+
+[node name="MainFrame" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MonoParameters" type="VBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+text = "PARAMETERS"
+
+[node name="Label4" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+text = "Sobol"
+label_settings = SubResource("LabelSettings_eovu1")
+
+[node name="NM" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+layout_mode = 2
+text = "N = "
+
+[node name="N" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 100000.0
+value = 10.0
+custom_arrow_step = 1.0
+
+[node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+layout_mode = 2
+tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each interval is equals to N (number of Simulation for One Sobol Experimentation)."
+text = "Div = "
+
+[node name="Div" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time
+between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each
+interval is equals to N (number of Simulation
+for One Sobol Experimentation)."
+min_value = 1.0
+max_value = 1000.0
+value = 100.0
+custom_arrow_step = 1.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+layout_mode = 2
+text = "M = "
+
+[node name="M" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+unique_name_in_owner = true
+layout_mode = 2
+value = 2.0
+custom_arrow_step = 1.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+text = "Morphological"
+label_settings = SubResource("LabelSettings_eovu1")
+
+[node name="Vt" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+layout_mode = 2
+text = "Vt = "
+
+[node name="Vt" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 150.0
+value = 70.0
+custom_arrow_step = 1.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+layout_mode = 2
+text = "+/-"
+
+[node name="Vt_d" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 50.0
+value = 10.0
+custom_arrow_step = 1.0
+
+[node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+text = "Physiological"
+label_settings = SubResource("LabelSettings_eovu1")
+
+[node name="Q" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+layout_mode = 2
+text = "Q = "
+
+[node name="Q" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 20.0
+step = 0.1
+value = 4.2
+custom_arrow_step = 1.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+layout_mode = 2
+text = "+/-"
+
+[node name="Q_d" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 50.0
+step = 0.1
+value = 0.5
+custom_arrow_step = 1.0
+
+[node name="Graph2D" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 350)
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("2_foqvu")
+x_max = 120.0
+x_label = "Time(s)"
+y_max = 180000.0
+y_label = "Y"
+background_color = Color(0.0941176, 0.227451, 0.4, 1)
+grid_horizontal_visible = true
+grid_vertical_visible = true
+
+[node name="ResultBox" type="PanelContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
+
+[node name="SobolResults" type="RichTextLabel" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ResultBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/normal_font = SubResource("FontFile_0resv")
+bbcode_enabled = true
+
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/PlayMono" to="." method="single_simulation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/SingleSobolMono" to="." method="one_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]

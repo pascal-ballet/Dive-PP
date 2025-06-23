@@ -12,7 +12,7 @@ var q: float = 4.209 # debit cardiaque
 var va: float = 1.7 #volume artériel
 var vv: float = 3.0 #volume veineux
 var patm: float = 101325.0 # presion ambiante
-var fn2: float = 0.79 #fraction d azote dans le gaz respiré 
+var fn2: float = 0.79 #fraction d azote dans le gaz respiré
 var diving_time = [1,null,null,null,null,null,null,null,null,null]
 var diving_deep = [10,null,null,null,null,null,null,null,null,null]
 
@@ -30,7 +30,7 @@ var ph2o:float = 6246.0 # presstion partiel de vapeur d eau
 var K1:float = 0.00267 # coef de difusion respiratoire
 var K2:float = 0.00748 # coef de difusion alveolo capilaire
 var K3:float =0.00267
-var R:float = 8.314 # constante des gaz parfait
+const R:float = 8.314 # constante des gaz parfait
 var T:float = 310.0 # Temperature en K
 var tmp_t:float = 0.0
 var tmp_s:float = 0.0
@@ -74,8 +74,9 @@ var pp_N2_a_t1: float = 0.0
 
 
 # ***********************
-# Fonctions de compartiments
+#       MODELE
 # ***********************
+#region Model
 #profil de plonge
 func pressure_atm():
 	if(diving_time[0] != null && diving_deep[0] != null):
@@ -220,190 +221,129 @@ func tissue_mono():
 	pp_N2_ti_t1 = pp_N2_ti_t0 + delta
 	
 
+#endregion
 
+# ****************************
+#     SIMULATIONS DU MODEL
+# ****************************
+#region Simulations
 
-
-
-
-
-
-## Execute 1 step (dt) du modèle pour le graphe
-func step2():
-
-
-		# Compute one step
-	pressure_atm()
-	air()
-	airways_rk4()
-	alveolar_rk4()
-	alveolar_blood_rk4()
-	
-	
-		# Preparer le prochain step
-	pp_N2_aw_t0 	= pp_N2_aw_t1
-	pp_N2_alv_t0	= pp_N2_alv_t1
-	pp_N2_alb_t0	 = pp_N2_alb_t1
-	pp_N2_a_t0		= pp_N2_a_t1
-	pp_N2_v_t0		= pp_N2_v_t1
-	
-		# Variables tissus
-	
-	
-	
-	#next step
-	time = time + dt
-	iteration = iteration + 1 
-
-
-
-
-
-# ***********************
-# Fonctions de Graph
-# ***********************
+# Diagram
 var my_plotti : PlotItem = null
-var swapti: bool = true
-#play
-func _on_add_Play_pressed() -> void:
+#var swapti: bool = true
 
-	_on_add_plot_pressedti()
+enum Sob {NONE,A,B}
 
+func single_simulation() -> void:
+	single_simu(Sob.NONE)
 
+func single_simulation_Sobol_A() -> void:
+	single_simu(Sob.A)
 
+func single_simulation_Sobol_B() -> void:
+	single_simu(Sob.B)
+	
+func single_simu(s:Sob) -> void:
+	if s == Sob.A:
+		Vt 		= ax1[index_Sobol_A] 
+		vc 		= ax2[index_Sobol_A] 
+		valg 	= ax3[index_Sobol_A]
+		valb 	= ax4[index_Sobol_A] 
+		va 		= ax5[index_Sobol_A] 
+		vv 		= ax6[index_Sobol_A] 
+		vaw 	= ax7[index_Sobol_A] 
+		q 		= ax8[index_Sobol_A] 
+		K1 		= ax9[index_Sobol_A] 
+		K2 		= ax10[index_Sobol_A] 
+		K3 		= ax11[index_Sobol_A]
+		index_Sobol_A += 1
+	if s == Sob.B:
+		# Parametres variables pour B
+		Vt 		= bx1[index_Sobol_B]
+		vc 		= bx2[index_Sobol_B]
+		valg 	= bx3[index_Sobol_B]
+		valb 	= bx4[index_Sobol_B]
+		va 		= bx5[index_Sobol_B]
+		vv 		= bx6[index_Sobol_B]
+		vaw 	= bx7[index_Sobol_B]
+		q 		= bx8[index_Sobol_B]
+		K1 		= bx9[index_Sobol_B]
+		K2 		= bx10[index_Sobol_B]
+		K3 		= bx11[index_Sobol_B]
+		index_Sobol_B += 1
 
-
-
-
-
-func _on_add_plot_pressedti() -> void:
+	# Parametres stables mais a re-initialiser
 	_reset_mono()
+
 	# Créer un nouveau plot avec un label unique et une couleur dynamique
+	var grey:int = randf()*0.5 + 0.5
 	my_plotti = %Graph2D.add_plot_item(  
 			"Plot %d" % [%Graph2D.count()],
-			[Color(randf(), randf(), randf())][%Graph2D.count() % 1],
+			[Color(grey, grey, grey)][%Graph2D.count() % 1],
 			[1.0, 1.0, 1.0].pick_random()
 			)
-	#print("press add 1 tissue !")
 	
 	var x: float = 0.0  # Initialize the x value
 	var y: float = 0.0  # Initialize the y value
 	
 	var duration:float  = 120
 	var max_points:float = duration / dt
-	var pt_dist:int = int(floor(max_points / 1360.0))
+	var time_dist:int = int(floor(max_points / 1360.0))
 	while time < duration:
-		one_step_mono()#met a jour lest valeur
-		if iteration % pt_dist == 0: #recupere 1 valeur toute les 500 
-			x = time  # Increment x 
-			y = pp_N2_ti_t0  # increment  y 
-			# Add the point (x, y) to the plot
-			my_plotti.add_point(Vector2(x, y))
-	_reset_valuesCourbe()
-	print("Plot updated with points!")
-func _swapti() -> void:
-	if my_plotti :
-		if swapti :
-			$TabContainer/Graph/Graph2D.change_plot_color(my_plotti, Color.TRANSPARENT)
-			swapti=false
-		else:
-			$TabContainer/Graph/Graph2D.change_plot_color(my_plotti, Color(randf(), randf(), randf()))	
-			swapti=true
-
-
-
-func _on_add_plot_sobol_A() -> void:
-	Vt=ax1[totoA] 
-	vc= ax2[totoA] 
-	valg = ax3[totoA]
-	valb = ax4[totoA] 
-	va = ax5[totoA] 
-	vv= ax6[totoA] 
-	vaw =ax7[totoA] 
-	q = ax8[totoA] 
-	K1 = ax9[totoA] 
-	K2 = ax10[totoA] 
-	K3 = ax11[totoA]
-	_reset_mono()
-	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	my_plotti = $TabContainer/Graph/Graph2D.add_plot_item(  
-			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
-			[Color(randf(), randf(), randf())][$TabContainer/Graph/Graph2D.count() % 1],
-			[1.0, 1.0, 1.0].pick_random()
-			)
-	#print("press add 1 tissue !")
-	
-	var x: float = 0.0  # Initialize the x value
-	var y: float = 0.0  # Initialize the y value
-	
-	while time <60:
-		one_step_mono()#met a jour lest valeur
-		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
+		one_step_mono() # Simulation of one step
+		if iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
 			x = time  # Increment x 
 			y = pp_N2_ti_t0  # increment  y 
 			# Add the point (x, y) to the plot
 			my_plotti.add_point(Vector2(x, y))
 		#_reset_valuesCourbe()
 	print("Plot updated with points!")
-	totoA+= 1
-	
-	
-func _on_add_plot_sobol_B() -> void:
-	Vt=bx1[totoB] 
-	vc= bx2[totoB] 
-	valg = bx3[totoB]
-	valb = bx4[totoB] 
-	va = bx5[totoB] 
-	vv= bx6[totoB] 
-	vaw =bx7[totoB] 
-	q = bx8[totoB] 
-	K1 = bx9[totoB] 
-	K2 = bx10[totoB] 
-	K3 = bx11[totoB]
-	_reset_mono()
-	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	my_plotti = $TabContainer/Graph/Graph2D.add_plot_item(  
-			"Plot %d" % [$TabContainer/Graph/Graph2D.count()],
-			[Color(randf(), randf(), randf())][$TabContainer/Graph/Graph2D.count() % 1],
-			[1.0, 1.0, 1.0].pick_random()
-			)
-	#print("press add 1 tissue !")
-	
-	var x: float = 0.0  # Initialize the x value
-	var y: float = 0.0  # Initialize the y value
-	
-	while time <60:
-		one_step_mono()#met a jour lest valeur
-		if iteration % 500 == 0: #recupere 1 valeur toute les 500 
-			x = time  # Increment x 
-			y = pp_N2_ti_t0  # increment  y 
-			# Add the point (x, y) to the plot
-			my_plotti.add_point(Vector2(x, y))
-		#_reset_valuesCourbe()
-	print("Plot updated with points!")
-	totoB+= 1
-
-func _swapsobol() -> void:
-	if my_plotti :
-		if swapti :
-			$TabContainer/Graph/Graph2D.change_plot_color(my_plotti, Color.TRANSPARENT)
-			swapti=false
-		else:
-			$TabContainer/Graph/Graph2D.change_plot_color(my_plotti, Color(randf(), randf(), randf()))	
-			swapti=true
 
 
+## fonction step pour 1 seul tissue
+func one_simulation_with_sobol() :
+	# display_parameters()
+	#if toto < 100:
+		#print ("init="+str(pp_N2_ti_t0))
+	var half_pressure : float = 75112.41 * 1.5 #TODO a changer par (pression init + pression final)/2 
+	while pp_N2_ti_t0 < half_pressure:
+		one_step_mono()
+#
 
-func _on_remove_all_plots_pressed() -> void:
-	$TabContainer/Graph/Graph2D.remove_all()
-	print("press remove !")
+func one_step_mono() :
+	# Compute one step
+	pressure_atm()
+	air()
+	airways_rk4()
+	alveolar_rk4()
+	alveolar_blood_rk4()
+	arterial_blood_rk4()
+	venous_blood_mono()
+	capilar_blood_mono()
+	tissue_mono()
+	# Preparer le prochain step
+	pp_N2_aw_t0 	= pp_N2_aw_t1
+	pp_N2_alv_t0	= pp_N2_alv_t1
+	pp_N2_alb_t0	= pp_N2_alb_t1
+	pp_N2_a_t0		= pp_N2_a_t1
+	pp_N2_v_t0		= pp_N2_v_t1
 	
-	
-	
+		# Variables tissus
+	pp_N2_ti_t0	= pp_N2_ti_t1
+	pp_N2_c_t0		= pp_N2_c_t1
 
+	# Next step
+	time = time + dt
+	iteration = iteration + 1 
+	
+#endregion
 
-# ***********************
+# ****************************
+#     Reset des parametres
+# ****************************
+#region ResetParameters
+
 # Fonction de reset quand stop est pressé
-# ***********************
 func _reset_values(): 
 	time = 0.0
 	patm = 101325.0
@@ -418,9 +358,6 @@ func _reset_values():
 	pp_N2_v_t1 = 0.0
 	pp_N2_a_t0 = 75112.41
 	pp_N2_a_t1 = 0.0
-	
-	
-	
 	
 	tmp_t = 0.0
 	tmp_s = 0.0
@@ -442,70 +379,132 @@ func _reset_values():
 	K2 = 0.00748 # coef de difusion alveolo capilaire
 	K3 =0.00267
 	
+
+var index_Sobol_A: int =0
+var index_Sobol_B: int =0
+func set_model_parameters_for_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
+	_reset_mono()
+	Vt=Vt_
+	vc=vc_
+	valg=valg_
+	valb = valb_
+	va=va_
+	vv=vv_
+	vaw=vaw_
+	q=q_
+	K1=K1_
+	K2=K2_
+	K3=K3_
+	vent=vent_
+	#var K3: float=0.00267
+	#var alpha_n2 :float=0.000061
+	one_simulation_with_sobol()
+	
+	return time
+	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
+	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))#capilaire
+	
+	#x1 + x2/10.0 + x3/2
+	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
 	
 	
+func _reset_mono():
+	#vent = 8.1 # debit ventilatoire 
+	#vaw = 1.5 #volume des voix aérienne
+	#valg = 1.0 # volume du gaz alvéolaire
+	#valb = 0.5 # volume de sang alvéolaire
+	#q= 4.209 # debit cardiaque
+	#va = 1.7 #volume artériel
+	#vv = 3.0 #volume veineux
+	patm = 101325.0 # pression ambiante
+	fn2 = 0.79 #fraction d azote dans le gaz respiré 
 	
-# ***********************
-# Fonction de reset Pour les courbes
-# ***********************
-func _reset_valuesCourbe(): 
-	iteration =0
+	alpha_n2 = 0.0000619 #coef solubilite azote
+	ph2o = 6246.0 # pression partiel de vapeur d ea
+	#K1 = 0.00267 # coef de difusion respiratoire
+	#K2 = 0.00748 # coef de difusion alveolo capilaire
+	#K3 = 0.000267
+	T = 310.0 # Temperature en K
+	tmp_t = 0.0
+	tmp_s = 0.0
 	time = 0.0
-	patm = 101325.0
+	dt = dtINI
+	diving_stage = 1
+	iteration = 0 
+	#vc = 0.5
+	kn2 = 0.0000619# coef solubiliter azote
+	#Vt = 70
 	pp_N2_air = 0.0
+	
 	pp_N2_aw_t0 = 75112.41
 	pp_N2_aw_t1 = 0.0
+	
 	pp_N2_alv_t0 = 75112.41
 	pp_N2_alv_t1 = 0.0
+	
 	pp_N2_alb_t0 = 75112.41
 	pp_N2_alb_t1 = 0.0
+	
 	pp_N2_v_t0 = 75112.41
 	pp_N2_v_t1 = 0.0
+	
 	pp_N2_a_t0 = 75112.41
 	pp_N2_a_t1 = 0.0
 	
+	pp_N2_ti_t0 = 75112.41
+	pp_N2_ti_t1 = 0.0
+	
+	pp_N2_c_t0 = 75112.41
+	pp_N2_c_t1 = 0.0
+	
+# # ***********************
+# # Fonction de reset Pour les courbes
+# # ***********************
+# func _reset_valuesCourbe(): 
+# 	iteration =0
+# 	time = 0.0
+# 	patm = 101325.0
+# 	pp_N2_air = 0.0
+# 	pp_N2_aw_t0 = 75112.41
+# 	pp_N2_aw_t1 = 0.0
+# 	pp_N2_alv_t0 = 75112.41
+# 	pp_N2_alv_t1 = 0.0
+# 	pp_N2_alb_t0 = 75112.41
+# 	pp_N2_alb_t1 = 0.0
+# 	pp_N2_v_t0 = 75112.41
+# 	pp_N2_v_t1 = 0.0
+# 	pp_N2_a_t0 = 75112.41
+# 	pp_N2_a_t1 = 0.0
 	
 	
-	tmp_t = 0.0
-	tmp_s = 0.0
-	vent = 8.1
-	vaw = 1.5
-	valg = 1.0
-	valb = 0.5
-	q = 4.2
-	va = 1.7
-	vv = 3.0
-	patm = 101325.0
-	fn2 = 0.79
-	dt = dtINI
+	
+# 	tmp_t = 0.0
+# 	tmp_s = 0.0
+# 	vent = 8.1
+# 	vaw = 1.5
+# 	valg = 1.0
+# 	valb = 0.5
+# 	q = 4.2
+# 	va = 1.7
+# 	vv = 3.0
+# 	patm = 101325.0
+# 	fn2 = 0.79
+# 	dt = dtINI
 # ***********************
 # Variable change functions
 # *********************** 
 
 
+#endregion
 
 
 
-	
+
 ###############################################################
-#Analyse de sobole 1 tissue
+#Analyse de sobol 1 tissue
 ###############################################################
+#region Sobol
 
-#var N = 100 # Nombre d'échantillons Monte Carlo (generalement 100 000)
-#var parametres = [
-	#{"nom": "Vt", "moyenne": 70.0, "variation": 10},
-	#{"nom": "vc", "moyenne": 0.5, "variation": 0.05},
-	#{"nom": "valg", "moyenne": 1.0, "variation": 0.1},
-	#{"nom": "valb", "moyenne": 0.5, "variation": 0.05},
-	#{"nom": "va", "moyenne": 1.7, "variation": 0.17},
-	#{"nom": "vv", "moyenne": 3.0, "variation": 0.3},
-	#{"nom": "vaw", "moyenne": 1.5, "variation": 0.15},
-	#{"nom": "q", "moyenne": 4.209, "variation": 0.4},
-	#{"nom": "k1", "moyenne": 0.00267, "variation": 0.000267},
-	#{"nom": "k2", "moyenne": 0.00748, "variation": 0.000748},
-	#{"nom": "k3", "moyenne": 0.00267, "variation": 0.000267},
-	#
-#]
 var l =0 
 
 var ax1 : Array[float] = [];  var bx1 : Array[float] = []
@@ -523,86 +522,30 @@ var ax12 : Array[float] = []; var bx12 : Array[float] = []
 var start_time:int=0
 var end_time:int=0
 var histo:Array = []
-const nb_sobol_experiences:int = 20 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plein de Sobol)
+var nb_sobol_experiences:int = 1 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plusieurs Sobol)
 var num_sobol_experience:int = 0
-const  N : int = 2 ## Nombre d'echantillon
-func display_parameters() :
-	if num_sobol_experience > 0 and num_sobol_experience < nb_sobol_experiences-1:
-		return
-	print("***************************************************************************************")
-	print("nb_sobol_experiences =", nb_sobol_experiences)
-	print("N =", N)
-	print("num_sobol_experience =", num_sobol_experience)
-	print("vent =", vent)
-	print("vaw =", vaw)
-	print("valg =", valg)
-	print("valb =", valb)
-	print("q =", q)
-	print("va =", va)
-	print("vv =", vv)
-	print("patm =", patm)
-	print("fn2 =", fn2)
-	print("diving_time =", diving_time)
-	print("diving_deep =", diving_deep)
+var  N:int = 100 # Nombre d'echantillon
 
-	print("alpha_n2 =", alpha_n2)
-	print("ph2o =", ph2o)
-	print("K1 =", K1)
-	print("K2 =", K2)
-	print("K3 =", K3)
-	print("R =", R)
-	print("T =", T)
-	print("tmp_t =", tmp_t)
-	print("tmp_s =", tmp_s)
-	print("time =", time)
-	print("dtINI =", dtINI)
-	print("dt =", dt)
-	print("diving_stage =", diving_stage)
-	print("iteration =", iteration)
-	print("vc =", vc)
-
-	print("kn2 =", kn2)
-	print("pp_N2_c_t0 =", pp_N2_c_t0)
-	print("pp_N2_c_t1 =", pp_N2_c_t1)
-	print("pp_N2_ti_t0 =", pp_N2_ti_t0)
-	print("pp_N2_ti_t1 =", pp_N2_ti_t1)
-	print("Vt =", Vt)
-
-	print("pp_N2_air =", pp_N2_air)
-
-	print("pp_N2_aw_t0 =", pp_N2_aw_t0)
-	print("pp_N2_aw_t1 =", pp_N2_aw_t1)
-
-	print("pp_N2_alv_t0 =", pp_N2_alv_t0)
-	print("pp_N2_alv_t1 =", pp_N2_alv_t1)
-
-	print("pp_N2_alb_t0 =", pp_N2_alb_t0)
-	print("pp_N2_alb_t1 =", pp_N2_alb_t1)
-
-	print("pp_N2_v_t0 =", pp_N2_v_t0)
-	print("pp_N2_v_t1 =", pp_N2_v_t1)
-
-	print("pp_N2_a_t0 =", pp_N2_a_t0)
-	print("pp_N2_a_t1 =", pp_N2_a_t1)
-	pass
 
 func multiple_sobol_experimentation() ->void:
+	nb_sobol_experiences = (get_node("%M") as SpinBox).value
 	while num_sobol_experience < nb_sobol_experiences: 
 		one_sobol_experimentation()
 		num_sobol_experience += 1
 
 func one_sobol_experimentation() -> void:
+	N = (get_node("%N") as SpinBox).value
+	var div = (get_node("%Div") as SpinBox).value
+
 	#display_parameters()
-	for i in range(101):
+
+	for i in range(div):
 		histo.append(0)
 	start_time = Time.get_ticks_msec()
 	#print("Sobol Analysis start at " + str(Time.get_ticks_msec() )+"in ms" )
 	print("Sobol Analysis start at " + str(start_time)+"in ms" )
 
 	var panel := %ResultBox
-	#panel.visible = !panel.visible
-	#var d := 3                               # nombre de variables
-	#var N := 5                         # taille d’échantillon
 	var rng := RandomNumberGenerator.new()
 	
 	rng.randomize()   # graine aléatoire basée sur l’horloge
@@ -611,25 +554,13 @@ func one_sobol_experimentation() -> void:
 	# ─────────────────────────────────────────────────────────────
 	# 1) Génération des échantillons  A  et  B  (séparés par variable)
 	# ─────────────────────────────────────────────────────────────
-	#var ax1 : Array[float] = [];  var bx1 : Array[float] = []
-	#var ax2 : Array[float] = [];  var bx2 : Array[float] = []
-	#var ax3 : Array[float] = [];  var bx3 : Array[float] = []
-	#var ax4 : Array[float] = []; var bx4 : Array[float] = []
-	#var ax5 : Array[float] = []; var bx5 : Array[float] = []
-	#var ax6 : Array[float] = []; var bx6 : Array[float] = []
-	#var ax7 : Array[float] = []; var bx7 : Array[float] = []
-	#var ax8 : Array[float] = []; var bx8 : Array[float] = []
-	#var ax9 : Array[float] = []; var bx9 : Array[float] = []
-	#var ax10 : Array[float] = []; var bx10 : Array[float] = []
-	#var ax11 : Array[float] = []; var bx11 : Array[float] = []
 	
 	ax1.resize(N); ax2.resize(N); ax3.resize(N); ax4.resize(N); ax5.resize(N); ax6.resize(N); ax7.resize(N); ax8.resize(N); ax9.resize(N); ax10.resize(N); ax11.resize(N); ax12.resize(N)
 	bx1.resize(N); bx2.resize(N); bx3.resize(N); bx4.resize(N); bx5.resize(N); bx6.resize(N); bx7.resize(N); bx8.resize(N); bx9.resize(N); bx10.resize(N); bx11.resize(N); bx12.resize(N)
 	
 	print("Array creation at " + str(Time.get_ticks_msec() ) )
 
-
-	for l in range(N):#variation de 20%
+	for l in range(N):#variation de 20% (+/- 10%)
 		ax1[l] = Vt + rng.randf_range(-14, 14);   bx1[l] = Vt + rng.randf_range(-14, 14)#vt
 		ax2[l] = vc + rng.randf_range(-0.10, 0.1); bx2[l] = vc + rng.randf_range(-0.1, 0.1)#vc
 		ax3[l] = valg + rng.randf_range(-0.2, 0.2);   bx3[l] = valg + rng.randf_range(-0.2, 0.2)#valg
@@ -642,17 +573,12 @@ func one_sobol_experimentation() -> void:
 		ax10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2);    bx10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2)#k2
 		ax11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2);    bx11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2)#k3
 		ax12[l] = vent + rng.randf_range(-0.81*2, 0.81*2);   bx12[l] = vent + rng.randf_range(-0.81*2, 0.81*2)#vt
-		#_on_add_plot_sobol_A()
-		#_on_add_plot_sobol_B()
+		single_simulation_Sobol_A()
+		single_simulation_Sobol_B()
 	print("1 - " + str(Time.get_ticks_msec() ) )
-	totoA=0
-	totoB=0
-#Vt: float, vc: float, valg: float,valb: float,va: float,vv: float, vaw
-	#vaw =1.5	valg =1.0	valb =0.5	va =1.7 	vv =3.0 	vc =0.5 
-	#q 4.209
-	#Vt=70L
-	#pp_N2_ti_t0: float = 75112.41
-	#pp_N2_c_t0: float = 75112.41
+	index_Sobol_A = 0
+	index_Sobol_B = 0
+
 	# ─────────────────────────────────────────────────────────────
 	# 2) Évaluations du modèle  f(A)  et  f(B)
 	# ─────────────────────────────────────────────────────────────
@@ -664,13 +590,13 @@ func one_sobol_experimentation() -> void:
 	for l in range(N):
 		#print ("l="+str(l))
 		#toto = l
-		YA[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YA[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
 		
 		if YA[l]>= 10 and YA[l]<=20:
 			var p:int = int(((YA[l]-10)*10))
 			histo[p]+=1
 			
-		YB[l] = my_model_parameters_for_sobol(bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l])
+		YB[l] = set_model_parameters_for_sobol(bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l])
 		if YB[l]>= 10 and YB[l]<=20:
 			var p:int = int(((YB[l]-10)*10))
 			histo[p]+=1
@@ -679,8 +605,8 @@ func one_sobol_experimentation() -> void:
 	print("3 - " + str(Time.get_ticks_msec() ) )
 
 	# ─────────────────────────────────────────────────────────────
-	## 3) Matrices mixtes  A_Bi  (pick & freeze) 
-	#La méthode vise à évaluer l'influence de chaque variable d’entrée sur la sortie du modèle, en ne changeant qu’une variable à la fois (on la "pick") tandis que les autres restent fixes (on les "freeze").
+	# 3) Matrices mixtes  A_Bi  (pick & freeze) 
+	# La méthode vise à évaluer l'influence de chaque variable d’entrée sur la sortie du modèle, en ne changeant qu’une variable à la fois (on la "pick") tandis que les autres restent fixes (on les "freeze").
 	# ─────────────────────────────────────────────────────────────
 	var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []; var YAB3 : Array[float] = [];var YAB4 : Array[float] = []; var YAB5 : Array[float] = []; var YAB6 : Array[float] = []; var YAB7 : Array[float] = []; var YAB8 : Array[float] = []; var YAB9 : Array[float] = []; var YAB10 : Array[float] = []; var YAB11 : Array[float] = []
 	YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)	;YAB3.resize(N);	YAB4.resize(N);	YAB5.resize(N);	YAB6.resize(N);	YAB7.resize(N);	YAB8.resize(N);	YAB9.resize(N);	YAB10.resize(N);	YAB11.resize(N)
@@ -689,23 +615,23 @@ func one_sobol_experimentation() -> void:
 
 	for l in range(N):
 		## i = 0 : on prend x1 de B, les autres de A
-		#YAB0[l] = my_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l])
+		#YAB0[l] = set_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l])
 		## i = 1 : on prend x2 de B, les autres de A
-		#YAB1[l] = my_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
+		#YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
 		## i = 2 : on prend x3 de B, les autres de A
-		#YAB2[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
-		YAB0[l] = my_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB1[l] = my_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB2[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB3[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB4[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB5[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB6[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB7[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB8[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l])
-		YAB9[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l])
-		YAB10[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l])
-		YAB11[l] = my_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l])
+		#YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
+		YAB0[l] = set_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB3[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB4[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB5[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB6[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB7[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB8[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l])
+		YAB9[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l])
+		YAB10[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l])
+		YAB11[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l])
 	print("5 - " + str(Time.get_ticks_msec() ) )
 
 
@@ -830,8 +756,90 @@ func one_sobol_experimentation() -> void:
 
 	#Sₜᵢ : Indice de Sobol total
 	#Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
-###################################################################################################	
 
+#endregion
+
+
+# **************************
+#    DISPLAY DATA / PLOTS
+# **************************
+#region display
+
+func display_parameters() :
+	if num_sobol_experience > 0 and num_sobol_experience < nb_sobol_experiences-1:
+		return
+	print("***************************************************************************************")
+	print("nb_sobol_experiences =", nb_sobol_experiences)
+	print("N =", N)
+	print("num_sobol_experience =", num_sobol_experience)
+	print("vent =", vent)
+	print("vaw =", vaw)
+	print("valg =", valg)
+	print("valb =", valb)
+	print("q =", q)
+	print("va =", va)
+	print("vv =", vv)
+	print("patm =", patm)
+	print("fn2 =", fn2)
+	print("diving_time =", diving_time)
+	print("diving_deep =", diving_deep)
+
+	print("alpha_n2 =", alpha_n2)
+	print("ph2o =", ph2o)
+	print("K1 =", K1)
+	print("K2 =", K2)
+	print("K3 =", K3)
+	print("R =", R)
+	print("T =", T)
+	print("tmp_t =", tmp_t)
+	print("tmp_s =", tmp_s)
+	print("time =", time)
+	print("dtINI =", dtINI)
+	print("dt =", dt)
+	print("diving_stage =", diving_stage)
+	print("iteration =", iteration)
+	print("vc =", vc)
+
+	print("kn2 =", kn2)
+	print("pp_N2_c_t0 =", pp_N2_c_t0)
+	print("pp_N2_c_t1 =", pp_N2_c_t1)
+	print("pp_N2_ti_t0 =", pp_N2_ti_t0)
+	print("pp_N2_ti_t1 =", pp_N2_ti_t1)
+	print("Vt =", Vt)
+
+	print("pp_N2_air =", pp_N2_air)
+
+	print("pp_N2_aw_t0 =", pp_N2_aw_t0)
+	print("pp_N2_aw_t1 =", pp_N2_aw_t1)
+
+	print("pp_N2_alv_t0 =", pp_N2_alv_t0)
+	print("pp_N2_alv_t1 =", pp_N2_alv_t1)
+
+	print("pp_N2_alb_t0 =", pp_N2_alb_t0)
+	print("pp_N2_alb_t1 =", pp_N2_alb_t1)
+
+	print("pp_N2_v_t0 =", pp_N2_v_t0)
+	print("pp_N2_v_t1 =", pp_N2_v_t1)
+
+	print("pp_N2_a_t0 =", pp_N2_a_t0)
+	print("pp_N2_a_t1 =", pp_N2_a_t1)
+
+
+func _on_remove_all_plots_pressed() -> void:
+	$TabContainer/Graph/Graph2D.remove_all()
+	print("press remove !")
+	
+
+
+#endregion
+
+
+
+
+# **********************
+# Export des resultats
+# **********************
+#region ExportData
 	##capture d'ecran des resultat
 var screenshot_count = 0
 var save_folder = "../sobol_results_"+str(N)+"/"# chemin parent relatif 
@@ -845,7 +853,7 @@ func capture_screenshot():
 		print("Capture d'écran sauvegardée dans ", filename)
 	else:
 		print("Erreur lors de la sauvegarde de la capture d'écran")
-################################################################################################
+
 func sauvegarder_resultats_json(chemin_complet: String, donnees: Array) -> void:
 	var file = FileAccess.open(chemin_complet, FileAccess.WRITE)
 	if file:
@@ -855,7 +863,6 @@ func sauvegarder_resultats_json(chemin_complet: String, donnees: Array) -> void:
 		push_error("Erreur : Impossible d’ouvrir le fichier : " + chemin_complet)
 func get_chemin_fichier(index: int) -> String:
 	return save_folder + "histo" + str(index) + ".json"	
-	##########################################################################################
 	
 func creer_dossier_si_absent(chemin: String) -> void:
 	if not DirAccess.dir_exists_absolute(chemin):
@@ -863,86 +870,16 @@ func creer_dossier_si_absent(chemin: String) -> void:
 		if dir != null:
 			dir.make_dir_recursive(chemin)
 	
+#endregion
+
+
 	
-	
-	
-	
-	############################################################################################
+
+
+
 # ────────────────────────────────────────────────────────────────────
 # Fonctions utilitaires
 # ────────────────────────────────────────────────────────────────────
-#var toto: int =0
-var totoA: int =0
-var totoB: int =0
-func my_model_parameters_for_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
-	_reset_mono()
-	Vt=Vt_
-	vc=vc_
-	valg=valg_
-	valb = valb_
-	va=va_
-	vv=vv_
-	vaw=vaw_
-	q=q_
-	K1=K1_
-	K2=K2_
-	K3=K3_
-	vent=vent_
-	#var K3: float=0.00267
-	#var alpha_n2 :float=0.000061
-	#one_step_mono()
-	#_on_add_plot_sobol()
-	one_simulation_with_sobol()
-	#print (str(time))
-	#print (str(pp_N2_ti_t0))
-	
-	return time
-	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
-	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))#capilaire
-	
-	#x1 + x2/10.0 + x3/2
-	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
-	
-	## fonction step pour 1 seul tissue
-func one_simulation_with_sobol() :
-	display_parameters()
-	#if toto < 100:
-		#print ("init="+str(pp_N2_ti_t0))
-	var half_pressure : float = 75112.41 *1.5 #TODO a changer par (pression init + pression final)/2 
-	while pp_N2_ti_t0 < half_pressure:
-		one_step_mono()
-		
-			#if toto ==1579:# and time>= 4.3 and time<6:
-				#print ("time =" + str(time))
-				#print (pp_N2_ti_t0)
-		#print ("end ="+str(pp_N2_ti_t0))
-#
-
-func one_step_mono() :
-	# Compute one step
-	pressure_atm()
-	air()
-	airways_rk4()
-	alveolar_rk4()
-	alveolar_blood_rk4()
-	arterial_blood_rk4()
-	venous_blood_mono()
-	capilar_blood_mono()
-	tissue_mono()
-	# Preparer le prochain step
-	pp_N2_aw_t0 	= pp_N2_aw_t1
-	pp_N2_alv_t0	= pp_N2_alv_t1
-	pp_N2_alb_t0	= pp_N2_alb_t1
-	pp_N2_a_t0		= pp_N2_a_t1
-	pp_N2_v_t0		= pp_N2_v_t1
-	
-		# Variables tissus
-	pp_N2_ti_t0	= pp_N2_ti_t1
-	pp_N2_c_t0		= pp_N2_c_t1
-
-	# Next step
-	time = time + dt
-	iteration = iteration + 1 
 
 func mean(arr: Array[float]) -> float:
 	var s := 0.0
@@ -957,62 +894,12 @@ func variance(arr: Array[float]) -> float:
 		s2 += d * d
 	return s2 / arr.size()
 	
-	##TODO lse parametre a varier 
+	##TODO lse parametre a faire varier 
 		##var V debi ventilatoire
 		##Q debit qaurdiaque
 		##K1 K2 K3
 		##tous les volume 7 
 		##
-		
-func _reset_mono():
-	#vent = 8.1 # debit ventilatoire 
-	#vaw = 1.5 #volume des voix aérienne
-	#valg = 1.0 # volume du gaz alvéolaire
-	#valb = 0.5 # volume de sang alvéolaire
-	#q= 4.209 # debit cardiaque
-	#va = 1.7 #volume artériel
-	#vv = 3.0 #volume veineux
-	patm = 101325.0 # pression ambiante
-	fn2 = 0.79 #fraction d azote dans le gaz respiré 
-	
-	alpha_n2 = 0.0000619 #coef solubilite azote
-	ph2o = 6246.0 # pression partiel de vapeur d ea
-	#K1 = 0.00267 # coef de difusion respiratoire
-	#K2 = 0.00748 # coef de difusion alveolo capilaire
-	#K3 = 0.000267
-	R = 8.314 # constante des gaz parfait
-	T = 310.0 # Temperature en K
-	tmp_t = 0.0
-	tmp_s = 0.0
-	time = 0.0
-	dt = dtINI
-	diving_stage = 1
-	iteration = 0 
-	#vc = 0.5
-	kn2 = 0.0000619# coef solubiliter azote
-	#Vt = 70
-	pp_N2_air = 0.0
-	
-	pp_N2_aw_t0 = 75112.41
-	pp_N2_aw_t1 = 0.0
-	
-	pp_N2_alv_t0 = 75112.41
-	pp_N2_alv_t1 = 0.0
-	
-	pp_N2_alb_t0 = 75112.41
-	pp_N2_alb_t1 = 0.0
-	
-	pp_N2_v_t0 = 75112.41
-	pp_N2_v_t1 = 0.0
-	
-	pp_N2_a_t0 = 75112.41
-	pp_N2_a_t1 = 0.0
-	
-	pp_N2_ti_t0 = 75112.41
-	pp_N2_ti_t1 = 0.0
-	
-	pp_N2_c_t0 = 75112.41
-	pp_N2_c_t1 = 0.0
 	
 
 
