@@ -79,7 +79,6 @@ theme_override_font_sizes/bold_italics_font_size = 1
 theme_override_font_sizes/normal_font_size = 40
 text = "Mono Tissue with N2"
 fit_content = true
-horizontal_alignment = 1
 
 [node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
 layout_mode = 2
@@ -149,19 +148,38 @@ layout_mode = 2
 layout_mode = 2
 text = "N = "
 
-[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+[node name="N" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+unique_name_in_owner = true
 layout_mode = 2
 max_value = 100000.0
-value = 1000.0
+value = 10.0
+custom_arrow_step = 1.0
+
+[node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+layout_mode = 2
+tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each interval is equals to N (number of Simulation for One Sobol Experimentation)."
+text = "Div = "
+
+[node name="Div" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time
+between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each
+interval is equals to N (number of Simulation
+for One Sobol Experimentation)."
+min_value = 1.0
+max_value = 1000.0
+value = 100.0
 custom_arrow_step = 1.0
 
 [node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 layout_mode = 2
 text = "M = "
 
-[node name="SpinBox2" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+[node name="M" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
+unique_name_in_owner = true
 layout_mode = 2
-value = 10.0
+value = 2.0
 custom_arrow_step = 1.0
 
 [node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
@@ -176,7 +194,8 @@ layout_mode = 2
 layout_mode = 2
 text = "Vt = "
 
-[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+[node name="Vt" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+unique_name_in_owner = true
 layout_mode = 2
 max_value = 150.0
 value = 70.0
@@ -186,7 +205,8 @@ custom_arrow_step = 1.0
 layout_mode = 2
 text = "+/-"
 
-[node name="SpinBox2" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+[node name="Vt_d" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
+unique_name_in_owner = true
 layout_mode = 2
 max_value = 50.0
 value = 10.0
@@ -204,7 +224,8 @@ layout_mode = 2
 layout_mode = 2
 text = "Q = "
 
-[node name="SpinBox" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+[node name="Q" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+unique_name_in_owner = true
 layout_mode = 2
 max_value = 20.0
 step = 0.1
@@ -215,7 +236,8 @@ custom_arrow_step = 1.0
 layout_mode = 2
 text = "+/-"
 
-[node name="SpinBox2" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+[node name="Q_d" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
+unique_name_in_owner = true
 layout_mode = 2
 max_value = 50.0
 step = 0.1
@@ -248,7 +270,7 @@ layout_mode = 2
 theme_override_fonts/normal_font = SubResource("FontFile_0resv")
 bbcode_enabled = true
 
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/PlayMono" to="." method="_on_add_plot_pressedti"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/PlayMono" to="." method="single_simulation"]
 [connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/SingleSobolMono" to="." method="one_sobol_experimentation"]
 [connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
 [connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
