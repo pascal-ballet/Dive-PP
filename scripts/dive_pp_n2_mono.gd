@@ -25,13 +25,13 @@ var diving_deep = [10,null,null,null,null,null,null,null,null,null]
 # Paramètres du modèle
 # ***********************
 
-var alpha_n2:float 	= 0.0000619 #coef solubilite azote
-var ph2o:float 		= 6246.0 # presstion partiel de vapeur d eau
+const alpha_n2:float 	= 0.0000619 #coef solubilite azote
+const ph2o:float 		= 6246.0 # presstion partiel de vapeur d eau
 var K1:float 		= 0.00267 # coef de difusion respiratoire
 var K2:float 		= 0.00748 # coef de difusion alveolo capilaire
 var K3:float 		= 0.00267
 const R:float 		= 8.314 # constante des gaz parfait
-var T:float 		= 310.0 # Temperature en K
+const T:float 		= 310.0 # Temperature en K
 var tmp_t:float 	= 0.0
 var tmp_s:float 	= 0.0
 var time:float 		= 0.0
@@ -42,7 +42,7 @@ var iteration:int 	= 0 # pas de simulation en cours
 var vc:float 		= 0.5# colume capilaire
 var Vt:float		= 70 # Tissue Volume
 #var Q: float =4.2#debit sanguin
-var kn2 :float 		= 0.0000619# coef solubiliter azote
+const kn2 :float 		= 0.0000619# coef solubiliter azote
 var pp_N2_c_t0 : float 	= 75112.41 # pression partiel initiale capilaire
 var pp_N2_c_t1 			= 0 #pression partiel courante capilaire
 var pp_N2_ti_t0 :float 	= 75112.41 # pression partiel initiale tissus
@@ -375,23 +375,8 @@ func set_parameters_and_play_sobol(Vt_: float, vc_: float, valg_: float,valb_: f
 #region ResetParameters
 
 # Fonction de reset quand stop est pressé
-func _reset_values(): 
-	time = 0.0
-	patm = 101325.0
-	pp_N2_air = 0.0
-	pp_N2_aw_t0 = 75112.41
-	pp_N2_aw_t1 = 0.0
-	pp_N2_alv_t0 = 75112.41
-	pp_N2_alv_t1 = 0.0
-	pp_N2_alb_t0 = 75112.41
-	pp_N2_alb_t1 = 0.0
-	pp_N2_v_t0 = 75112.41
-	pp_N2_v_t1 = 0.0
-	pp_N2_a_t0 = 75112.41
-	pp_N2_a_t1 = 0.0
-	
-	tmp_t = 0.0
-	tmp_s = 0.0
+func reset_values_when_Sobol(): 
+	reset_parameters()	
 	vent = 8.1
 	vaw = 1.5
 	valg = 1.0
@@ -400,8 +385,6 @@ func _reset_values():
 	va = 1.7
 	vv = 3.0
 	patm = 101325.0
-	fn2 = 0.79
-	dt = dtINI
 	diving_time = [1,null,null,null,null,null,null,null,null,null]
 	diving_deep = [10,null,null,null,null,null,null,null,null,null]
 	Vt = %Vt.value
@@ -411,9 +394,8 @@ func _reset_values():
 	K3 =0.00267
 	
 
-
-	
 func _reset_mono():
+	reset_parameters()
 	#vent = 8.1 # debit ventilatoire 
 	#vaw = 1.5 #volume des voix aérienne
 	#valg = 1.0 # volume du gaz alvéolaire
@@ -421,29 +403,38 @@ func _reset_mono():
 	#q= 4.209 # debit cardiaque
 	#va = 1.7 #volume artériel
 	#vv = 3.0 #volume veineux
-	patm = 101325.0 # pression ambiante
-	fn2 = 0.79 #fraction d azote dans le gaz respiré 
 	
-	alpha_n2 = 0.0000619 #coef solubilite azote
-	ph2o = 6246.0 # pression partiel de vapeur d ea
+	#alpha_n2 = 0.0000619 #coef solubilite azote
+	#ph2o = 6246.0 # pression partiel de vapeur d ea
 	#K1 = 0.00267 # coef de difusion respiratoire
 	#K2 = 0.00748 # coef de difusion alveolo capilaire
 	#K3 = 0.000267
-	T = 310.0 # Temperature en K
-	tmp_t = 0.0
-	tmp_s = 0.0
-	time = 0.0
-	dt = dtINI
+	#T = 310.0 # Temperature en K
 	diving_stage = 1
 	iteration = 0 
 	#vc = 0.5
-	kn2 = 0.0000619# coef solubiliter azote
+	#kn2 = 0.0000619# coef solubiliter azote
 	#Vt = 70
-	pp_N2_air = 0.0
+		
+	pp_N2_ti_t0 = 75112.41
+	pp_N2_ti_t1 = 0.0
 	
+	pp_N2_c_t0 = 75112.41
+	pp_N2_c_t1 = 0.0
+
+
+func reset_parameters():
+	time = 0.0
+
+	fn2 = 0.79 #fraction d azote dans le gaz respiré 
+
+	patm = 101325.0
+
+	pp_N2_air = 0.0
+
 	pp_N2_aw_t0 = 75112.41
 	pp_N2_aw_t1 = 0.0
-	
+
 	pp_N2_alv_t0 = 75112.41
 	pp_N2_alv_t1 = 0.0
 	
@@ -455,12 +446,14 @@ func _reset_mono():
 	
 	pp_N2_a_t0 = 75112.41
 	pp_N2_a_t1 = 0.0
-	
-	pp_N2_ti_t0 = 75112.41
-	pp_N2_ti_t1 = 0.0
-	
-	pp_N2_c_t0 = 75112.41
-	pp_N2_c_t1 = 0.0
+
+	tmp_t = 0.0
+	tmp_s = 0.0
+
+	dt = dtINI
+
+
+
 
 #endregion
 
@@ -471,7 +464,7 @@ func _reset_mono():
 ###############################################################
 #region Sobol
 
-var l =0 # Current sample among N
+#var l =0 # Current sample among N
 
 var ax1  : Array[float] = [];  var bx1 : Array[float]  = []
 var ax2  : Array[float] = [];  var bx2 : Array[float]  = []
@@ -494,14 +487,14 @@ var  N:int = 100 # Nombre d'echantillon
 
 
 func multiple_sobol_experimentation() ->void:
-	nb_sobol_experiences = (get_node("%M") as SpinBox).value
+	nb_sobol_experiences = %M.value
 	while num_sobol_experience < nb_sobol_experiences: 
 		one_sobol_experimentation()
 		num_sobol_experience += 1
 
 func one_sobol_experimentation() -> void:
-	N = (get_node("%N") as SpinBox).value
-	var div = (get_node("%Div") as SpinBox).value
+	N = %N.value
+	var div = %Div.value
 
 	#display_parameters()
 
@@ -713,7 +706,7 @@ func one_sobol_experimentation() -> void:
 	sauvegarder_resultats_json(chemin, histo)
 	histo=[]
 
-	_reset_values()
+	reset_values_when_Sobol()
 	#capture_screenshot()
 	# Affiche le texte dans le RichTextLabel
 
