@@ -4,15 +4,15 @@ extends MarginContainer
 # Variables modifiables
 # ***********************
 
-var vent: float = 8.1 # debit ventilatoire 
-var vaw: float = 1.5 #volume des voix aérienne
-var valg: float = 1.0 # volume du gaz alvéolaire
-var valb: float = 0.5 # volume de sang alvéolaire
-var q: float = 4.209 # debit cardiaque
-var va: float = 1.7 #volume artériel
-var vv: float = 3.0 #volume veineux
-var patm: float = 101325.0 # presion ambiante
-var fn2: float = 0.79 #fraction d azote dans le gaz respiré
+var vent: 	float = 8.1 # debit ventilatoire 
+var vaw: 	float = 1.5 #volume des voix aérienne
+var valg: 	float = 1.0 # volume du gaz alvéolaire
+var valb: 	float = 0.5 # volume de sang alvéolaire
+var q: 		float = 4.209 # debit cardiaque
+var va: 	float = 1.7 #volume artériel
+var vv: 	float = 3.0 #volume veineux
+var patm: 	float = 101325.0 # presion ambiante
+var fn2: 	float = 0.79 #fraction d azote dans le gaz respiré
 var diving_time = [1,null,null,null,null,null,null,null,null,null]
 var diving_deep = [10,null,null,null,null,null,null,null,null,null]
 
@@ -25,28 +25,28 @@ var diving_deep = [10,null,null,null,null,null,null,null,null,null]
 # Paramètres du modèle
 # ***********************
 
-var alpha_n2:float = 0.0000619 #coef solubilite azote
-var ph2o:float = 6246.0 # presstion partiel de vapeur d eau
-var K1:float = 0.00267 # coef de difusion respiratoire
-var K2:float = 0.00748 # coef de difusion alveolo capilaire
-var K3:float =0.00267
-const R:float = 8.314 # constante des gaz parfait
-var T:float = 310.0 # Temperature en K
-var tmp_t:float = 0.0
-var tmp_s:float = 0.0
-var time:float = 0.0
-var dtINI:float = 0.0009  #variable global de dt permet de changer tout les dt "0.0002 euler" "0.0004 rk4""0.0009 rk6" "RK8 0.0009"
-var dt:float = dtINI
-var diving_stage:int = 1  #iterateur pour le calcule du profil de plongé
-var iteration:int =0 # pas de simulation en cours
-var vc:float =0.5# colume capilaire
+var alpha_n2:float 	= 0.0000619 #coef solubilite azote
+var ph2o:float 		= 6246.0 # presstion partiel de vapeur d eau
+var K1:float 		= 0.00267 # coef de difusion respiratoire
+var K2:float 		= 0.00748 # coef de difusion alveolo capilaire
+var K3:float 		= 0.00267
+const R:float 		= 8.314 # constante des gaz parfait
+var T:float 		= 310.0 # Temperature en K
+var tmp_t:float 	= 0.0
+var tmp_s:float 	= 0.0
+var time:float 		= 0.0
+var dtINI:float 	= 0.0009  #variable global de dt permet de changer tout les dt "0.0002 euler" "0.0004 rk4""0.0009 rk6" "RK8 0.0009"
+var dt:float 		= dtINI
+var diving_stage:int= 1  #iterateur pour le calcule du profil de plongé
+var iteration:int 	= 0 # pas de simulation en cours
+var vc:float 		= 0.5# colume capilaire
+var Vt:float		= 70 # Tissue Volume
 #var Q: float =4.2#debit sanguin
-var kn2 :float =0.0000619# coef solubiliter azote
-var pp_N2_c_t0 : float = 75112.41 #pression partiel initiale capilaire
-var pp_N2_c_t1 = 0#pression partiel courante capilaire
-var pp_N2_ti_t0 :float = 75112.41 # pression partiel initiale tissus
-var pp_N2_ti_t1 = 0# pression partiel courante tissus
-var Vt = 70 # Tissue Volume
+var kn2 :float 		= 0.0000619# coef solubiliter azote
+var pp_N2_c_t0 : float 	= 75112.41 # pression partiel initiale capilaire
+var pp_N2_c_t1 			= 0 #pression partiel courante capilaire
+var pp_N2_ti_t0 :float 	= 75112.41 # pression partiel initiale tissus
+var pp_N2_ti_t1 		= 0 # pression partiel courante tissus
 
 
 # Air paramètres
@@ -336,6 +336,37 @@ func one_step_mono() :
 	time = time + dt
 	iteration = iteration + 1 
 	
+	
+var index_Sobol_A: int =0
+var index_Sobol_B: int =0
+func set_parameters_and_play_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
+	_reset_mono()
+	Vt		= Vt_
+	vc		= vc_
+	valg	= valg_
+	valb 	= valb_
+	va		= va_
+	vv		= vv_
+	vaw		= vaw_
+	q		= q_
+	K1		= K1_
+	K2		= K2_
+	K3		= K3_
+	vent	= vent_
+	#var K3: float=0.00267
+	#var alpha_n2 :float=0.000061
+	one_simulation_with_sobol()
+	
+	return time
+	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
+	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))#capilaire
+	
+	#x1 + x2/10.0 + x3/2
+	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
+	
+
+
+
 #endregion
 
 # ****************************
@@ -373,40 +404,14 @@ func _reset_values():
 	dt = dtINI
 	diving_time = [1,null,null,null,null,null,null,null,null,null]
 	diving_deep = [10,null,null,null,null,null,null,null,null,null]
-	Vt=70
+	Vt = %Vt.value
 	vc = 0.5
 	K1 = 0.00267 # coef de difusion respiratoire
 	K2 = 0.00748 # coef de difusion alveolo capilaire
 	K3 =0.00267
 	
 
-var index_Sobol_A: int =0
-var index_Sobol_B: int =0
-func set_model_parameters_for_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
-	_reset_mono()
-	Vt=Vt_
-	vc=vc_
-	valg=valg_
-	valb = valb_
-	va=va_
-	vv=vv_
-	vaw=vaw_
-	q=q_
-	K1=K1_
-	K2=K2_
-	K3=K3_
-	vent=vent_
-	#var K3: float=0.00267
-	#var alpha_n2 :float=0.000061
-	one_simulation_with_sobol()
-	
-	return time
-	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
-	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))#capilaire
-	
-	#x1 + x2/10.0 + x3/2
-	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
-	
+
 	
 func _reset_mono():
 	#vent = 8.1 # debit ventilatoire 
@@ -456,47 +461,8 @@ func _reset_mono():
 	
 	pp_N2_c_t0 = 75112.41
 	pp_N2_c_t1 = 0.0
-	
-# # ***********************
-# # Fonction de reset Pour les courbes
-# # ***********************
-# func _reset_valuesCourbe(): 
-# 	iteration =0
-# 	time = 0.0
-# 	patm = 101325.0
-# 	pp_N2_air = 0.0
-# 	pp_N2_aw_t0 = 75112.41
-# 	pp_N2_aw_t1 = 0.0
-# 	pp_N2_alv_t0 = 75112.41
-# 	pp_N2_alv_t1 = 0.0
-# 	pp_N2_alb_t0 = 75112.41
-# 	pp_N2_alb_t1 = 0.0
-# 	pp_N2_v_t0 = 75112.41
-# 	pp_N2_v_t1 = 0.0
-# 	pp_N2_a_t0 = 75112.41
-# 	pp_N2_a_t1 = 0.0
-	
-	
-	
-# 	tmp_t = 0.0
-# 	tmp_s = 0.0
-# 	vent = 8.1
-# 	vaw = 1.5
-# 	valg = 1.0
-# 	valb = 0.5
-# 	q = 4.2
-# 	va = 1.7
-# 	vv = 3.0
-# 	patm = 101325.0
-# 	fn2 = 0.79
-# 	dt = dtINI
-# ***********************
-# Variable change functions
-# *********************** 
-
 
 #endregion
-
 
 
 
@@ -505,23 +471,23 @@ func _reset_mono():
 ###############################################################
 #region Sobol
 
-var l =0 
+var l =0 # Current sample among N
 
-var ax1 : Array[float] = [];  var bx1 : Array[float] = []
-var ax2 : Array[float] = [];  var bx2 : Array[float] = []
-var ax3 : Array[float] = [];  var bx3 : Array[float] = []
-var ax4 : Array[float] = []; var bx4 : Array[float] = []
-var ax5 : Array[float] = []; var bx5 : Array[float] = []
-var ax6 : Array[float] = []; var bx6 : Array[float] = []
-var ax7 : Array[float] = []; var bx7 : Array[float] = []
-var ax8 : Array[float] = []; var bx8 : Array[float] = []
-var ax9 : Array[float] = []; var bx9 : Array[float] = []
-var ax10 : Array[float] = []; var bx10 : Array[float] = []
-var ax11 : Array[float] = []; var bx11 : Array[float] = []
-var ax12 : Array[float] = []; var bx12 : Array[float] = []
-var start_time:int=0
-var end_time:int=0
-var histo:Array = []
+var ax1  : Array[float] = [];  var bx1 : Array[float]  = []
+var ax2  : Array[float] = [];  var bx2 : Array[float]  = []
+var ax3  : Array[float] = [];  var bx3 : Array[float]  = []
+var ax4  : Array[float] = [];  var bx4 : Array[float]  = []
+var ax5  : Array[float] = [];  var bx5 : Array[float]  = []
+var ax6  : Array[float] = [];  var bx6 : Array[float]  = []
+var ax7  : Array[float] = [];  var bx7 : Array[float]  = []
+var ax8  : Array[float] = [];  var bx8 : Array[float]  = []
+var ax9  : Array[float] = [];  var bx9 : Array[float]  = []
+var ax10 : Array[float] = [];  var bx10 : Array[float] = []
+var ax11 : Array[float] = [];  var bx11 : Array[float] = []
+var ax12 : Array[float] = [];  var bx12 : Array[float] = []
+var start_time:int = 0
+var end_time:int   = 0
+var histo:Array    = []
 var nb_sobol_experiences:int = 1 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plusieurs Sobol)
 var num_sobol_experience:int = 0
 var  N:int = 100 # Nombre d'echantillon
@@ -539,14 +505,15 @@ func one_sobol_experimentation() -> void:
 
 	#display_parameters()
 
+	# Initialisation de l'histogramme
 	for i in range(div):
 		histo.append(0)
+	
 	start_time = Time.get_ticks_msec()
-	#print("Sobol Analysis start at " + str(Time.get_ticks_msec() )+"in ms" )
-	print("Sobol Analysis start at " + str(start_time)+"in ms" )
+	print("Sobol Analysis start at " + str(start_time)+" in ms" )
 
 	var panel := %ResultBox
-	var rng := RandomNumberGenerator.new()
+	var rng   := RandomNumberGenerator.new()
 	
 	rng.randomize()   # graine aléatoire basée sur l’horloge
 	#rng.seed = 1                             # reproductibilité
@@ -590,13 +557,13 @@ func one_sobol_experimentation() -> void:
 	for l in range(N):
 		#print ("l="+str(l))
 		#toto = l
-		YA[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YA[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
 		
 		if YA[l]>= 10 and YA[l]<=20:
 			var p:int = int(((YA[l]-10)*10))
 			histo[p]+=1
 			
-		YB[l] = set_model_parameters_for_sobol(bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l])
+		YB[l] = set_parameters_and_play_sobol(bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l])
 		if YB[l]>= 10 and YB[l]<=20:
 			var p:int = int(((YB[l]-10)*10))
 			histo[p]+=1
@@ -620,18 +587,18 @@ func one_sobol_experimentation() -> void:
 		#YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
 		## i = 2 : on prend x3 de B, les autres de A
 		#YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
-		YAB0[l] = set_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB3[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB4[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB5[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB6[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB7[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB8[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l])
-		YAB9[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l])
-		YAB10[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l])
-		YAB11[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l])
+		YAB0[l] = set_parameters_and_play_sobol(bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB1[l] = set_parameters_and_play_sobol(ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB2[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB3[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB4[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB5[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB6[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB7[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YAB8[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l])
+		YAB9[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l])
+		YAB10[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l])
+		YAB11[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l])
 	print("5 - " + str(Time.get_ticks_msec() ) )
 
 
