@@ -241,45 +241,56 @@ func single_simulation_Sobol_A() -> void:
 func single_simulation_Sobol_B() -> void:
 	single_simu(Sob.B)
 	
-func single_simu(s:Sob) -> void:
-	if s == Sob.A:
-		Vt 		= ax1[index_Sobol_A] 
-		vc 		= ax2[index_Sobol_A] 
-		valg 	= ax3[index_Sobol_A]
-		valb 	= ax4[index_Sobol_A] 
-		va 		= ax5[index_Sobol_A] 
-		vv 		= ax6[index_Sobol_A] 
-		vaw 	= ax7[index_Sobol_A] 
-		q 		= ax8[index_Sobol_A] 
-		K1 		= ax9[index_Sobol_A] 
-		K2 		= ax10[index_Sobol_A] 
-		K3 		= ax11[index_Sobol_A]
-		index_Sobol_A += 1
-	if s == Sob.B:
-		# Parametres variables pour B
-		Vt 		= bx1[index_Sobol_B]
-		vc 		= bx2[index_Sobol_B]
-		valg 	= bx3[index_Sobol_B]
-		valb 	= bx4[index_Sobol_B]
-		va 		= bx5[index_Sobol_B]
-		vv 		= bx6[index_Sobol_B]
-		vaw 	= bx7[index_Sobol_B]
-		q 		= bx8[index_Sobol_B]
-		K1 		= bx9[index_Sobol_B]
-		K2 		= bx10[index_Sobol_B]
-		K3 		= bx11[index_Sobol_B]
-		index_Sobol_B += 1
+func single_simu(params:Array, curve:bool) -> void:
+	Vt 		= params[0] 
+	vc 		= params[1] 
+	valg 	= params[2]
+	valb 	= params[3] 
+	va 		= params[4] 
+	vv 		= params[5] 
+	vaw 	= params[6] 
+	q 		= params[7] 
+	K1 		= params[8] 
+	K2 		= params[9] 
+	K3 		= params[10]
+
+	# Vt 		= ax1[index_Sobol_A] 
+	# vc 		= ax2[index_Sobol_A] 
+	# valg 	= ax3[index_Sobol_A]
+	# valb 	= ax4[index_Sobol_A] 
+	# va 		= ax5[index_Sobol_A] 
+	# vv 		= ax6[index_Sobol_A] 
+	# vaw 	= ax7[index_Sobol_A] 
+	# q 		= ax8[index_Sobol_A] 
+	# K1 		= ax9[index_Sobol_A] 
+	# K2 		= ax10[index_Sobol_A] 
+	# K3 		= ax11[index_Sobol_A]
+	#index_Sobol_A += 1
+	# Parametres variables pour B
+	# Vt 		= bx1[index_Sobol_B]
+	# vc 		= bx2[index_Sobol_B]
+	# valg 	= bx3[index_Sobol_B]
+	# valb 	= bx4[index_Sobol_B]
+	# va 		= bx5[index_Sobol_B]
+	# vv 		= bx6[index_Sobol_B]
+	# vaw 	= bx7[index_Sobol_B]
+	# q 		= bx8[index_Sobol_B]
+	# K1 		= bx9[index_Sobol_B]
+	# K2 		= bx10[index_Sobol_B]
+	# K3 		= bx11[index_Sobol_B]
+	#index_Sobol_B += 1
 
 	# Parametres stables mais a re-initialiser
 	_reset_mono()
 
-	# Créer un nouveau plot avec un label unique et une couleur dynamique
-	var grey:int = randf()*0.5 + 0.5
-	my_plotti = %Graph2D.add_plot_item(  
-			"Plot %d" % [%Graph2D.count()],
-			[Color(grey, grey, grey)][%Graph2D.count() % 1],
-			[1.0, 1.0, 1.0].pick_random()
-			)
+	if curve == true:
+		# Créer un nouveau plot avec un label unique et une couleur dynamique
+		var grey:int = randf()*0.5 + 0.5
+		my_plotti = %Graph2D.add_plot_item(  
+				"Plot %d" % [%Graph2D.count()],
+				[Color(grey, grey, grey)][%Graph2D.count() % 1],
+				[1.0, 1.0, 1.0].pick_random()
+				)
 	
 	var x: float = 0.0  # Initialize the x value
 	var y: float = 0.0  # Initialize the y value
@@ -289,13 +300,13 @@ func single_simu(s:Sob) -> void:
 	var time_dist:int = int(floor(max_points / 1360.0))
 	while time < duration:
 		one_step_mono() # Simulation of one step
-		if iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
+		if curve == true and iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
 			x = time  # Increment x 
 			y = pp_N2_ti_t0  # increment  y 
 			# Add the point (x, y) to the plot
 			my_plotti.add_point(Vector2(x, y))
 		#_reset_valuesCourbe()
-	print("Plot updated with points!")
+	#print("Plot updated with points!")
 
 
 ## fonction step pour 1 seul tissue
@@ -535,13 +546,13 @@ func _on_one_sobol_experimentation() -> void:
 	for l in range(N):
 		#print ("l="+str(l))
 		#toto = l
-		YA[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
+		YA[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
 		
 		if YA[l]>= 10 and YA[l]<=20:
 			var p:int = int(((YA[l]-10)*10))
 			histo[p]+=1
 			
-		YB[l] = set_parameters_and_play_sobol(bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l])
+		YB[l] = single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
 		if YB[l]>= 10 and YB[l]<=20:
 			var p:int = int(((YB[l]-10)*10))
 			histo[p]+=1
@@ -565,18 +576,18 @@ func _on_one_sobol_experimentation() -> void:
 		#YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
 		## i = 2 : on prend x3 de B, les autres de A
 		#YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
-		YAB0[l] = set_parameters_and_play_sobol(bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB1[l] = set_parameters_and_play_sobol(ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB2[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB3[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB4[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB5[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB6[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB7[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l])
-		YAB8[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l])
-		YAB9[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l])
-		YAB10[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l])
-		YAB11[l] = set_parameters_and_play_sobol(ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l])
+		YAB0[l] = single_simu([ bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB1[l] = single_simu([ ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB2[l] = single_simu([ ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB3[l] = single_simu([ ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB4[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB5[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB6[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB7[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB8[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB9[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l] ], false)
+		YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ], false)
+		YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ], false)
 	print("5 - " + str(Time.get_ticks_msec() ) )
 
 
