@@ -230,10 +230,6 @@ func tissue_mono():
 
 # Diagram
 var my_plotti : PlotItem = null
-#var swapti: bool = true
-
-#enum Sob {NONE,A,B}
-
 	
 func single_simu(params:Array, curve:bool) -> float:
 	Vt 		= params[0] 
@@ -247,32 +243,6 @@ func single_simu(params:Array, curve:bool) -> float:
 	K1 		= params[8] 
 	K2 		= params[9] 
 	K3 		= params[10]
-
-	# Vt 		= ax1[index_Sobol_A] 
-	# vc 		= ax2[index_Sobol_A] 
-	# valg 	= ax3[index_Sobol_A]
-	# valb 	= ax4[index_Sobol_A] 
-	# va 		= ax5[index_Sobol_A] 
-	# vv 		= ax6[index_Sobol_A] 
-	# vaw 	= ax7[index_Sobol_A] 
-	# q 		= ax8[index_Sobol_A] 
-	# K1 		= ax9[index_Sobol_A] 
-	# K2 		= ax10[index_Sobol_A] 
-	# K3 		= ax11[index_Sobol_A]
-	#index_Sobol_A += 1
-	# Parametres variables pour B
-	# Vt 		= bx1[index_Sobol_B]
-	# vc 		= bx2[index_Sobol_B]
-	# valg 	= bx3[index_Sobol_B]
-	# valb 	= bx4[index_Sobol_B]
-	# va 		= bx5[index_Sobol_B]
-	# vv 		= bx6[index_Sobol_B]
-	# vaw 	= bx7[index_Sobol_B]
-	# q 		= bx8[index_Sobol_B]
-	# K1 		= bx9[index_Sobol_B]
-	# K2 		= bx10[index_Sobol_B]
-	# K3 		= bx11[index_Sobol_B]
-	#index_Sobol_B += 1
 
 	# Parametres stables mais a re-initialiser
 	_reset_mono()
@@ -340,9 +310,6 @@ func one_step_mono() :
 	time = time + dt
 	iteration = iteration + 1 
 	
-	
-var index_Sobol_A: int =0
-var index_Sobol_B: int =0
 func set_parameters_and_play_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
 	_reset_mono()
 	Vt		= Vt_
@@ -527,8 +494,6 @@ func _on_one_sobol_experimentation() -> void:
 		single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
 		single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
 	print("1 - " + str(Time.get_ticks_msec() ) )
-	index_Sobol_A = 0
-	index_Sobol_B = 0
 
 	# ─────────────────────────────────────────────────────────────
 	# 2) Évaluations du modèle  f(A)  et  f(B)
