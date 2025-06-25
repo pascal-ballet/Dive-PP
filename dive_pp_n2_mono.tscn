@@ -270,7 +270,7 @@ layout_mode = 2
 theme_override_fonts/normal_font = SubResource("FontFile_0resv")
 bbcode_enabled = true
 
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/PlayMono" to="." method="single_simulation"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/SingleSobolMono" to="." method="one_sobol_experimentation"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/MutipleSobolMono" to="." method="multiple_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/PlayMono" to="." method="_on_single_simulation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/SingleSobolMono" to="." method="_on_one_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/MutipleSobolMono" to="." method="_on_multiple_sobol_experimentation"]
 [connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
