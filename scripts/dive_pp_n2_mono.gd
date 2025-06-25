@@ -232,16 +232,10 @@ func tissue_mono():
 var my_plotti : PlotItem = null
 #var swapti: bool = true
 
-enum Sob {NONE,A,B}
+#enum Sob {NONE,A,B}
 
-
-func single_simulation_Sobol_A() -> void:
-	single_simu(Sob.A)
-
-func single_simulation_Sobol_B() -> void:
-	single_simu(Sob.B)
 	
-func single_simu(params:Array, curve:bool) -> void:
+func single_simu(params:Array, curve:bool) -> float:
 	Vt 		= params[0] 
 	vc 		= params[1] 
 	valg 	= params[2]
@@ -285,7 +279,7 @@ func single_simu(params:Array, curve:bool) -> void:
 
 	if curve == true:
 		# Créer un nouveau plot avec un label unique et une couleur dynamique
-		var grey:int = randf()*0.5 + 0.5
+		var grey:int = int(randf()*0.5 + 0.5)
 		my_plotti = %Graph2D.add_plot_item(  
 				"Plot %d" % [%Graph2D.count()],
 				[Color(grey, grey, grey)][%Graph2D.count() % 1],
@@ -307,6 +301,7 @@ func single_simu(params:Array, curve:bool) -> void:
 			my_plotti.add_point(Vector2(x, y))
 		#_reset_valuesCourbe()
 	#print("Plot updated with points!")
+	return time
 
 
 ## fonction step pour 1 seul tissue
@@ -480,7 +475,7 @@ var  N:int = 100 # Nombre d'echantillon
 
 
 func _on_single_simulation() -> void:
-	single_simu(Sob.NONE)
+	single_simu([Vt,vc,valg,valb,va,vv,vaw,q,K1,K2,K3,vent], true)
 
 func _on_multiple_sobol_experimentation() ->void:
 	M = %M.value
@@ -529,8 +524,8 @@ func _on_one_sobol_experimentation() -> void:
 		ax10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2);    bx10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2)#k2
 		ax11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2);    bx11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2)#k3
 		ax12[l] = vent + rng.randf_range(-0.81*2, 0.81*2);   bx12[l] = vent + rng.randf_range(-0.81*2, 0.81*2)#vt
-		single_simulation_Sobol_A()
-		single_simulation_Sobol_B()
+		single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
 	print("1 - " + str(Time.get_ticks_msec() ) )
 	index_Sobol_A = 0
 	index_Sobol_B = 0
