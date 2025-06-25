@@ -234,8 +234,6 @@ var my_plotti : PlotItem = null
 
 enum Sob {NONE,A,B}
 
-func single_simulation() -> void:
-	single_simu(Sob.NONE)
 
 func single_simulation_Sobol_A() -> void:
 	single_simu(Sob.A)
@@ -396,25 +394,9 @@ func reset_values_when_Sobol():
 
 func _reset_mono():
 	reset_parameters()
-	#vent = 8.1 # debit ventilatoire 
-	#vaw = 1.5 #volume des voix aérienne
-	#valg = 1.0 # volume du gaz alvéolaire
-	#valb = 0.5 # volume de sang alvéolaire
-	#q= 4.209 # debit cardiaque
-	#va = 1.7 #volume artériel
-	#vv = 3.0 #volume veineux
-	
-	#alpha_n2 = 0.0000619 #coef solubilite azote
-	#ph2o = 6246.0 # pression partiel de vapeur d ea
-	#K1 = 0.00267 # coef de difusion respiratoire
-	#K2 = 0.00748 # coef de difusion alveolo capilaire
-	#K3 = 0.000267
-	#T = 310.0 # Temperature en K
+
 	diving_stage = 1
-	iteration = 0 
-	#vc = 0.5
-	#kn2 = 0.0000619# coef solubiliter azote
-	#Vt = 70
+	iteration = 0
 		
 	pp_N2_ti_t0 = 75112.41
 	pp_N2_ti_t1 = 0.0
@@ -481,18 +463,21 @@ var ax12 : Array[float] = [];  var bx12 : Array[float] = []
 var start_time:int = 0
 var end_time:int   = 0
 var histo:Array    = []
-var nb_sobol_experiences:int = 1 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plusieurs Sobol)
+var M:int = 1 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plusieurs Sobol)
 var num_sobol_experience:int = 0
 var  N:int = 100 # Nombre d'echantillon
 
 
-func multiple_sobol_experimentation() ->void:
-	nb_sobol_experiences = %M.value
-	while num_sobol_experience < nb_sobol_experiences: 
-		one_sobol_experimentation()
+func _on_single_simulation() -> void:
+	single_simu(Sob.NONE)
+
+func _on_multiple_sobol_experimentation() ->void:
+	M = %M.value
+	while num_sobol_experience < M: 
+		_on_one_sobol_experimentation()
 		num_sobol_experience += 1
 
-func one_sobol_experimentation() -> void:
+func _on_one_sobol_experimentation() -> void:
 	N = %N.value
 	var div = %Div.value
 
@@ -691,7 +676,7 @@ func one_sobol_experimentation() -> void:
 	display_text += "vent (12)   :   %.4f                          |   %.4f\n" % [S[11], ST[11]]
 	print(histo)
 	creer_dossier_si_absent(save_folder)
-	var chemin = get_chemin_fichier(nb_sobol_experiences)
+	var chemin = get_chemin_fichier(M)
 	#get_node("TabContainer/Graph/Control/ResultBox/SobolResults").text = display_text
 	var sobol_node=%SobolResults
 	sobol_node.bbcode_enabled = true
@@ -726,10 +711,10 @@ func one_sobol_experimentation() -> void:
 #region display
 
 func display_parameters() :
-	if num_sobol_experience > 0 and num_sobol_experience < nb_sobol_experiences-1:
+	if num_sobol_experience > 0 and num_sobol_experience < M-1:
 		return
 	print("***************************************************************************************")
-	print("nb_sobol_experiences =", nb_sobol_experiences)
+	print("M =", M)
 	print("N =", N)
 	print("num_sobol_experience =", num_sobol_experience)
 	print("vent =", vent)
