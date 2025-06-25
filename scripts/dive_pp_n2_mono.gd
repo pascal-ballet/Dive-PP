@@ -25,8 +25,8 @@ var diving_deep = [10,null,null,null,null,null,null,null,null,null]
 # Paramètres du modèle
 # ***********************
 
-const alpha_n2:float 	= 0.0000619 #coef solubilite azote
-const ph2o:float 		= 6246.0 # presstion partiel de vapeur d eau
+const alpha_n2:float= 0.0000619 #coef solubilite azote
+const ph2o:float 	= 6246.0 # presstion partiel de vapeur d eau
 var K1:float 		= 0.00267 # coef de difusion respiratoire
 var K2:float 		= 0.00748 # coef de difusion alveolo capilaire
 var K3:float 		= 0.00267
@@ -44,9 +44,9 @@ var Vt:float		= 70 # Tissue Volume
 #var Q: float =4.2#debit sanguin
 const kn2 :float 		= 0.0000619# coef solubiliter azote
 var pp_N2_c_t0 : float 	= 75112.41 # pression partiel initiale capilaire
-var pp_N2_c_t1 			= 0 #pression partiel courante capilaire
-var pp_N2_ti_t0 :float 	= 75112.41 # pression partiel initiale tissus
-var pp_N2_ti_t1 		= 0 # pression partiel courante tissus
+var pp_N2_c_t1 : float	= 0 #pression partiel courante capilaire
+var pp_N2_ti_t0: float 	= 75112.41 # pression partiel initiale tissus
+var pp_N2_ti_t1: float 	= 0 # pression partiel courante tissus
 
 
 # Air paramètres
@@ -407,9 +407,6 @@ func reset_parameters():
 
 	dt = dtINI
 
-
-
-
 #endregion
 
 
@@ -418,8 +415,6 @@ func reset_parameters():
 #Analyse de sobol 1 tissue
 ###############################################################
 #region Sobol
-
-#var l =0 # Current sample among N
 
 var ax1  : Array[float] = [];  var bx1 : Array[float]  = []
 var ax2  : Array[float] = [];  var bx2 : Array[float]  = []
@@ -463,7 +458,6 @@ func _on_one_sobol_experimentation() -> void:
 	start_time = Time.get_ticks_msec()
 	print("Sobol Analysis start at " + str(start_time)+" in ms" )
 
-	var panel := %ResultBox
 	var rng   := RandomNumberGenerator.new()
 	
 	rng.randomize()   # graine aléatoire basée sur l’horloge
@@ -549,7 +543,6 @@ func _on_one_sobol_experimentation() -> void:
 		YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ], false)
 		YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ], false)
 	print("5 - " + str(Time.get_ticks_msec() ) )
-
 
 	# ─────────────────────────────────────────────────────────────
 	# 4) Variance totale de la sortie
@@ -648,30 +641,23 @@ func _on_one_sobol_experimentation() -> void:
 	print(histo)
 	creer_dossier_si_absent(save_folder)
 	var chemin = get_chemin_fichier(M)
-	#get_node("TabContainer/Graph/Control/ResultBox/SobolResults").text = display_text
+
 	var sobol_node=%SobolResults
 	sobol_node.bbcode_enabled = true
 	sobol_node.bbcode_text = display_text
-	#await get_tree().process_frame
-	#await get_tree().process_frame
+
 	capture_screenshot()
-	#get_node("TabContainer/Graph/Control/ResultBox/SobolResults").clear()
-	#get_node(".../SobolResults").queue_redraw()
-	#await get_tree().process_frame  #
 	
 	sauvegarder_resultats_json(chemin, histo)
 	histo=[]
 
 	reset_values_when_Sobol()
-	#capture_screenshot()
-	# Affiche le texte dans le RichTextLabel
+	# capture_screenshot()
+	# Sᵢ : Indice de Sobol de premier ordre
+	# Part de la variance de la sortie due uniquement à la variable xᵢ prise seule.
 
-	#get_tree().quit()  # ferme l’application Godot
-	#Sᵢ : Indice de Sobol de premier ordre
-	#Part de la variance de la sortie due uniquement à la variable xᵢ prise seule.
-
-	#Sₜᵢ : Indice de Sobol total
-	#Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
+	# Sₜᵢ : Indice de Sobol total
+	# Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
 
 #endregion
 
@@ -746,10 +732,7 @@ func _on_remove_all_plots_pressed() -> void:
 	print("press remove !")
 	
 
-
 #endregion
-
-
 
 
 # **********************
@@ -790,8 +773,6 @@ func creer_dossier_si_absent(chemin: String) -> void:
 
 
 	
-
-
 
 # ────────────────────────────────────────────────────────────────────
 # Fonctions utilitaires
