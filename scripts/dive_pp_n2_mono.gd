@@ -262,7 +262,9 @@ func single_simu(params:Array, curve:bool) -> float:
 	var duration:float  = 120
 	var max_points:float = duration / dt
 	var time_dist:int = int(floor(max_points / 1360.0))
-	while time < duration:
+	var half_pressure : float = 75112.41 * 1.5 #TODO a changer par (pression init + pression final)/2 
+	while pp_N2_ti_t0 < half_pressure:
+	#while time < duration:
 		one_step_mono() # Simulation of one step
 		if curve == true and iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
 			x = time  # Increment x 
@@ -310,34 +312,6 @@ func one_step_mono() :
 	time = time + dt
 	iteration = iteration + 1 
 	
-func set_parameters_and_play_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
-	_reset_mono()
-	Vt		= Vt_
-	vc		= vc_
-	valg	= valg_
-	valb 	= valb_
-	va		= va_
-	vv		= vv_
-	vaw		= vaw_
-	q		= q_
-	K1		= K1_
-	K2		= K2_
-	K3		= K3_
-	vent	= vent_
-	#var K3: float=0.00267
-	#var alpha_n2 :float=0.000061
-	one_simulation_with_sobol()
-	
-	return time
-	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
-	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))#capilaire
-	
-	#x1 + x2/10.0 + x3/2
-	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
-	
-
-
-
 #endregion
 
 # ****************************
@@ -646,9 +620,9 @@ func _on_one_sobol_experimentation() -> void:
 	sobol_node.bbcode_enabled = true
 	sobol_node.bbcode_text = display_text
 
-	capture_screenshot()
+	#capture_screenshot()
 	
-	sauvegarder_resultats_json(chemin, histo)
+	#sauvegarder_resultats_json(chemin, histo)
 	histo=[]
 
 	reset_values_when_Sobol()
