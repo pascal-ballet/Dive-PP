@@ -83,6 +83,9 @@ fit_content = true
 [node name="ProgressBarMono" type="ProgressBar" parent="VBoxContainer/TabContainer/Mono Tissue"]
 unique_name_in_owner = true
 layout_mode = 2
+step = 0.0
+allow_greater = true
+allow_lesser = true
 
 [node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
 layout_mode = 2
@@ -156,7 +159,7 @@ text = "N = "
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 100000.0
-value = 10.0
+value = 2.0
 custom_arrow_step = 1.0
 
 [node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]

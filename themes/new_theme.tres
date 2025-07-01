@@ -1,0 +1,8 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://xfrndc4dfjtd"]
+
+[sub_resource type="SystemFont" id="SystemFont_mun0v"]
+
+[resource]
+default_base_scale = 1.0
+default_font = SubResource("SystemFont_mun0v")
+default_font_size = 14

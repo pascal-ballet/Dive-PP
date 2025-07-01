@@ -232,6 +232,9 @@ func tissue_mono():
 var my_plotti : PlotItem = null
 	
 func single_simu(params:Array, curve:bool) -> float:
+	
+	reset_parameters_total()
+	
 	Vt 		= params[0] 
 	vc 		= params[1] 
 	valg 	= params[2]
@@ -245,7 +248,7 @@ func single_simu(params:Array, curve:bool) -> float:
 	K3 		= params[10]
 
 	# Parametres stables mais a re-initialiser
-	_reset_mono()
+	#_reset_mono()
 
 	if curve == true:
 		# Créer un nouveau plot avec un label unique et une couleur dynamique
@@ -319,29 +322,10 @@ func one_step_mono() :
 # ****************************
 #region ResetParameters
 
-# Fonction de reset quand stop est pressé
-func reset_values_when_Sobol(): 
-	reset_parameters()	
-	vent = 8.1
-	vaw = 1.5
-	valg = 1.0
-	valb = 0.5
-	q = 4.2
-	va = 1.7
-	vv = 3.0
-	patm = 101325.0
-	diving_time = [1,null,null,null,null,null,null,null,null,null]
-	diving_deep = [10,null,null,null,null,null,null,null,null,null]
-	Vt = %Vt.value
-	vc = 0.5
-	K1 = 0.00267 # coef de difusion respiratoire
-	K2 = 0.00748 # coef de difusion alveolo capilaire
-	K3 =0.00267
-	
+func reset_parameters_total():
+	time = 0.0
 
-func _reset_mono():
-	reset_parameters()
-
+	#### ex reset_mono()
 	diving_stage = 1
 	iteration = 0
 		
@@ -351,10 +335,10 @@ func _reset_mono():
 	pp_N2_c_t0 = 75112.41
 	pp_N2_c_t1 = 0.0
 
+	####
 
-func reset_parameters():
-	time = 0.0
 
+	#### ex reset_parameters()
 	fn2 = 0.79 #fraction d azote dans le gaz respiré 
 
 	patm = 101325.0
@@ -380,6 +364,88 @@ func reset_parameters():
 	tmp_s = 0.0
 
 	dt = dtINI
+	####
+
+	#### ex reset_values_when_Sobol()
+	vent = 8.1
+	vaw = 1.5
+	valg = 1.0
+	valb = 0.5
+	q = 4.2
+	va = 1.7
+	vv = 3.0
+	patm = 101325.0
+	diving_time = [1,null,null,null,null,null,null,null,null,null]
+	diving_deep = [10,null,null,null,null,null,null,null,null,null]
+	Vt = %Vt.value
+	vc = 0.5
+	K1 = 0.00267 # coef de diffusion respiratoire
+	K2 = 0.00748 # coef de diffusion alveolo capilaire
+	K3 =0.00267
+	####
+
+
+# Fonction de reset quand stop est pressé
+# func reset_values_when_Sobol(): 
+# 	reset_parameters()	
+# 	vent = 8.1
+# 	vaw = 1.5
+# 	valg = 1.0
+# 	valb = 0.5
+# 	q = 4.2
+# 	va = 1.7
+# 	vv = 3.0
+# 	patm = 101325.0
+# 	diving_time = [1,null,null,null,null,null,null,null,null,null]
+# 	diving_deep = [10,null,null,null,null,null,null,null,null,null]
+# 	Vt = %Vt.value
+# 	vc = 0.5
+# 	K1 = 0.00267 # coef de diffusion respiratoire
+# 	K2 = 0.00748 # coef de diffusion alveolo capilaire
+# 	K3 =0.00267
+	
+
+# func _reset_mono():
+# 	reset_parameters()
+
+# 	diving_stage = 1
+# 	iteration = 0
+		
+# 	pp_N2_ti_t0 = 75112.41
+# 	pp_N2_ti_t1 = 0.0
+	
+# 	pp_N2_c_t0 = 75112.41
+# 	pp_N2_c_t1 = 0.0
+
+
+# func reset_parameters():
+# 	time = 0.0
+
+# 	fn2 = 0.79 #fraction d azote dans le gaz respiré 
+
+# 	patm = 101325.0
+
+# 	pp_N2_air = 0.0
+
+# 	pp_N2_aw_t0 = 75112.41
+# 	pp_N2_aw_t1 = 0.0
+
+# 	pp_N2_alv_t0 = 75112.41
+# 	pp_N2_alv_t1 = 0.0
+	
+# 	pp_N2_alb_t0 = 75112.41
+# 	pp_N2_alb_t1 = 0.0
+	
+# 	pp_N2_v_t0 = 75112.41
+# 	pp_N2_v_t1 = 0.0
+	
+# 	pp_N2_a_t0 = 75112.41
+# 	pp_N2_a_t1 = 0.0
+
+# 	tmp_t = 0.0
+# 	tmp_s = 0.0
+
+# 	dt = dtINI
 
 #endregion
 
@@ -413,7 +479,7 @@ enum PlayMode {STOP, SINGLE, SOBOL, MULTIPLE}
 
 var play_mode:PlayMode = PlayMode.STOP
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if play_mode == PlayMode.MULTIPLE:
 		if num_sobol_experience < M:
 			_on_one_sobol_experimentation()
@@ -433,8 +499,8 @@ func _on_single_simulation() -> void:
 func _on_multiple_sobol_experimentation() ->void:
 	M = %M.value
 	play_mode = PlayMode.MULTIPLE
-	%ProgressBarMono.max_value = M
-	%ProgressBarMono.value = 1
+	#%ProgressBarMono.max_value = M
+	#%ProgressBarMono.value = 1
 
 	# while num_sobol_experience < M:
 	# 	_on_one_sobol_experimentation()
@@ -443,8 +509,8 @@ func _on_multiple_sobol_experimentation() ->void:
 func _on_one_sobol_experimentation() -> void:
 	N = %N.value
 	play_mode = PlayMode.SOBOL
-	%ProgressBarMono.max_value = 6
-	%ProgressBarMono.value = 1
+	#%ProgressBarMono.max_value = 6
+	#%ProgressBarMono.value = 1
 	one_sobol_stage = 0
 
 
@@ -453,6 +519,8 @@ func _on_one_sobol_experimentation() -> void:
 
 
 var one_sobol_stage:int = 0
+var l:int = 0 # Current Sobol Sample in Computation (between 0 and N-1)
+var DEBUG:int = 0 #0 no debug, 1 display all parameters values, 2 display time in ms and progress bar value
 var rng   := RandomNumberGenerator.new()
 var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []; var YAB3 : Array[float] = [];var YAB4 : Array[float] = []; var YAB5 : Array[float] = []; var YAB6 : Array[float] = []; var YAB7 : Array[float] = []; var YAB8 : Array[float] = []; var YAB9 : Array[float] = []; var YAB10 : Array[float] = []; var YAB11 : Array[float] = []
 var all_Y : Array[float]
@@ -464,10 +532,21 @@ var VY
 func one_sobol_experimentation() -> void:
 	var div = %Div.value
 
-	#display_parameters()
-	%ProgressBarMono.value = one_sobol_stage + 1
+	if DEBUG == 1:
+		if one_sobol_stage == 0:
+			print("***************************************************************************************")
+		else:
+			print()
+		print(">>>>> one_sobol_stage = " + str(one_sobol_stage) + " <<<<<<")
+		display_parameters()
+
+	var pgr_b:float = ( (l+0.0)/N+(one_sobol_stage/6.0) ) * 50.0    #(one_sobol_stage + l) / (6.0 + N)
+	if DEBUG == 2:
+		print("pgr_b = " + str(pgr_b))
+	%ProgressBarMono.value = pgr_b
 	
 	if one_sobol_stage == 0:
+		l = 0
 		# Initialisation de l'histogramme
 		for i in range(div):
 			histo.append(0)
@@ -494,21 +573,22 @@ func one_sobol_experimentation() -> void:
 		
 		print("Array creation at " + str(Time.get_ticks_msec() ) )
 
-		for l in range(N):#variation de 20% (+/- 10%)
-			ax1[l] = Vt + rng.randf_range(-14, 14);   bx1[l] = Vt + rng.randf_range(-14, 14)#vt
-			ax2[l] = vc + rng.randf_range(-0.10, 0.1); bx2[l] = vc + rng.randf_range(-0.1, 0.1)#vc
-			ax3[l] = valg + rng.randf_range(-0.2, 0.2);   bx3[l] = valg + rng.randf_range(-0.2, 0.2)#valg
-			ax4[l] = valb + rng.randf_range(-0.1, 0.1);    bx4[l] = valb + rng.randf_range(-0.1, 0.1)#valb
-			ax5[l] = va + rng.randf_range(-0.34, 0.34);    bx5[l] = va + rng.randf_range(-0.34, 0.34)#va
-			ax6[l] = vv + rng.randf_range(-0.6, 0.6);    bx6[l] = vv + rng.randf_range(-0.6, 0.6)#vv
-			ax7[l] = vaw + rng.randf_range(-0.30, 0.30);    bx7[l] = vaw + rng.randf_range(-0.30, 0.30)#vaw
-			ax8[l] = q + rng.randf_range(-0.8, 0.8);    bx8[l] = q + rng.randf_range(-0.8, 0.8)#q
-			ax9[l] = K1 + rng.randf_range(-0.000267*2, 0.000267*2);    bx9[l] = K1 + rng.randf_range(-0.000267*2, 0.000267*2)#k1
-			ax10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2);    bx10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2)#k2
-			ax11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2);    bx11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2)#k3
-			ax12[l] = vent + rng.randf_range(-0.81*2, 0.81*2);   bx12[l] = vent + rng.randf_range(-0.81*2, 0.81*2)#vt
-			single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
+		for ll in range(N):#variation de 20% (+/- 10%)
+			ax1[ll] = Vt + rng.randf_range(-14, 14);   bx1[ll] = Vt + rng.randf_range(-14, 14)#vt
+			ax2[ll] = vc + rng.randf_range(-0.10, 0.1); bx2[ll] = vc + rng.randf_range(-0.1, 0.1)#vc
+			ax3[ll] = valg + rng.randf_range(-0.2, 0.2);   bx3[ll] = valg + rng.randf_range(-0.2, 0.2)#valg
+			ax4[ll] = valb + rng.randf_range(-0.1, 0.1);    bx4[ll] = valb + rng.randf_range(-0.1, 0.1)#valb
+			ax5[ll] = va + rng.randf_range(-0.34, 0.34);    bx5[ll] = va + rng.randf_range(-0.34, 0.34)#va
+			ax6[ll] = vv + rng.randf_range(-0.6, 0.6);    bx6[ll] = vv + rng.randf_range(-0.6, 0.6)#vv
+			ax7[ll] = vaw + rng.randf_range(-0.30, 0.30);    bx7[ll] = vaw + rng.randf_range(-0.30, 0.30)#vaw
+			ax8[ll] = q + rng.randf_range(-0.8, 0.8);    bx8[ll] = q + rng.randf_range(-0.8, 0.8)#q
+			ax9[ll] = K1 + rng.randf_range(-0.000267*2, 0.000267*2);    bx9[ll] = K1 + rng.randf_range(-0.000267*2, 0.000267*2)#k1
+			ax10[ll] = K2 + rng.randf_range(-0.000748*2, 0.000748*2);    bx10[ll] = K2 + rng.randf_range(-0.000748*2, 0.000748*2)#k2
+			ax11[ll] = K3 + rng.randf_range(-0.000267*2, 0.000267*2);    bx11[ll] = K3 + rng.randf_range(-0.000267*2, 0.000267*2)#k3
+			ax12[ll] = vent + rng.randf_range(-0.81*2, 0.81*2);   bx12[ll] = vent + rng.randf_range(-0.81*2, 0.81*2)#vt
+			#single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			#single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
+
 		print("1 - " + str(Time.get_ticks_msec() ) )
 		one_sobol_stage = 2
 		return
@@ -524,18 +604,18 @@ func one_sobol_experimentation() -> void:
 
 		print("2 - " + str(Time.get_ticks_msec() ) )
 
-		for l in range(N):
-			#print ("l="+str(l))
-			#toto = l
-			YA[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		for ll in range(N):
+			#print ("ll="+str(ll))
+			#toto = ll
+			YA[ll] = single_simu([ ax1[ll], ax2[ll], ax3[ll], ax4[ll], ax5[ll], ax6[ll], ax7[ll], ax8[ll], ax9[ll], ax10[ll], ax11[ll], ax12[ll] ], false)
 			
-			if YA[l]>= 10 and YA[l]<=20:
-				var p:int = int(((YA[l]-10)*10))
+			if YA[ll]>= 10 and YA[ll]<=20:
+				var p:int = int(((YA[ll]-10)*10))
 				histo[p]+=1
 				
-			YB[l] = single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
-			if YB[l]>= 10 and YB[l]<=20:
-				var p:int = int(((YB[l]-10)*10))
+			YB[ll] = single_simu([ bx1[ll], bx2[ll], bx3[ll], bx4[ll], bx5[ll], bx6[ll], bx7[ll], bx8[ll], bx9[ll], bx10[ll], bx11[ll], bx12[ll] ], false)
+			if YB[ll]>= 10 and YB[ll]<=20:
+				var p:int = int(((YB[ll]-10)*10))
 				histo[p]+=1
 				
 
@@ -555,27 +635,30 @@ func one_sobol_experimentation() -> void:
 		print("4 - " + str(Time.get_ticks_msec() ) )
 
 
-		for l in range(N):
+		#for l in range(N):
 			## i = 0 : on prend x1 de B, les autres de A
 			#YAB0[l] = set_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l])
 			## i = 1 : on prend x2 de B, les autres de A
 			#YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
 			## i = 2 : on prend x3 de B, les autres de A
 			#YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
-			YAB0[l] = single_simu([ bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB1[l] = single_simu([ ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB2[l] = single_simu([ ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB3[l] = single_simu([ ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB4[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB5[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB6[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB7[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB8[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l] ], false)
-			YAB9[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l] ], false)
-			YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ], false)
-			YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ], false)
-		print("5 - " + str(Time.get_ticks_msec() ) )
-		one_sobol_stage = 4
+		YAB0[l] = single_simu([ bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB1[l] = single_simu([ ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB2[l] = single_simu([ ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB3[l] = single_simu([ ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB4[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB5[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB6[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB7[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB8[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l] ], false)
+		YAB9[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l] ], false)
+		YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ], false)
+		YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ], false)
+
+		l = l + 1
+		if l >= N:
+			print("5 - " + str(Time.get_ticks_msec() ) )
+			one_sobol_stage = 4
 		return
 
 	if one_sobol_stage == 4:
@@ -600,33 +683,33 @@ func one_sobol_experimentation() -> void:
 		var acc_S0 := 0.0; var acc_S1 := 0.0; var acc_S2 := 0.0; var acc_S3 := 0.0; var acc_S4 := 0.0; var acc_S5 := 0.0; var acc_S6 := 0.0; var acc_S7 := 0.0; var acc_S8 := 0.0; var acc_S9 := 0.0; var acc_S10 := 0.0; var acc_S11 := 0.0
 		var acc_ST0 := 0.0; var acc_ST1 := 0.0; var acc_ST2 := 0.0; var acc_ST3 := 0.0; var acc_ST4 := 0.0; var acc_ST5 := 0.0; var acc_ST6 := 0.0; var acc_ST7 := 0.0; var acc_ST8 := 0.0; var acc_ST9 := 0.0; var acc_ST10 := 0.0; var acc_ST11 := 0.0
 
-		for l in range(N):
-			acc_S0  += YB[l] * (YAB0[l] - YA[l])
-			acc_S1  += YB[l] * (YAB1[l] - YA[l])
-			acc_S2  += YB[l] * (YAB2[l] - YA[l])
-			acc_S3  += YB[l] * (YAB3[l] - YA[l])
-			acc_S4  += YB[l] * (YAB4[l] - YA[l])
-			acc_S5  += YB[l] * (YAB5[l] - YA[l])
-			acc_S6  += YB[l] * (YAB6[l] - YA[l])
-			acc_S7  += YB[l] * (YAB7[l] - YA[l])
-			acc_S8  += YB[l] * (YAB8[l] - YA[l])
-			acc_S9  += YB[l] * (YAB9[l] - YA[l])
-			acc_S10  += YB[l] * (YAB10[l] - YA[l])
-			acc_S11  += YB[l] * (YAB11[l] - YA[l])
+		for ll in range(N):
+			acc_S0  += YB[ll] * (YAB0[ll] - YA[ll])
+			acc_S1  += YB[ll] * (YAB1[ll] - YA[ll])
+			acc_S2  += YB[ll] * (YAB2[ll] - YA[ll])
+			acc_S3  += YB[ll] * (YAB3[ll] - YA[ll])
+			acc_S4  += YB[ll] * (YAB4[ll] - YA[ll])
+			acc_S5  += YB[ll] * (YAB5[ll] - YA[ll])
+			acc_S6  += YB[ll] * (YAB6[ll] - YA[ll])
+			acc_S7  += YB[ll] * (YAB7[ll] - YA[ll])
+			acc_S8  += YB[ll] * (YAB8[ll] - YA[ll])
+			acc_S9  += YB[ll] * (YAB9[ll] - YA[ll])
+			acc_S10  += YB[ll] * (YAB10[ll] - YA[ll])
+			acc_S11  += YB[ll] * (YAB11[ll] - YA[ll])
 
 
-			var d0 := YA[l] - YAB0[l];  acc_ST0 += d0 * d0
-			var d1 := YA[l] - YAB1[l];  acc_ST1 += d1 * d1
-			var d2 := YA[l] - YAB2[l];  acc_ST2 += d2 * d2
-			var d3 := YA[l] - YAB3[l];  acc_ST3 += d3 * d3
-			var d4 := YA[l] - YAB4[l];  acc_ST4 += d4 * d4
-			var d5 := YA[l] - YAB5[l];  acc_ST5 += d5 * d5
-			var d6 := YA[l] - YAB6[l];  acc_ST6 += d6 * d6
-			var d7 := YA[l] - YAB7[l];  acc_ST7 += d7 * d7
-			var d8 := YA[l] - YAB8[l];  acc_ST8 += d8 * d8
-			var d9 := YA[l] - YAB9[l];  acc_ST9 += d9 * d9
-			var d10 := YA[l] - YAB10[l];  acc_ST10 += d10 * d10
-			var d11 := YA[l] - YAB11[l];  acc_ST11 += d11 * d11
+			var d0 := YA[ll] - YAB0[ll];  acc_ST0 += d0 * d0
+			var d1 := YA[ll] - YAB1[ll];  acc_ST1 += d1 * d1
+			var d2 := YA[ll] - YAB2[ll];  acc_ST2 += d2 * d2
+			var d3 := YA[ll] - YAB3[ll];  acc_ST3 += d3 * d3
+			var d4 := YA[ll] - YAB4[ll];  acc_ST4 += d4 * d4
+			var d5 := YA[ll] - YAB5[ll];  acc_ST5 += d5 * d5
+			var d6 := YA[ll] - YAB6[ll];  acc_ST6 += d6 * d6
+			var d7 := YA[ll] - YAB7[ll];  acc_ST7 += d7 * d7
+			var d8 := YA[ll] - YAB8[ll];  acc_ST8 += d8 * d8
+			var d9 := YA[ll] - YAB9[ll];  acc_ST9 += d9 * d9
+			var d10 := YA[ll] - YAB10[ll];  acc_ST10 += d10 * d10
+			var d11 := YA[ll] - YAB11[ll];  acc_ST11 += d11 * d11
 
 		S [0] = acc_S0  / N / VY;     ST[0] = 0.5 * acc_ST0 / N / VY
 		S [1] = acc_S1  / N / VY;     ST[1] = 0.5 * acc_ST1 / N / VY
@@ -644,7 +727,7 @@ func one_sobol_experimentation() -> void:
 		#print("Sobol Analysis end   at " + str(Time.get_ticks_msec() )+"in ms" )
 		print("Sobol Analysis end   at " + str(end_time)+"in ms" )
 		var duration_ms = end_time - start_time
-		var total_seconds = int(duration_ms / 1000)
+		var total_seconds:int = duration_ms / 1000
 		var hours = int(total_seconds / 3600)
 		var minutes = int((total_seconds % 3600) / 60)
 		var seconds = int(total_seconds % 60)
@@ -680,7 +763,8 @@ func one_sobol_experimentation() -> void:
 		display_text += "K2 (x10)   :   %.4f                            |   %.4f\n" % [S[9], ST[9]]
 		display_text += "K3 (11)   :   %.4f                             |   %.4f\n" % [S[10], ST[10]]
 		display_text += "vent (12)   :   %.4f                          |   %.4f\n" % [S[11], ST[11]]
-		print(histo)
+		if DEBUG == 1:
+			print(histo)
 		creer_dossier_si_absent(save_folder)
 		var chemin = get_chemin_fichier(M)
 
@@ -693,7 +777,6 @@ func one_sobol_experimentation() -> void:
 		#sauvegarder_resultats_json(chemin, histo)
 		histo=[]
 
-		reset_values_when_Sobol()
 		# capture_screenshot()
 		# Sᵢ : Indice de Sobol de premier ordre
 		# Part de la variance de la sortie due uniquement à la variable xᵢ prise seule.
@@ -702,6 +785,7 @@ func one_sobol_experimentation() -> void:
 		# Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
 
 		one_sobol_stage = 0
+		l = 0
 		play_mode = PlayMode.STOP
 		return
 
