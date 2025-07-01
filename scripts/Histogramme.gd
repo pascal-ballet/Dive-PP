@@ -3,9 +3,6 @@ extends Node2D
 
 var resultat = []
 
-func _ready():
-	update()  # Rafraîchir l'affichage
-
 func _draw():
 	var bar_width = 20
 	var spacing = 5

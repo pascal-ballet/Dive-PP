@@ -276,7 +276,7 @@ func single_simu(params:Array, curve:bool) -> float:
 
 ## fonction step pour 1 seul tissue
 func one_simulation_with_sobol() :
-	# display_parameters()
+	display_parameters()
 	#if toto < 100:
 		#print ("init="+str(pp_N2_ti_t0))
 	var half_pressure : float = 75112.41 * 1.5 #TODO a changer par (pression init + pression final)/2 
