@@ -9,7 +9,13 @@ extends Control
 
 #region Export variables
 
+
 @export_group("X Axis")
+## Color of Labels
+@export var label_color: Color = Color.BLACK:
+	set(value):
+		label_color = value
+		_update_graph()
 ## Minimun value on X-axis
 @export var x_min: float = 0.0:
 	set(value):
@@ -88,8 +94,9 @@ extends Control
 	set(value):
 		show_vertical_line = value
 		_update_graph()
-		
-@export_group("Background")
+
+
+@export_group("Backgrounds")
 ## Background color of graph
 @export var background_color = Color.BLACK:
 	set(value):
@@ -116,7 +123,7 @@ extends Control
 	set(value):
 		grid_vertical_color = value
 		_update_graph()
-
+		
 #endregion
 
 #region Private variables
@@ -229,6 +236,7 @@ func _update_graph() -> void:
 	# Update margins depend of axis labels
 	get_node("Axis").x_label = x_label
 	get_node("Axis").y_label = y_label
+	get_node("Axis").label_color = label_color
 	get_node("Axis").show_x_ticks = show_x_ticks
 	get_node("Axis").show_x_numbers = show_x_numbers
 	get_node("Axis").show_horizontal_line = show_horizontal_line
