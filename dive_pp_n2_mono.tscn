@@ -80,6 +80,10 @@ theme_override_font_sizes/normal_font_size = 40
 text = "Mono Tissue with N2"
 fit_content = true
 
+[node name="ProgressBarMono" type="ProgressBar" parent="VBoxContainer/TabContainer/Mono Tissue"]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
 layout_mode = 2
 alignment = 1

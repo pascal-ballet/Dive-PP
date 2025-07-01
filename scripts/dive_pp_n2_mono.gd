@@ -262,7 +262,9 @@ func single_simu(params:Array, curve:bool) -> float:
 	var duration:float  = 120
 	var max_points:float = duration / dt
 	var time_dist:int = int(floor(max_points / 1360.0))
-	while time < duration:
+	var half_pressure : float = 75112.41 * 1.5 #TODO a changer par (pression init + pression final)/2 
+	while pp_N2_ti_t0 < half_pressure:
+	#while time < duration:
 		one_step_mono() # Simulation of one step
 		if curve == true and iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
 			x = time  # Increment x 
@@ -310,34 +312,6 @@ func one_step_mono() :
 	time = time + dt
 	iteration = iteration + 1 
 	
-func set_parameters_and_play_sobol(Vt_: float, vc_: float, valg_: float,valb_: float,va_: float,vv_: float, vaw_: float, q_:float,K1_:float,K2_:float,K3_:float,vent_:float ) -> float: #1 tissue
-	_reset_mono()
-	Vt		= Vt_
-	vc		= vc_
-	valg	= valg_
-	valb 	= valb_
-	va		= va_
-	vv		= vv_
-	vaw		= vaw_
-	q		= q_
-	K1		= K1_
-	K2		= K2_
-	K3		= K3_
-	vent	= vent_
-	#var K3: float=0.00267
-	#var alpha_n2 :float=0.000061
-	one_simulation_with_sobol()
-	
-	return time
-	#return (K3/(alpha_n2*Vt)*(pp_N2_c_t0-pp_N2_ti_t0))#tissue
-	#return (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))#capilaire
-	
-	#x1 + x2/10.0 + x3/2
-	#return sin(x1) + 7.0 * pow(sin(x2), 2) + 0.1 * pow(x3, 4) * sin(x1)
-	
-
-
-
 #endregion
 
 # ****************************
@@ -435,229 +409,301 @@ var M:int = 1 # Nombre d'expériences de Sobol (utile pour créer la gaussienne 
 var num_sobol_experience:int = 0
 var  N:int = 100 # Nombre d'echantillon
 
+enum PlayMode {STOP, SINGLE, SOBOL, MULTIPLE}
+
+var play_mode:PlayMode = PlayMode.STOP
+
+func _process(delta: float) -> void:
+	if play_mode == PlayMode.MULTIPLE:
+		if num_sobol_experience < M:
+			_on_one_sobol_experimentation()
+			num_sobol_experience += 1
+			%ProgressBarMono.value = num_sobol_experience
+		else:
+			play_mode = PlayMode.STOP
+			
+	if play_mode == PlayMode.SOBOL:
+		one_sobol_experimentation()
 
 func _on_single_simulation() -> void:
+	play_mode = PlayMode.SINGLE
 	single_simu([Vt,vc,valg,valb,va,vv,vaw,q,K1,K2,K3,vent], true)
+	play_mode = PlayMode.STOP
 
 func _on_multiple_sobol_experimentation() ->void:
 	M = %M.value
-	while num_sobol_experience < M: 
-		_on_one_sobol_experimentation()
-		num_sobol_experience += 1
+	play_mode = PlayMode.MULTIPLE
+	%ProgressBarMono.max_value = M
+	%ProgressBarMono.value = 1
+
+	# while num_sobol_experience < M:
+	# 	_on_one_sobol_experimentation()
+	# 	num_sobol_experience += 1
 
 func _on_one_sobol_experimentation() -> void:
 	N = %N.value
+	play_mode = PlayMode.SOBOL
+	%ProgressBarMono.max_value = 6
+	%ProgressBarMono.value = 1
+	one_sobol_stage = 0
+
+
+
+
+
+
+var one_sobol_stage:int = 0
+var rng   := RandomNumberGenerator.new()
+var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []; var YAB3 : Array[float] = [];var YAB4 : Array[float] = []; var YAB5 : Array[float] = []; var YAB6 : Array[float] = []; var YAB7 : Array[float] = []; var YAB8 : Array[float] = []; var YAB9 : Array[float] = []; var YAB10 : Array[float] = []; var YAB11 : Array[float] = []
+var all_Y : Array[float]
+var YA : Array[float] = []
+var YB : Array[float] = []
+var S : Array[float]
+var ST : Array[float]
+var VY
+func one_sobol_experimentation() -> void:
 	var div = %Div.value
 
 	#display_parameters()
-
-	# Initialisation de l'histogramme
-	for i in range(div):
-		histo.append(0)
+	%ProgressBarMono.value = one_sobol_stage + 1
 	
-	start_time = Time.get_ticks_msec()
-	print("Sobol Analysis start at " + str(start_time)+" in ms" )
-
-	var rng   := RandomNumberGenerator.new()
-	
-	rng.randomize()   # graine aléatoire basée sur l’horloge
-	#rng.seed = 1                             # reproductibilité
-
-	# ─────────────────────────────────────────────────────────────
-	# 1) Génération des échantillons  A  et  B  (séparés par variable)
-	# ─────────────────────────────────────────────────────────────
-	
-	ax1.resize(N); ax2.resize(N); ax3.resize(N); ax4.resize(N); ax5.resize(N); ax6.resize(N); ax7.resize(N); ax8.resize(N); ax9.resize(N); ax10.resize(N); ax11.resize(N); ax12.resize(N)
-	bx1.resize(N); bx2.resize(N); bx3.resize(N); bx4.resize(N); bx5.resize(N); bx6.resize(N); bx7.resize(N); bx8.resize(N); bx9.resize(N); bx10.resize(N); bx11.resize(N); bx12.resize(N)
-	
-	print("Array creation at " + str(Time.get_ticks_msec() ) )
-
-	for l in range(N):#variation de 20% (+/- 10%)
-		ax1[l] = Vt + rng.randf_range(-14, 14);   bx1[l] = Vt + rng.randf_range(-14, 14)#vt
-		ax2[l] = vc + rng.randf_range(-0.10, 0.1); bx2[l] = vc + rng.randf_range(-0.1, 0.1)#vc
-		ax3[l] = valg + rng.randf_range(-0.2, 0.2);   bx3[l] = valg + rng.randf_range(-0.2, 0.2)#valg
-		ax4[l] = valb + rng.randf_range(-0.1, 0.1);    bx4[l] = valb + rng.randf_range(-0.1, 0.1)#valb
-		ax5[l] = va + rng.randf_range(-0.34, 0.34);    bx5[l] = va + rng.randf_range(-0.34, 0.34)#va
-		ax6[l] = vv + rng.randf_range(-0.6, 0.6);    bx6[l] = vv + rng.randf_range(-0.6, 0.6)#vv
-		ax7[l] = vaw + rng.randf_range(-0.30, 0.30);    bx7[l] = vaw + rng.randf_range(-0.30, 0.30)#vaw
-		ax8[l] = q + rng.randf_range(-0.8, 0.8);    bx8[l] = q + rng.randf_range(-0.8, 0.8)#q
-		ax9[l] = K1 + rng.randf_range(-0.000267*2, 0.000267*2);    bx9[l] = K1 + rng.randf_range(-0.000267*2, 0.000267*2)#k1
-		ax10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2);    bx10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2)#k2
-		ax11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2);    bx11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2)#k3
-		ax12[l] = vent + rng.randf_range(-0.81*2, 0.81*2);   bx12[l] = vent + rng.randf_range(-0.81*2, 0.81*2)#vt
-		single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
-	print("1 - " + str(Time.get_ticks_msec() ) )
-
-	# ─────────────────────────────────────────────────────────────
-	# 2) Évaluations du modèle  f(A)  et  f(B)
-	# ─────────────────────────────────────────────────────────────
-	var YA : Array[float] = [];  YA.resize(N)
-	var YB : Array[float] = [];  YB.resize(N)
-
-	print("2 - " + str(Time.get_ticks_msec() ) )
-
-	for l in range(N):
-		#print ("l="+str(l))
-		#toto = l
-		YA[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+	if one_sobol_stage == 0:
+		# Initialisation de l'histogramme
+		for i in range(div):
+			histo.append(0)
 		
-		if YA[l]>= 10 and YA[l]<=20:
-			var p:int = int(((YA[l]-10)*10))
-			histo[p]+=1
+		start_time = Time.get_ticks_msec()
+		print("Sobol Analysis start at " + str(start_time)+" in ms" )
+
+		rng = RandomNumberGenerator.new()
+		
+		rng.randomize()   # graine aléatoire basée sur l’horloge
+		#rng.seed = 1                             # reproductibilité
+		one_sobol_stage = 1
+		return
+
+
+	if one_sobol_stage == 1:
+
+		# ─────────────────────────────────────────────────────────────
+		# 1) Génération des échantillons  A  et  B  (séparés par variable)
+		# ─────────────────────────────────────────────────────────────
+		
+		ax1.resize(N); ax2.resize(N); ax3.resize(N); ax4.resize(N); ax5.resize(N); ax6.resize(N); ax7.resize(N); ax8.resize(N); ax9.resize(N); ax10.resize(N); ax11.resize(N); ax12.resize(N)
+		bx1.resize(N); bx2.resize(N); bx3.resize(N); bx4.resize(N); bx5.resize(N); bx6.resize(N); bx7.resize(N); bx8.resize(N); bx9.resize(N); bx10.resize(N); bx11.resize(N); bx12.resize(N)
+		
+		print("Array creation at " + str(Time.get_ticks_msec() ) )
+
+		for l in range(N):#variation de 20% (+/- 10%)
+			ax1[l] = Vt + rng.randf_range(-14, 14);   bx1[l] = Vt + rng.randf_range(-14, 14)#vt
+			ax2[l] = vc + rng.randf_range(-0.10, 0.1); bx2[l] = vc + rng.randf_range(-0.1, 0.1)#vc
+			ax3[l] = valg + rng.randf_range(-0.2, 0.2);   bx3[l] = valg + rng.randf_range(-0.2, 0.2)#valg
+			ax4[l] = valb + rng.randf_range(-0.1, 0.1);    bx4[l] = valb + rng.randf_range(-0.1, 0.1)#valb
+			ax5[l] = va + rng.randf_range(-0.34, 0.34);    bx5[l] = va + rng.randf_range(-0.34, 0.34)#va
+			ax6[l] = vv + rng.randf_range(-0.6, 0.6);    bx6[l] = vv + rng.randf_range(-0.6, 0.6)#vv
+			ax7[l] = vaw + rng.randf_range(-0.30, 0.30);    bx7[l] = vaw + rng.randf_range(-0.30, 0.30)#vaw
+			ax8[l] = q + rng.randf_range(-0.8, 0.8);    bx8[l] = q + rng.randf_range(-0.8, 0.8)#q
+			ax9[l] = K1 + rng.randf_range(-0.000267*2, 0.000267*2);    bx9[l] = K1 + rng.randf_range(-0.000267*2, 0.000267*2)#k1
+			ax10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2);    bx10[l] = K2 + rng.randf_range(-0.000748*2, 0.000748*2)#k2
+			ax11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2);    bx11[l] = K3 + rng.randf_range(-0.000267*2, 0.000267*2)#k3
+			ax12[l] = vent + rng.randf_range(-0.81*2, 0.81*2);   bx12[l] = vent + rng.randf_range(-0.81*2, 0.81*2)#vt
+			single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
+		print("1 - " + str(Time.get_ticks_msec() ) )
+		one_sobol_stage = 2
+		return
+		
+		
+	if one_sobol_stage == 2:
+
+		# ─────────────────────────────────────────────────────────────
+		# 2) Évaluations du modèle  f(A)  et  f(B)
+		# ─────────────────────────────────────────────────────────────
+		YA.resize(N)
+		YB.resize(N)
+
+		print("2 - " + str(Time.get_ticks_msec() ) )
+
+		for l in range(N):
+			#print ("l="+str(l))
+			#toto = l
+			YA[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
 			
-		YB[l] = single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
-		if YB[l]>= 10 and YB[l]<=20:
-			var p:int = int(((YB[l]-10)*10))
-			histo[p]+=1
-			
+			if YA[l]>= 10 and YA[l]<=20:
+				var p:int = int(((YA[l]-10)*10))
+				histo[p]+=1
+				
+			YB[l] = single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
+			if YB[l]>= 10 and YB[l]<=20:
+				var p:int = int(((YB[l]-10)*10))
+				histo[p]+=1
+				
 
-	print("3 - " + str(Time.get_ticks_msec() ) )
-
-	# ─────────────────────────────────────────────────────────────
-	# 3) Matrices mixtes  A_Bi  (pick & freeze) 
-	# La méthode vise à évaluer l'influence de chaque variable d’entrée sur la sortie du modèle, en ne changeant qu’une variable à la fois (on la "pick") tandis que les autres restent fixes (on les "freeze").
-	# ─────────────────────────────────────────────────────────────
-	var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []; var YAB3 : Array[float] = [];var YAB4 : Array[float] = []; var YAB5 : Array[float] = []; var YAB6 : Array[float] = []; var YAB7 : Array[float] = []; var YAB8 : Array[float] = []; var YAB9 : Array[float] = []; var YAB10 : Array[float] = []; var YAB11 : Array[float] = []
-	YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)	;YAB3.resize(N);	YAB4.resize(N);	YAB5.resize(N);	YAB6.resize(N);	YAB7.resize(N);	YAB8.resize(N);	YAB9.resize(N);	YAB10.resize(N);	YAB11.resize(N)
-	print("4 - " + str(Time.get_ticks_msec() ) )
+		print("3 - " + str(Time.get_ticks_msec() ) )
+		one_sobol_stage = 3
+		return
 
 
-	for l in range(N):
-		## i = 0 : on prend x1 de B, les autres de A
-		#YAB0[l] = set_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l])
-		## i = 1 : on prend x2 de B, les autres de A
-		#YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
-		## i = 2 : on prend x3 de B, les autres de A
-		#YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
-		YAB0[l] = single_simu([ bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB1[l] = single_simu([ ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB2[l] = single_simu([ ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB3[l] = single_simu([ ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB4[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB5[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB6[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB7[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB8[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB9[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l] ], false)
-		YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ], false)
-		YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ], false)
-	print("5 - " + str(Time.get_ticks_msec() ) )
+	if one_sobol_stage == 3:
 
-	# ─────────────────────────────────────────────────────────────
-	# 4) Variance totale de la sortie
-	# ─────────────────────────────────────────────────────────────
-	var all_Y : Array[float] = YA.duplicate()
-	all_Y.append_array(YB)
-	var VY := variance(all_Y)
-
-	print("6 - " + str(Time.get_ticks_msec() ) )
-
-	# ─────────────────────────────────────────────────────────────
-	# 5) Indices de Sobol  S_i  et  S_Ti
-	# ─────────────────────────────────────────────────────────────
-	var S : Array[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-	var ST : Array[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-
-	var acc_S0 := 0.0; var acc_S1 := 0.0; var acc_S2 := 0.0; var acc_S3 := 0.0; var acc_S4 := 0.0; var acc_S5 := 0.0; var acc_S6 := 0.0; var acc_S7 := 0.0; var acc_S8 := 0.0; var acc_S9 := 0.0; var acc_S10 := 0.0; var acc_S11 := 0.0
-	var acc_ST0 := 0.0; var acc_ST1 := 0.0; var acc_ST2 := 0.0; var acc_ST3 := 0.0; var acc_ST4 := 0.0; var acc_ST5 := 0.0; var acc_ST6 := 0.0; var acc_ST7 := 0.0; var acc_ST8 := 0.0; var acc_ST9 := 0.0; var acc_ST10 := 0.0; var acc_ST11 := 0.0
-
-	for l in range(N):
-		acc_S0  += YB[l] * (YAB0[l] - YA[l])
-		acc_S1  += YB[l] * (YAB1[l] - YA[l])
-		acc_S2  += YB[l] * (YAB2[l] - YA[l])
-		acc_S3  += YB[l] * (YAB3[l] - YA[l])
-		acc_S4  += YB[l] * (YAB4[l] - YA[l])
-		acc_S5  += YB[l] * (YAB5[l] - YA[l])
-		acc_S6  += YB[l] * (YAB6[l] - YA[l])
-		acc_S7  += YB[l] * (YAB7[l] - YA[l])
-		acc_S8  += YB[l] * (YAB8[l] - YA[l])
-		acc_S9  += YB[l] * (YAB9[l] - YA[l])
-		acc_S10  += YB[l] * (YAB10[l] - YA[l])
-		acc_S11  += YB[l] * (YAB11[l] - YA[l])
+		# ─────────────────────────────────────────────────────────────
+		# 3) Matrices mixtes  A_Bi  (pick & freeze) 
+		# La méthode vise à évaluer l'influence de chaque variable d’entrée sur la sortie du modèle, en ne changeant qu’une variable à la fois (on la "pick") tandis que les autres restent fixes (on les "freeze").
+		# ─────────────────────────────────────────────────────────────
+		#var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []; var YAB3 : Array[float] = [];var YAB4 : Array[float] = []; var YAB5 : Array[float] = []; var YAB6 : Array[float] = []; var YAB7 : Array[float] = []; var YAB8 : Array[float] = []; var YAB9 : Array[float] = []; var YAB10 : Array[float] = []; var YAB11 : Array[float] = []
+		YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)	;YAB3.resize(N);	YAB4.resize(N);	YAB5.resize(N);	YAB6.resize(N);	YAB7.resize(N);	YAB8.resize(N);	YAB9.resize(N);	YAB10.resize(N);	YAB11.resize(N)
+		print("4 - " + str(Time.get_ticks_msec() ) )
 
 
-		var d0 := YA[l] - YAB0[l];  acc_ST0 += d0 * d0
-		var d1 := YA[l] - YAB1[l];  acc_ST1 += d1 * d1
-		var d2 := YA[l] - YAB2[l];  acc_ST2 += d2 * d2
-		var d3 := YA[l] - YAB3[l];  acc_ST3 += d3 * d3
-		var d4 := YA[l] - YAB4[l];  acc_ST4 += d4 * d4
-		var d5 := YA[l] - YAB5[l];  acc_ST5 += d5 * d5
-		var d6 := YA[l] - YAB6[l];  acc_ST6 += d6 * d6
-		var d7 := YA[l] - YAB7[l];  acc_ST7 += d7 * d7
-		var d8 := YA[l] - YAB8[l];  acc_ST8 += d8 * d8
-		var d9 := YA[l] - YAB9[l];  acc_ST9 += d9 * d9
-		var d10 := YA[l] - YAB10[l];  acc_ST10 += d10 * d10
-		var d11 := YA[l] - YAB11[l];  acc_ST11 += d11 * d11
+		for l in range(N):
+			## i = 0 : on prend x1 de B, les autres de A
+			#YAB0[l] = set_model_parameters_for_sobol(bx1[l], ax2[l], ax3[l])
+			## i = 1 : on prend x2 de B, les autres de A
+			#YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
+			## i = 2 : on prend x3 de B, les autres de A
+			#YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
+			YAB0[l] = single_simu([ bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB1[l] = single_simu([ ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB2[l] = single_simu([ ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB3[l] = single_simu([ ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB4[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB5[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB6[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB7[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB8[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l] ], false)
+			YAB9[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l] ], false)
+			YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ], false)
+			YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ], false)
+		print("5 - " + str(Time.get_ticks_msec() ) )
+		one_sobol_stage = 4
+		return
 
-	S [0] = acc_S0  / N / VY;     ST[0] = 0.5 * acc_ST0 / N / VY
-	S [1] = acc_S1  / N / VY;     ST[1] = 0.5 * acc_ST1 / N / VY
-	S [2] = acc_S2  / N / VY;     ST[2] = 0.5 * acc_ST2 / N / VY
-	S [3] = acc_S3  / N / VY;     ST[3] = 0.5 * acc_ST3 / N / VY
-	S [4] = acc_S4  / N / VY;     ST[4] = 0.5 * acc_ST4 / N / VY
-	S [5] = acc_S5  / N / VY;     ST[5] = 0.5 * acc_ST5 / N / VY
-	S [6] = acc_S6  / N / VY;     ST[6] = 0.5 * acc_ST6 / N / VY
-	S [7] = acc_S7  / N / VY;     ST[7] = 0.5 * acc_ST7 / N / VY
-	S [8] = acc_S8  / N / VY;     ST[8] = 0.5 * acc_ST8 / N / VY
-	S [9] = acc_S9  / N / VY;     ST[9] = 0.5 * acc_ST9 / N / VY
-	S [10] = acc_S10  / N / VY;     ST[10] = 0.5 * acc_ST10 / N / VY
-	S [11] = acc_S11  / N / VY;     ST[11] = 0.5 * acc_ST11 / N / VY
-	end_time = Time.get_ticks_msec()
-	#print("Sobol Analysis end   at " + str(Time.get_ticks_msec() )+"in ms" )
-	print("Sobol Analysis end   at " + str(end_time)+"in ms" )
-	var duration_ms = end_time - start_time
-	var total_seconds = int(duration_ms / 1000)
-	var hours = int(total_seconds / 3600)
-	var minutes = int((total_seconds % 3600) / 60)
-	var seconds = int(total_seconds % 60)
+	if one_sobol_stage == 4:
+		# ─────────────────────────────────────────────────────────────
+		# 4) Variance totale de la sortie
+		# ─────────────────────────────────────────────────────────────
+		all_Y = YA.duplicate()
+		all_Y.append_array(YB)
+		VY = variance(all_Y)
 
-	print("Sobol Analysis duration: %02dh %02dmin %02ds" % [hours, minutes, seconds])
+		print("6 - " + str(Time.get_ticks_msec() ) )
+		one_sobol_stage = 5
+		return
 
-	# ─────────────────────────────────────────────────────────────
-	# 6) Affichage
-	# ─────────────────────────────────────────────────────────────
-	#var names := ["x₁", "x₂", "x₃"]
-	#print("\nIndices de Sobol — fonction de my_model_parameters_for_sobol (N =", N, ")")
-	#print("────────────────────────────────────────────────────────")
-	#for i in range(d):
-		#print("%s :  Sᵢ = %.4f   |   Sₜᵢ = %.4f" % [names[i], S[i], ST[i]])
-	var display_text := "[color=#003366]" 
-	display_text +="		Indices de Sobol — fonction de my_model_parameters_for_sobol (N = %d)\n" % N
-	display_text += "──────────────────────────────────────────────────────────\n"
-	display_text += "Variable                |   Sᵢ (effet direct)   |   Sₜᵢ (effet total)\n"
-	display_text += "──────────────────────────────────────────────────────────\n"
-	display_text += "Volume du tissu (x₁)    :   %.4f               |   %.4f\n" % [S[0], ST[0]]
-	display_text += "Volume du capillaire (x₂)        :   %.4f      |   %.4f\n" % [S[1], ST[1]]
-	display_text += "Volume alveolar gaz (x₃)   :   %.4f            |   %.4f\n" % [S[2], ST[2]]
-	display_text += "Volume alveolar blood (x4)   :   %.4f          |   %.4f\n" % [S[3], ST[3]]
-	display_text += "Volume arterial blood  (x5)   :   %.4f         |   %.4f\n" % [S[4], ST[4]]
-	display_text += "Volume veinous blood (x6)   :   %.4f           |   %.4f\n" % [S[5], ST[5]]
-	display_text += "Volume airways (x7)   :   %.4f                 |   %.4f\n" % [S[6], ST[6]]
-	display_text += "Q (x8)   :   %.4f                              |   %.4f\n" % [S[7], ST[7]]
-	display_text += "K1 (x9)   :   %.4f                             |   %.4f\n" % [S[8], ST[8]]
-	display_text += "K2 (x10)   :   %.4f                            |   %.4f\n" % [S[9], ST[9]]
-	display_text += "K3 (11)   :   %.4f                             |   %.4f\n" % [S[10], ST[10]]
-	display_text += "vent (12)   :   %.4f                          |   %.4f\n" % [S[11], ST[11]]
-	print(histo)
-	creer_dossier_si_absent(save_folder)
-	var chemin = get_chemin_fichier(M)
+	if one_sobol_stage == 5:
+		# ─────────────────────────────────────────────────────────────
+		# 5) Indices de Sobol  S_i  et  S_Ti
+		# ─────────────────────────────────────────────────────────────
+		S  = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+		ST = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-	var sobol_node=%SobolResults
-	sobol_node.bbcode_enabled = true
-	sobol_node.bbcode_text = display_text
+		var acc_S0 := 0.0; var acc_S1 := 0.0; var acc_S2 := 0.0; var acc_S3 := 0.0; var acc_S4 := 0.0; var acc_S5 := 0.0; var acc_S6 := 0.0; var acc_S7 := 0.0; var acc_S8 := 0.0; var acc_S9 := 0.0; var acc_S10 := 0.0; var acc_S11 := 0.0
+		var acc_ST0 := 0.0; var acc_ST1 := 0.0; var acc_ST2 := 0.0; var acc_ST3 := 0.0; var acc_ST4 := 0.0; var acc_ST5 := 0.0; var acc_ST6 := 0.0; var acc_ST7 := 0.0; var acc_ST8 := 0.0; var acc_ST9 := 0.0; var acc_ST10 := 0.0; var acc_ST11 := 0.0
 
-	capture_screenshot()
-	
-	sauvegarder_resultats_json(chemin, histo)
-	histo=[]
+		for l in range(N):
+			acc_S0  += YB[l] * (YAB0[l] - YA[l])
+			acc_S1  += YB[l] * (YAB1[l] - YA[l])
+			acc_S2  += YB[l] * (YAB2[l] - YA[l])
+			acc_S3  += YB[l] * (YAB3[l] - YA[l])
+			acc_S4  += YB[l] * (YAB4[l] - YA[l])
+			acc_S5  += YB[l] * (YAB5[l] - YA[l])
+			acc_S6  += YB[l] * (YAB6[l] - YA[l])
+			acc_S7  += YB[l] * (YAB7[l] - YA[l])
+			acc_S8  += YB[l] * (YAB8[l] - YA[l])
+			acc_S9  += YB[l] * (YAB9[l] - YA[l])
+			acc_S10  += YB[l] * (YAB10[l] - YA[l])
+			acc_S11  += YB[l] * (YAB11[l] - YA[l])
 
-	reset_values_when_Sobol()
-	# capture_screenshot()
-	# Sᵢ : Indice de Sobol de premier ordre
-	# Part de la variance de la sortie due uniquement à la variable xᵢ prise seule.
 
-	# Sₜᵢ : Indice de Sobol total
-	# Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
+			var d0 := YA[l] - YAB0[l];  acc_ST0 += d0 * d0
+			var d1 := YA[l] - YAB1[l];  acc_ST1 += d1 * d1
+			var d2 := YA[l] - YAB2[l];  acc_ST2 += d2 * d2
+			var d3 := YA[l] - YAB3[l];  acc_ST3 += d3 * d3
+			var d4 := YA[l] - YAB4[l];  acc_ST4 += d4 * d4
+			var d5 := YA[l] - YAB5[l];  acc_ST5 += d5 * d5
+			var d6 := YA[l] - YAB6[l];  acc_ST6 += d6 * d6
+			var d7 := YA[l] - YAB7[l];  acc_ST7 += d7 * d7
+			var d8 := YA[l] - YAB8[l];  acc_ST8 += d8 * d8
+			var d9 := YA[l] - YAB9[l];  acc_ST9 += d9 * d9
+			var d10 := YA[l] - YAB10[l];  acc_ST10 += d10 * d10
+			var d11 := YA[l] - YAB11[l];  acc_ST11 += d11 * d11
+
+		S [0] = acc_S0  / N / VY;     ST[0] = 0.5 * acc_ST0 / N / VY
+		S [1] = acc_S1  / N / VY;     ST[1] = 0.5 * acc_ST1 / N / VY
+		S [2] = acc_S2  / N / VY;     ST[2] = 0.5 * acc_ST2 / N / VY
+		S [3] = acc_S3  / N / VY;     ST[3] = 0.5 * acc_ST3 / N / VY
+		S [4] = acc_S4  / N / VY;     ST[4] = 0.5 * acc_ST4 / N / VY
+		S [5] = acc_S5  / N / VY;     ST[5] = 0.5 * acc_ST5 / N / VY
+		S [6] = acc_S6  / N / VY;     ST[6] = 0.5 * acc_ST6 / N / VY
+		S [7] = acc_S7  / N / VY;     ST[7] = 0.5 * acc_ST7 / N / VY
+		S [8] = acc_S8  / N / VY;     ST[8] = 0.5 * acc_ST8 / N / VY
+		S [9] = acc_S9  / N / VY;     ST[9] = 0.5 * acc_ST9 / N / VY
+		S [10] = acc_S10  / N / VY;     ST[10] = 0.5 * acc_ST10 / N / VY
+		S [11] = acc_S11  / N / VY;     ST[11] = 0.5 * acc_ST11 / N / VY
+		end_time = Time.get_ticks_msec()
+		#print("Sobol Analysis end   at " + str(Time.get_ticks_msec() )+"in ms" )
+		print("Sobol Analysis end   at " + str(end_time)+"in ms" )
+		var duration_ms = end_time - start_time
+		var total_seconds = int(duration_ms / 1000)
+		var hours = int(total_seconds / 3600)
+		var minutes = int((total_seconds % 3600) / 60)
+		var seconds = int(total_seconds % 60)
+
+		print("Sobol Analysis duration: %02dh %02dmin %02ds" % [hours, minutes, seconds])
+		one_sobol_stage = 6
+		return
+
+	if one_sobol_stage == 6:
+
+		# ─────────────────────────────────────────────────────────────
+		# 6) Affichage
+		# ─────────────────────────────────────────────────────────────
+		#var names := ["x₁", "x₂", "x₃"]
+		#print("\nIndices de Sobol — fonction de my_model_parameters_for_sobol (N =", N, ")")
+		#print("────────────────────────────────────────────────────────")
+		#for i in range(d):
+			#print("%s :  Sᵢ = %.4f   |   Sₜᵢ = %.4f" % [names[i], S[i], ST[i]])
+		var display_text := "[color=#003366]" 
+		display_text +="		Indices de Sobol — fonction de my_model_parameters_for_sobol (N = %d)\n" % N
+		display_text += "──────────────────────────────────────────────────────────\n"
+		display_text += "Variable                |   Sᵢ (effet direct)   |   Sₜᵢ (effet total)\n"
+		display_text += "──────────────────────────────────────────────────────────\n"
+		display_text += "Volume du tissu (x₁)    :   %.4f               |   %.4f\n" % [S[0], ST[0]]
+		display_text += "Volume du capillaire (x₂)        :   %.4f      |   %.4f\n" % [S[1], ST[1]]
+		display_text += "Volume alveolar gaz (x₃)   :   %.4f            |   %.4f\n" % [S[2], ST[2]]
+		display_text += "Volume alveolar blood (x4)   :   %.4f          |   %.4f\n" % [S[3], ST[3]]
+		display_text += "Volume arterial blood  (x5)   :   %.4f         |   %.4f\n" % [S[4], ST[4]]
+		display_text += "Volume veinous blood (x6)   :   %.4f           |   %.4f\n" % [S[5], ST[5]]
+		display_text += "Volume airways (x7)   :   %.4f                 |   %.4f\n" % [S[6], ST[6]]
+		display_text += "Q (x8)   :   %.4f                              |   %.4f\n" % [S[7], ST[7]]
+		display_text += "K1 (x9)   :   %.4f                             |   %.4f\n" % [S[8], ST[8]]
+		display_text += "K2 (x10)   :   %.4f                            |   %.4f\n" % [S[9], ST[9]]
+		display_text += "K3 (11)   :   %.4f                             |   %.4f\n" % [S[10], ST[10]]
+		display_text += "vent (12)   :   %.4f                          |   %.4f\n" % [S[11], ST[11]]
+		print(histo)
+		creer_dossier_si_absent(save_folder)
+		var chemin = get_chemin_fichier(M)
+
+		var sobol_node=%SobolResults
+		sobol_node.bbcode_enabled = true
+		sobol_node.bbcode_text = display_text
+
+		#capture_screenshot()
+		
+		#sauvegarder_resultats_json(chemin, histo)
+		histo=[]
+
+		reset_values_when_Sobol()
+		# capture_screenshot()
+		# Sᵢ : Indice de Sobol de premier ordre
+		# Part de la variance de la sortie due uniquement à la variable xᵢ prise seule.
+
+		# Sₜᵢ : Indice de Sobol total
+		# Part de la variance due à xᵢ et à toutes ses interactions avec les autres variables.
+
+		one_sobol_stage = 0
+		play_mode = PlayMode.STOP
+		return
 
 #endregion
 
