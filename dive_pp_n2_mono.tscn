@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://c2leoa4cehu8f"]
+[gd_scene load_steps=15 format=3 uid="uid://c2leoa4cehu8f"]
 
 [ext_resource type="Script" uid="uid://d03yu20c8bn4j" path="res://scripts/dive_pp_n2_mono.gd" id="1_csnru"]
 [ext_resource type="Texture2D" uid="uid://dev3kr3ovimk" path="res://images/dive_pp_icon.png" id="2_de0hx"]
@@ -7,8 +7,23 @@
 [ext_resource type="Texture2D" uid="uid://bb8nj3u53ddsc" path="res://images/xN.png" id="4_7s50g"]
 [ext_resource type="Texture2D" uid="uid://b1e2naw588xoc" path="res://images/xM.png" id="5_fs0r4"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ar8x0"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fs0r4"]
+bg_color = Color(0.942823, 0.942823, 0.942823, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eovu1"]
+bg_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ycfnx"]
+bg_color = Color(0.0941176, 0.227451, 0.4, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pn8rt"]
+bg_color = Color(0.392157, 0.639216, 0.596078, 1)
+
 [sub_resource type="LabelSettings" id="LabelSettings_eovu1"]
-font_color = Color(0, 1, 1, 1)
+font_color = Color(0.0941176, 0.227451, 0.4, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vb7mx"]
 bg_color = Color(0.933333, 0.933333, 0.933333, 1)
@@ -29,7 +44,7 @@ cache/0/16/0/underline_position = 0.0
 cache/0/16/0/underline_thickness = 0.0
 cache/0/16/0/scale = 1.0
 
-[node name="Dive-PP-N2" type="MarginContainer"]
+[node name="Dive-PP-N2" type="Panel"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -37,10 +52,16 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_ar8x0")
 script = ExtResource("1_csnru")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 128)
@@ -59,6 +80,7 @@ texture = ExtResource("2_de0hx")
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 64
 text = "Dive-PP"
 horizontal_alignment = 1
@@ -67,6 +89,9 @@ vertical_alignment = 1
 [node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/tabbar_background = SubResource("StyleBoxFlat_fs0r4")
+theme_override_styles/panel = SubResource("StyleBoxFlat_eovu1")
+theme_override_styles/tab_selected = SubResource("StyleBoxFlat_ycfnx")
 current_tab = 0
 
 [node name="Mono Tissue" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
@@ -75,6 +100,7 @@ metadata/_tab_index = 0
 
 [node name="RichTextLabel_N2" type="RichTextLabel" parent="VBoxContainer/TabContainer/Mono Tissue"]
 layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/bold_italics_font_size = 1
 theme_override_font_sizes/normal_font_size = 40
 text = "Mono Tissue with N2"
@@ -83,6 +109,8 @@ fit_content = true
 [node name="ProgressBarMono" type="ProgressBar" parent="VBoxContainer/TabContainer/Mono Tissue"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_styles/background = SubResource("StyleBoxFlat_pn8rt")
 step = 0.0
 allow_greater = true
 allow_lesser = true
@@ -141,10 +169,12 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "PARAMETERS"
 
 [node name="Label4" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Sobol"
 label_settings = SubResource("LabelSettings_eovu1")
 
@@ -153,11 +183,14 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "N = "
 
 [node name="N" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 max_value = 100000.0
 value = 2.0
 custom_arrow_step = 1.0
@@ -165,7 +198,8 @@ custom_arrow_step = 1.0
 [node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 layout_mode = 2
 tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each interval is equals to N (number of Simulation for One Sobol Experimentation)."
-text = "Div = "
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Histo = "
 
 [node name="Div" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 unique_name_in_owner = true
@@ -174,6 +208,8 @@ tooltip_text = "Number of divisions recording all half-timel results statistics.
 between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each
 interval is equals to N (number of Simulation
 for One Sobol Experimentation)."
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 min_value = 1.0
 max_value = 1000.0
 value = 100.0
@@ -181,16 +217,20 @@ custom_arrow_step = 1.0
 
 [node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "M = "
 
 [node name="M" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/NM"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 value = 2.0
 custom_arrow_step = 1.0
 
 [node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Morphological"
 label_settings = SubResource("LabelSettings_eovu1")
 
@@ -199,28 +239,35 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Vt = "
 
 [node name="Vt" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 max_value = 150.0
 value = 70.0
 custom_arrow_step = 1.0
 
 [node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "+/-"
 
 [node name="Vt_d" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Vt"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 max_value = 50.0
 value = 10.0
 custom_arrow_step = 1.0
 
 [node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Physiological"
 label_settings = SubResource("LabelSettings_eovu1")
 
@@ -229,11 +276,14 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Q = "
 
 [node name="Q" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 max_value = 20.0
 step = 0.1
 value = 4.2
@@ -241,11 +291,14 @@ custom_arrow_step = 1.0
 
 [node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "+/-"
 
 [node name="Q_d" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/MonoParameters/Q"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 max_value = 50.0
 step = 0.1
 value = 0.5
@@ -261,9 +314,11 @@ x_max = 120.0
 x_label = "Time(s)"
 y_max = 180000.0
 y_label = "Y"
-background_color = Color(0.0941176, 0.227451, 0.4, 1)
+background_color = Color(0.589968, 0.740012, 0.942417, 1)
 grid_horizontal_visible = true
+grid_horizontal_color = Color(0, 0, 0, 1)
 grid_vertical_visible = true
+grid_vertical_color = Color(0, 0, 0, 1)
 
 [node name="ResultBox" type="PanelContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame"]
 unique_name_in_owner = true
