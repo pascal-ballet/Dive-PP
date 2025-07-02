@@ -42,7 +42,7 @@ func _draw() -> void:
 	
 	if show_x_ticks:
 		for grad in hor_grad: 
-			draw_line(grad[POINT], grad[POINT] + Vector2(0, 10), Color.WHITE)
+			draw_line(grad[POINT], grad[POINT] + Vector2(0, 10), label_color)
 	
 	if show_x_numbers:
 		for grad in hor_grad:

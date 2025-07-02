@@ -5,12 +5,12 @@ extends Control
 # ***********************
 
 var vent: 	float = 8.1 # debit ventilatoire 
-var vaw: 	float = 1.5 #volume des voix aérienne
-var valg: 	float = 1.0 # volume du gaz alvéolaire
-var valb: 	float = 0.5 # volume de sang alvéolaire
-var q: 		float = 4.209 # debit cardiaque
-var va: 	float = 1.7 #volume artériel
-var vv: 	float = 3.0 #volume veineux
+var Vaw: 	float = 1.5 #volume des voix aérienne
+var Valg: 	float = 1.0 # volume du gaz alvéolaire
+var Valb: 	float = 0.5 # volume de sang alvéolaire
+var Q: 		float = 4.209 # debit cardiaque
+var Va: 	float = 1.7 #volume artériel
+var Vv: 	float = 3.0 #volume veineux
 var patm: 	float = 101325.0 # presion ambiante
 var fn2: 	float = 0.79 #fraction d azote dans le gaz respiré
 var diving_time = [1,null,null,null,null,null,null,null,null,null]
@@ -39,15 +39,16 @@ var dtINI:float 	= 0.0009  #variable global de dt permet de changer tout les dt 
 var dt:float 		= dtINI
 var diving_stage:int= 1  #iterateur pour le calcule du profil de plongé
 var iteration:int 	= 0 # pas de simulation en cours
-var vc:float 		= 0.5# colume capilaire
+var Vc:float 		= 0.5# colume capilaire
 var Vt:float		= 70 # Tissue Volume
 #var Q: float =4.2#debit sanguin
 const kn2 :float 		= 0.0000619# coef solubiliter azote
+
+# Pressions partielles
 var pp_N2_c_t0 : float 	= 75112.41 # pression partiel initiale capilaire
 var pp_N2_c_t1 : float	= 0 #pression partiel courante capilaire
 var pp_N2_ti_t0: float 	= 75112.41 # pression partiel initiale tissus
 var pp_N2_ti_t1: float 	= 0 # pression partiel courante tissus
-
 
 # Air paramètres
 var pp_N2_air:float = 0.0
@@ -105,14 +106,14 @@ func air():
 ## Compute the partial pressure of aw
 #methode euler
 func airways():
-	var delta = ((vent/vaw*pp_N2_air)-(vent+K1*R*T)/vaw*pp_N2_aw_t0+(K1*R*T)/vaw*pp_N2_alv_t0)*dt
+	var delta = ((vent/Vaw*pp_N2_air)-(vent+K1*R*T)/Vaw*pp_N2_aw_t0+(K1*R*T)/Vaw*pp_N2_alv_t0)*dt
 	pp_N2_aw_t1 = pp_N2_aw_t0 + delta
 
 #methode runge kutta 4
 
 # Fonction dérivée définie globalement
 func f_airways(pp_N2_aw):
-	return ((vent / vaw * pp_N2_air) - (vent + K1 * R * T) / vaw * pp_N2_aw + (K1 * R * T) / vaw * pp_N2_alv_t0)
+	return ((vent / Vaw * pp_N2_air) - (vent + K1 * R * T) / Vaw * pp_N2_aw + (K1 * R * T) / Vaw * pp_N2_alv_t0)
 
 func airways_rk4():
 		# Étapes de Runge-Kutta
@@ -128,13 +129,13 @@ func airways_rk4():
 ## Compute the partial pressure of alv
 #methode euler
 func alveolar():
-	var delta = (-R*T/valg*(K1+K2)*pp_N2_alv_t0+R*T/valg*(K1*pp_N2_aw_t0+K2*pp_N2_alb_t0))*dt
+	var delta = (-R*T/Valg*(K1+K2)*pp_N2_alv_t0+R*T/Valg*(K1*pp_N2_aw_t0+K2*pp_N2_alb_t0))*dt
 	pp_N2_alv_t1 = pp_N2_alv_t0 + delta
 	
 #methode runge kutta 4
 # Fonction dérivée définie globalement
 func f_alveolar(pp_N2_alv):
-	return (-R * T / valg * (K1 + K2) * pp_N2_alv + R * T / valg * (K1 * pp_N2_aw_t0 + K2 * pp_N2_alb_t0))
+	return (-R * T / Valg * (K1 + K2) * pp_N2_alv + R * T / Valg * (K1 * pp_N2_aw_t0 + K2 * pp_N2_alb_t0))
 
 func alveolar_rk4(): #alveolagaz
 		# Étapes de Runge-Kutta
@@ -150,13 +151,13 @@ func alveolar_rk4(): #alveolagaz
 ## Compute the partial pressure of alb
 #methode euler
 func alveolar_blood():
-	var delta = (1/(valb*alpha_n2)*(K2*pp_N2_alv_t0-pp_N2_alb_t0*(K2+alpha_n2*q)+alpha_n2*q*pp_N2_v_t0))*dt
+	var delta = (1/(Valb*alpha_n2)*(K2*pp_N2_alv_t0-pp_N2_alb_t0*(K2+alpha_n2*Q)+alpha_n2*Q*pp_N2_v_t0))*dt
 	pp_N2_alb_t1 = pp_N2_alb_t0 + delta
 
 ##methode tunge kutta 4
 # Fonction dérivée définie globalement
 func f_alveolar_blood(pp_N2_alb):
-		return (1 / (valb * alpha_n2) * (K2 * pp_N2_alv_t0 - pp_N2_alb * (K2 + alpha_n2 * q) + alpha_n2 * q * pp_N2_v_t0))
+		return (1 / (Valb * alpha_n2) * (K2 * pp_N2_alv_t0 - pp_N2_alb * (K2 + alpha_n2 * Q) + alpha_n2 * Q * pp_N2_v_t0))
 
 func alveolar_blood_rk4():
 	# Étapes de Runge-Kutta
@@ -172,14 +173,14 @@ func alveolar_blood_rk4():
 ## Compute the partial pressure of a
 ##methode euler
 func arterial_blood():
-	var delta = (q/va*(pp_N2_alb_t0-pp_N2_a_t0))*dt
+	var delta = (Q/Va*(pp_N2_alb_t0-pp_N2_a_t0))*dt
 	pp_N2_a_t1 = pp_N2_a_t0 + delta
 	
 ##methode runge kutta 4
 
 # Fonction dérivée définie globalement
 func f_arterial_blood(pp_N2_a):
-		return (q / va * (pp_N2_alb_t0 - pp_N2_a))
+		return (Q / Va * (pp_N2_alb_t0 - pp_N2_a))
 
 func arterial_blood_rk4():
 	# Étapes de Runge-Kutta
@@ -194,14 +195,14 @@ func arterial_blood_rk4():
 
 	#
 func venous_blood_mono():
-	var delta =q/vv*(pp_N2_c_t0 - pp_N2_v_t0)*dt
+	var delta =Q/Vv*(pp_N2_c_t0 - pp_N2_v_t0)*dt
 	pp_N2_v_t1 = pp_N2_v_t0 + delta
 
 
 
 
 func capilar_blood_mono():
-	var delta = (1/(vc*alpha_n2)*(q*alpha_n2*pp_N2_a_t0-(alpha_n2*q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))*dt
+	var delta = (1/(Vc*alpha_n2)*(Q*alpha_n2*pp_N2_a_t0-(alpha_n2*Q+K3)*pp_N2_c_t0+K3*pp_N2_ti_t0))*dt
 	#print("delta_cap_CE = ",delta)
 	pp_N2_c_t1 = pp_N2_c_t0 + delta
 	
@@ -236,13 +237,13 @@ func single_simu(params:Array, curve:bool) -> float:
 	reset_parameters_total()
 	
 	Vt 		= params[0] 
-	vc 		= params[1] 
-	valg 	= params[2]
-	valb 	= params[3] 
-	va 		= params[4] 
-	vv 		= params[5] 
-	vaw 	= params[6] 
-	q 		= params[7] 
+	Vc 		= params[1] 
+	Valg 	= params[2]
+	Valb 	= params[3] 
+	Va 		= params[4] 
+	Vv 		= params[5] 
+	Vaw 	= params[6] 
+	Q 		= params[7] 
 	K1 		= params[8] 
 	K2 		= params[9] 
 	K3 		= params[10]
@@ -367,21 +368,24 @@ func reset_parameters_total():
 	####
 
 	#### ex reset_values_when_Sobol()
-	vent = 8.1
-	vaw = 1.5
-	valg = 1.0
-	valb = 0.5
-	q = 4.2
-	va = 1.7
-	vv = 3.0
+	# Parametres Morphologiques
+	Vt = %Vt.value
+	Vc = %Vc.value
+	Valg = %Valg.value
+	Valb = %Valb.value
+	Va = %Va.value
+	Vv = %Vv.value
+	Vaw = %Vaw.value
+	# Parametres Physiologiques
+	Q = %Q.value
+	K1 = %K1.value # coef de diffusion respiratoire
+	K2 = %K2.value # coef de diffusion alveolo capilaire
+	K3 = %K3.value
+	vent = %Vent.value
+
 	patm = 101325.0
 	diving_time = [1,null,null,null,null,null,null,null,null,null]
 	diving_deep = [10,null,null,null,null,null,null,null,null,null]
-	Vt = %Vt.value
-	vc = 0.5
-	K1 = 0.00267 # coef de diffusion respiratoire
-	K2 = 0.00748 # coef de diffusion alveolo capilaire
-	K3 =0.00267
 	####
 
 
@@ -389,17 +393,17 @@ func reset_parameters_total():
 # func reset_values_when_Sobol(): 
 # 	reset_parameters()	
 # 	vent = 8.1
-# 	vaw = 1.5
-# 	valg = 1.0
-# 	valb = 0.5
-# 	q = 4.2
-# 	va = 1.7
-# 	vv = 3.0
+# 	Vaw = 1.5
+# 	Valg = 1.0
+# 	Valb = 0.5
+# 	Q = 4.2
+# 	Va = 1.7
+# 	Vv = 3.0
 # 	patm = 101325.0
 # 	diving_time = [1,null,null,null,null,null,null,null,null,null]
 # 	diving_deep = [10,null,null,null,null,null,null,null,null,null]
 # 	Vt = %Vt.value
-# 	vc = 0.5
+# 	Vc = 0.5
 # 	K1 = 0.00267 # coef de diffusion respiratoire
 # 	K2 = 0.00748 # coef de diffusion alveolo capilaire
 # 	K3 =0.00267
@@ -493,7 +497,7 @@ func _process(_delta: float) -> void:
 
 func _on_single_simulation() -> void:
 	play_mode = PlayMode.SINGLE
-	single_simu([Vt,vc,valg,valb,va,vv,vaw,q,K1,K2,K3,vent], true)
+	single_simu([Vt,Vc,Valg,Valb,Va,Vv,Vaw,Q,K1,K2,K3,vent], true)
 	play_mode = PlayMode.STOP
 
 func _on_multiple_sobol_experimentation() ->void:
@@ -573,19 +577,33 @@ func one_sobol_experimentation() -> void:
 		
 		print("Array creation at " + str(Time.get_ticks_msec() ) )
 
+		var d_Vt	:float	= Vt 	* %Vt_d.value 	/ 100.0
+		var d_Vc	:float	= Vc 	* %Vc_d.value 	/ 100.0
+		var d_Valg	:float 	= Valg 	* %Valg_d.value / 100.0
+		var d_Valb	:float 	= Valb 	* %Valb_d.value / 100.0
+		var d_Va	:float	= Va 	* %Va.value 	/ 100.0
+		var d_Vv	:float	= Vv 	* %Vv.value 	/ 100.0
+		var d_Vaw	:float	= Vaw 	* %Vaw.value 	/ 100.0
+		var d_Q		:float	= Q 	* %Q.value 		/ 100.0
+		var d_K1	:float	= K1 	* %K1.value 	/ 100.0
+		var d_K2	:float	= K2 	* %K2.value 	/ 100.0
+		var d_K3	:float	= K3 	* %K3.value 	/ 100.0
+		var d_vent	:float	= vent 	* %Vent.value 	/ 100.0
+
 		for ll in range(N):#variation de 20% (+/- 10%)
-			ax1[ll] = Vt + rng.randf_range(-14, 14);   bx1[ll] = Vt + rng.randf_range(-14, 14)#vt
-			ax2[ll] = vc + rng.randf_range(-0.10, 0.1); bx2[ll] = vc + rng.randf_range(-0.1, 0.1)#vc
-			ax3[ll] = valg + rng.randf_range(-0.2, 0.2);   bx3[ll] = valg + rng.randf_range(-0.2, 0.2)#valg
-			ax4[ll] = valb + rng.randf_range(-0.1, 0.1);    bx4[ll] = valb + rng.randf_range(-0.1, 0.1)#valb
-			ax5[ll] = va + rng.randf_range(-0.34, 0.34);    bx5[ll] = va + rng.randf_range(-0.34, 0.34)#va
-			ax6[ll] = vv + rng.randf_range(-0.6, 0.6);    bx6[ll] = vv + rng.randf_range(-0.6, 0.6)#vv
-			ax7[ll] = vaw + rng.randf_range(-0.30, 0.30);    bx7[ll] = vaw + rng.randf_range(-0.30, 0.30)#vaw
-			ax8[ll] = q + rng.randf_range(-0.8, 0.8);    bx8[ll] = q + rng.randf_range(-0.8, 0.8)#q
-			ax9[ll] = K1 + rng.randf_range(-0.000267*2, 0.000267*2);    bx9[ll] = K1 + rng.randf_range(-0.000267*2, 0.000267*2)#k1
-			ax10[ll] = K2 + rng.randf_range(-0.000748*2, 0.000748*2);    bx10[ll] = K2 + rng.randf_range(-0.000748*2, 0.000748*2)#k2
-			ax11[ll] = K3 + rng.randf_range(-0.000267*2, 0.000267*2);    bx11[ll] = K3 + rng.randf_range(-0.000267*2, 0.000267*2)#k3
-			ax12[ll] = vent + rng.randf_range(-0.81*2, 0.81*2);   bx12[ll] = vent + rng.randf_range(-0.81*2, 0.81*2)#vt
+			ax1[ll]  = Vt 	+ rng.randf_range(-d_Vt, d_Vt);   	bx1[ll] = Vt 	+ rng.randf_range(-d_Vt, d_Vt)
+			ax2[ll]  = Vc 	+ rng.randf_range(-d_Vc, d_Vc); 	bx2[ll] = Vc 	+ rng.randf_range(-d_Vc, d_Vc)
+			ax3[ll]  = Valg + rng.randf_range(-d_Valg, d_Valg);	bx3[ll] = Valg 	+ rng.randf_range(-d_Valg, d_Valg)
+			ax4[ll]  = Valb + rng.randf_range(-d_Valb, d_Valb);	bx4[ll] = Valb 	+ rng.randf_range(-d_Valb, d_Valb)
+			ax5[ll]  = Va 	+ rng.randf_range(-d_Va, d_Va);    	bx5[ll]  = Va 	+ rng.randf_range(-d_Va, d_Va)
+			ax6[ll]  = Vv 	+ rng.randf_range(-d_Vv, d_Vv);    	bx6[ll]  = Vv 	+ rng.randf_range(-d_Vv, d_Vv)
+			ax7[ll]  = Vaw 	+ rng.randf_range(-d_Vaw, d_Vaw);  	bx7[ll]  = Vaw 	+ rng.randf_range(-d_Vaw, d_Vaw)
+			ax8[ll]  = Q 	+ rng.randf_range(-d_Q, d_Q);    	bx8[ll]  = Q 	+ rng.randf_range(-d_Q, d_Q)
+			ax9[ll]  = K1 	+ rng.randf_range(-d_K1, d_K1); 	bx9[ll]  = K1 	+ rng.randf_range(-d_K1, d_K1)
+			ax10[ll] = K2 	+ rng.randf_range(-d_K2, d_K2);		bx10[ll] = K2 	+ rng.randf_range(-d_K2, d_K2)
+			ax11[ll] = K3 	+ rng.randf_range(-d_K3, d_K3);		bx11[ll] = K3 	+ rng.randf_range(-d_K3, d_K3)
+			ax12[ll] = vent + rng.randf_range(-d_vent, d_vent);	bx12[ll] = vent + rng.randf_range(-d_vent, d_vent)
+			# TODO: I removed both single_simu() below, but not sure. Must be verified. Here their resutls are not used so, I delete them. But...
 			#single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
 			#single_simu([ bx1[l], bx2[l], bx3[l], bx4[l], bx5[l], bx6[l], bx7[l], bx8[l], bx9[l], bx10[l], bx11[l], bx12[l] ], false)
 
@@ -805,12 +823,12 @@ func display_parameters() :
 	print("N =", N)
 	print("num_sobol_experience =", num_sobol_experience)
 	print("vent =", vent)
-	print("vaw =", vaw)
-	print("valg =", valg)
-	print("valb =", valb)
-	print("q =", q)
-	print("va =", va)
-	print("vv =", vv)
+	print("Vaw =", Vaw)
+	print("Valg =", Valg)
+	print("Valb =", Valb)
+	print("Q =", Q)
+	print("Va =", Va)
+	print("Vv =", Vv)
 	print("patm =", patm)
 	print("fn2 =", fn2)
 	print("diving_time =", diving_time)
@@ -830,7 +848,7 @@ func display_parameters() :
 	print("dt =", dt)
 	print("diving_stage =", diving_stage)
 	print("iteration =", iteration)
-	print("vc =", vc)
+	print("Vc =", Vc)
 
 	print("kn2 =", kn2)
 	print("pp_N2_c_t0 =", pp_N2_c_t0)
