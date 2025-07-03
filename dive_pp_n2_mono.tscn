@@ -115,6 +115,13 @@ step = 0.0
 allow_greater = true
 allow_lesser = true
 
+[node name="LabelProgressBar" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Stage"
+horizontal_alignment = 1
+
 [node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
 layout_mode = 2
 alignment = 1
