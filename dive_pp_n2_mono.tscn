@@ -122,48 +122,55 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Stage"
 horizontal_alignment = 1
 
-[node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/TabContainer/Mono Tissue"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 16
+
+[node name="ButtonBar" type="HFlowContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="PlayMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+[node name="PlayMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar"]
 layout_mode = 2
 tooltip_text = "Launch just ONE simulation to generate the N2 evolution in the single tissue."
 text = "Single Simulation"
 
-[node name="xN" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+[node name="xN" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar"]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 
-[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/xN"]
+[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar/xN"]
 scale = Vector2(0.052, 0.052)
 texture = ExtResource("4_7s50g")
 centered = false
 offset = Vector2(104, 0)
 
-[node name="SingleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+[node name="SingleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar"]
 layout_mode = 2
 tooltip_text = "Launch N simulations to generate the Sobol test. There are 11 parameters. Their influence on the half-time saturation of N2 in the tissue is computed."
 text = "Single Sobol Test
 with N simulations"
 
-[node name="xM" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+[node name="xM" type="Control" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar"]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 
-[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/xM"]
+[node name="XN" type="Sprite2D" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar/xM"]
 scale = Vector2(0.052, 0.052)
 texture = ExtResource("5_fs0r4")
 centered = false
 offset = Vector2(104, 0)
 
-[node name="MutipleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+[node name="MutipleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar"]
 layout_mode = 2
 tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
 text = "Multiple Sobol Tests
 with M repetitions"
 
-[node name="RemoveAllPlots" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
+[node name="RemoveAllPlots" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar"]
 layout_mode = 2
 text = "Remove plots"
 
@@ -669,15 +676,18 @@ grid_vertical_color = Color(0, 0, 0, 1)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_vb7mx")
 
 [node name="SobolResults" type="RichTextLabel" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ResultBox"]
 unique_name_in_owner = true
 layout_mode = 2
+focus_mode = 2
 theme_override_fonts/normal_font = SubResource("FontFile_0resv")
 bbcode_enabled = true
+selection_enabled = true
 
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/PlayMono" to="." method="_on_single_simulation"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/SingleSobolMono" to="." method="_on_one_sobol_experimentation"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/MutipleSobolMono" to="." method="_on_multiple_sobol_experimentation"]
-[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/ButtonBar/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar/PlayMono" to="." method="_on_single_simulation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar/SingleSobolMono" to="." method="_on_one_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar/MutipleSobolMono" to="." method="_on_multiple_sobol_experimentation"]
+[connection signal="pressed" from="VBoxContainer/TabContainer/Mono Tissue/MarginContainer/ButtonBar/RemoveAllPlots" to="." method="_on_remove_all_plots_pressed"]
