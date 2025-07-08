@@ -13,7 +13,7 @@ var Va: 	float = 1.7 #volume artériel
 var Vv: 	float = 3.0 #volume veineux
 var patm: 	float = 101325.0 # presion ambiante
 var fn2: 	float = 0.79 #fraction d azote dans le gaz respiré
-var diving_time = [1,null,null,null,null,null,null,null,null,null]
+var diving_time = [1, null,null,null,null,null,null,null,null,null]
 var diving_deep = [10,null,null,null,null,null,null,null,null,null]
 
 ######################################################################################################################################
@@ -232,7 +232,7 @@ func tissue_mono():
 # Diagram
 var my_plotti : PlotItem = null
 	
-func single_simu(params:Array, curve:bool) -> float:
+func single_simu(params:Array) -> float:
 	
 	reset_parameters_total()
 	
@@ -247,11 +247,12 @@ func single_simu(params:Array, curve:bool) -> float:
 	K1 		= params[8] 
 	K2 		= params[9] 
 	K3 		= params[10]
+	vent	= params[11]
 
 	# Parametres stables mais a re-initialiser
 	#_reset_mono()
 
-	if curve == true:
+	if graph_mode == GraphMode.SATURATION:
 		# Créer un nouveau plot avec un label unique et une couleur dynamique
 		var grey:int = int(randf()*0.5 + 0.5)
 		my_plotti = %Graph2D.add_plot_item(  
@@ -270,13 +271,22 @@ func single_simu(params:Array, curve:bool) -> float:
 	while pp_N2_ti_t0 < half_pressure:
 	#while time < duration:
 		one_step_mono() # Simulation of one step
-		if curve == true and iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
+		if graph_mode == GraphMode.SATURATION and iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
 			x = time  # Increment x 
 			y = pp_N2_ti_t0  # increment  y 
 			# Add the point (x, y) to the plot
 			my_plotti.add_point(Vector2(x, y))
 		#_reset_valuesCourbe()
 	#print("Plot updated with points!")
+
+	# Record the result into the Histogramm
+	if graph_mode == GraphMode.HISTOGRAM:
+		if time >= 10 and time <= 20:
+			var p:int = int(((time-10)*10))
+			histo[p]+=1
+			if histo[p] > histo_max:
+				histo_max = histo[p]
+
 	return time
 
 
@@ -369,21 +379,21 @@ func reset_parameters_total():
 
 	#### ex reset_values_when_Sobol()
 	# Parametres Morphologiques
-	Vt = %Vt.value
-	Vc = %Vc.value
-	Valg = %Valg.value
-	Valb = %Valb.value
-	Va = %Va.value
-	Vv = %Vv.value
-	Vaw = %Vaw.value
+	Vt 			= %Vt.value
+	Vc 			= %Vc.value
+	Valg 		= %Valg.value
+	Valb 		= %Valb.value
+	Va 			= %Va.value
+	Vv 			= %Vv.value
+	Vaw 		= %Vaw.value
 	# Parametres Physiologiques
-	Q = %Q.value
-	K1 = %K1.value # coef de diffusion respiratoire
-	K2 = %K2.value # coef de diffusion alveolo capilaire
-	K3 = %K3.value
-	vent = %Vent.value
+	Q 			= %Q.value
+	K1 			= %K1.value # coef de diffusion respiratoire
+	K2 			= %K2.value # coef de diffusion alveolo capilaire
+	K3 			= %K3.value
+	vent 		= %Vent.value
 
-	patm = 101325.0
+	patm 		= 101325.0
 	diving_time = [1,null,null,null,null,null,null,null,null,null]
 	diving_deep = [10,null,null,null,null,null,null,null,null,null]
 	####
@@ -454,6 +464,8 @@ func reset_parameters_total():
 #endregion
 
 
+enum PlayMode  {STOP, SINGLE, SOBOL, MULTIPLE}
+enum GraphMode {NONE, SATURATION, HISTOGRAM}
 
 ###############################################################
 #Analyse de sobol 1 tissue
@@ -475,14 +487,19 @@ var ax12 : Array[float] = [];  var bx12 : Array[float] = []
 var start_time:int = 0
 var end_time:int   = 0
 var histo:Array    = []
+var histo_max:float= 0
 var M:int = 1 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plusieurs Sobol)
 var num_sobol_experience:int = 0
 var  N:int = 100 # Nombre d'echantillon
 
-enum PlayMode {STOP, SINGLE, SOBOL, MULTIPLE}
 
-var play_mode:PlayMode = PlayMode.STOP
+var play_mode:PlayMode 		= PlayMode.STOP
+var graph_mode:GraphMode 	= GraphMode.HISTOGRAM
 
+
+# ************************
+# MAIN SIMULATION FUNCTION
+# ************************
 func _process(_delta: float) -> void:
 	if play_mode == PlayMode.MULTIPLE:
 		if num_sobol_experience < M:
@@ -494,10 +511,13 @@ func _process(_delta: float) -> void:
 			
 	if play_mode == PlayMode.SOBOL:
 		one_sobol_experimentation()
+# ************************
+
+
 
 func _on_single_simulation() -> void:
 	play_mode = PlayMode.SINGLE
-	single_simu([Vt,Vc,Valg,Valb,Va,Vv,Vaw,Q,K1,K2,K3,vent], true)
+	single_simu([Vt,Vc,Valg,Valb,Va,Vv,Vaw,Q,K1,K2,K3,vent])
 	play_mode = PlayMode.STOP
 
 func _on_multiple_sobol_experimentation() ->void:
@@ -512,7 +532,9 @@ func _on_multiple_sobol_experimentation() ->void:
 
 func _on_one_sobol_experimentation() -> void:
 	N = %N.value
-	play_mode = PlayMode.SOBOL
+	play_mode 	= PlayMode.SOBOL
+	graph_mode	= GraphMode.HISTOGRAM
+
 	#%ProgressBarMono.max_value = 6
 	#%ProgressBarMono.value = 1
 	one_sobol_stage = 0
@@ -534,7 +556,7 @@ var S : Array[float]
 var ST : Array[float]
 var VY
 func one_sobol_experimentation() -> void:
-	var div = %Div.value
+	var div = %Div.value # Nb of divisions in the histogram
 
 	if DEBUG == 1:
 		if one_sobol_stage == 0:
@@ -542,7 +564,7 @@ func one_sobol_experimentation() -> void:
 		else:
 			print()
 		print(">>>>> one_sobol_stage = " + str(one_sobol_stage) + " <<<<<<")
-		display_parameters()
+	display_parameters()
 
 	var pgr_b:float = ( (l+0.0)/N+(one_sobol_stage/6.0) ) * 50.0    #(one_sobol_stage + l) / (6.0 + N)
 	if DEBUG == 2:
@@ -625,17 +647,11 @@ func one_sobol_experimentation() -> void:
 		for ll in range(N):
 			#print ("ll="+str(ll))
 			#toto = ll
-			YA[ll] = single_simu([ ax1[ll], ax2[ll], ax3[ll], ax4[ll], ax5[ll], ax6[ll], ax7[ll], ax8[ll], ax9[ll], ax10[ll], ax11[ll], ax12[ll] ], false)
-			
-			if YA[ll]>= 10 and YA[ll]<=20:
-				var p:int = int(((YA[ll]-10)*10))
-				histo[p]+=1
-				
-			YB[ll] = single_simu([ bx1[ll], bx2[ll], bx3[ll], bx4[ll], bx5[ll], bx6[ll], bx7[ll], bx8[ll], bx9[ll], bx10[ll], bx11[ll], bx12[ll] ], false)
-			if YB[ll]>= 10 and YB[ll]<=20:
-				var p:int = int(((YB[ll]-10)*10))
-				histo[p]+=1
-				
+			YA[ll] = single_simu([ ax1[ll], ax2[ll], ax3[ll], ax4[ll], ax5[ll], ax6[ll], ax7[ll], ax8[ll], ax9[ll], ax10[ll], ax11[ll], ax12[ll] ])
+			YB[ll] = single_simu([ bx1[ll], bx2[ll], bx3[ll], bx4[ll], bx5[ll], bx6[ll], bx7[ll], bx8[ll], bx9[ll], bx10[ll], bx11[ll], bx12[ll] ])				
+
+		if graph_mode == GraphMode.HISTOGRAM:
+			display_histogram()
 
 		print("3 - " + str(Time.get_ticks_msec() ) )
 		one_sobol_stage = 3
@@ -660,21 +676,23 @@ func one_sobol_experimentation() -> void:
 			#YAB1[l] = set_model_parameters_for_sobol(ax1[l], bx2[l], ax3[l])
 			## i = 2 : on prend x3 de B, les autres de A
 			#YAB2[l] = set_model_parameters_for_sobol(ax1[l], ax2[l], bx3[l])
-		YAB0[l] = single_simu([ bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB1[l] = single_simu([ ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB2[l] = single_simu([ ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB3[l] = single_simu([ ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB4[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB5[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB6[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB7[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB8[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l] ], false)
-		YAB9[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l] ], false)
-		YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ], false)
-		YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ], false)
+		YAB0[l] = single_simu([ bx1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB1[l] = single_simu([ ax1[l], bx2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB2[l] = single_simu([ ax1[l], ax2[l], bx3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB3[l] = single_simu([ ax1[l], ax2[l], ax3[l], bx4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB4[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], bx5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB5[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], bx6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB6[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], bx7[l], ax8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB7[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], bx8[l], ax9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB8[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], bx9[l], ax10[l], ax11[l], ax12[l] ])
+		YAB9[l] = single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], bx10[l], ax11[l], ax12[l] ])
+		YAB10[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], bx11[l], ax12[l] ])
+		YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ])
 
 		l = l + 1
 		if l >= N:
+			if graph_mode == GraphMode.HISTOGRAM:
+				display_histogram()
 			print("5 - " + str(Time.get_ticks_msec() ) )
 			one_sobol_stage = 4
 		return
@@ -780,7 +798,7 @@ func one_sobol_experimentation() -> void:
 		display_text += "K1 (x9)   :   %.4f                             |   %.4f\n" % [S[8], ST[8]]
 		display_text += "K2 (x10)   :   %.4f                            |   %.4f\n" % [S[9], ST[9]]
 		display_text += "K3 (11)   :   %.4f                             |   %.4f\n" % [S[10], ST[10]]
-		display_text += "vent (12)   :   %.4f                          |   %.4f\n" % [S[11], ST[11]]
+		display_text += "vent (12)   :   %.4f                           |   %.4f\n" % [S[11], ST[11]]
 		if DEBUG == 1:
 			print(histo)
 		creer_dossier_si_absent(save_folder)
@@ -793,7 +811,8 @@ func one_sobol_experimentation() -> void:
 		#capture_screenshot()
 		
 		#sauvegarder_resultats_json(chemin, histo)
-		histo=[]
+		histo 		= []
+		histo_max 	= 0
 
 		# capture_screenshot()
 		# Sᵢ : Indice de Sobol de premier ordre
@@ -818,70 +837,91 @@ func one_sobol_experimentation() -> void:
 func display_parameters() :
 	if num_sobol_experience > 0 and num_sobol_experience < M-1:
 		return
-	print("***************************************************************************************")
-	print("M =", M)
-	print("N =", N)
-	print("num_sobol_experience =", num_sobol_experience)
-	print("vent =", vent)
-	print("Vaw =", Vaw)
-	print("Valg =", Valg)
-	print("Valb =", Valb)
-	print("Q =", Q)
-	print("Va =", Va)
-	print("Vv =", Vv)
-	print("patm =", patm)
-	print("fn2 =", fn2)
-	print("diving_time =", diving_time)
-	print("diving_deep =", diving_deep)
 
-	print("alpha_n2 =", alpha_n2)
-	print("ph2o =", ph2o)
-	print("K1 =", K1)
-	print("K2 =", K2)
-	print("K3 =", K3)
-	print("R =", R)
-	print("T =", T)
-	print("tmp_t =", tmp_t)
-	print("tmp_s =", tmp_s)
-	print("time =", time)
-	print("dtINI =", dtINI)
-	print("dt =", dt)
-	print("diving_stage =", diving_stage)
-	print("iteration =", iteration)
-	print("Vc =", Vc)
+	# Display param values in the UI
+	%LblVt.text 	= "= " + str(Vt).pad_decimals(4)
+	%LblVc.text 	= "= " + str(Vc).pad_decimals(6)
+	%LblValg.text 	= "= " + str(Valg).pad_decimals(5)
+	%LblValb.text 	= "= " + str(Valb).pad_decimals(6)
+	%LblVa.text 	= "= " + str(Va).pad_decimals(5)
+	%LblVv.text 	= "= " + str(Vv).pad_decimals(5)
+	%LblVaw.text 	= "= " + str(Vaw).pad_decimals(5)
+	%LblQ.text 		= "= " + str(Q).pad_decimals(5)
+	%LblK1.text 	= "= " + str(K1).pad_decimals(8)
+	%LblK2.text 	= "= " + str(K2).pad_decimals(8)
+	%LblK3.text 	= "= " + str(K3).pad_decimals(8)
+	%LblVent.text 	= "= " + str(vent).pad_decimals(5)
 
-	print("kn2 =", kn2)
-	print("pp_N2_c_t0 =", pp_N2_c_t0)
-	print("pp_N2_c_t1 =", pp_N2_c_t1)
-	print("pp_N2_ti_t0 =", pp_N2_ti_t0)
-	print("pp_N2_ti_t1 =", pp_N2_ti_t1)
-	print("Vt =", Vt)
+	# Display param values in the console
+	if DEBUG == 1:
+		print("***************************************************************************************")
+		print("M =", M)
+		print("N =", N)
+		print("num_sobol_experience =", num_sobol_experience)
+		print("vent =", vent)
+		print("Vaw =", Vaw)
+		print("Valg =", Valg)
+		print("Valb =", Valb)
+		print("Q =", Q)
+		print("Va =", Va)
+		print("Vv =", Vv)
+		print("patm =", patm)
+		print("fn2 =", fn2)
+		print("diving_time =", diving_time)
+		print("diving_deep =", diving_deep)
 
-	print("pp_N2_air =", pp_N2_air)
+		print("alpha_n2 =", alpha_n2)
+		print("ph2o =", ph2o)
+		print("K1 =", K1)
+		print("K2 =", K2)
+		print("K3 =", K3)
+		print("R =", R)
+		print("T =", T)
+		print("tmp_t =", tmp_t)
+		print("tmp_s =", tmp_s)
+		print("time =", time)
+		print("dtINI =", dtINI)
+		print("dt =", dt)
+		print("diving_stage =", diving_stage)
+		print("iteration =", iteration)
+		print("Vc =", Vc)
 
-	print("pp_N2_aw_t0 =", pp_N2_aw_t0)
-	print("pp_N2_aw_t1 =", pp_N2_aw_t1)
+		print("kn2 =", kn2)
+		print("pp_N2_c_t0 =", pp_N2_c_t0)
+		print("pp_N2_c_t1 =", pp_N2_c_t1)
+		print("pp_N2_ti_t0 =", pp_N2_ti_t0)
+		print("pp_N2_ti_t1 =", pp_N2_ti_t1)
+		print("Vt =", Vt)
 
-	print("pp_N2_alv_t0 =", pp_N2_alv_t0)
-	print("pp_N2_alv_t1 =", pp_N2_alv_t1)
+		print("pp_N2_air =", pp_N2_air)
 
-	print("pp_N2_alb_t0 =", pp_N2_alb_t0)
-	print("pp_N2_alb_t1 =", pp_N2_alb_t1)
+		print("pp_N2_aw_t0 =", pp_N2_aw_t0)
+		print("pp_N2_aw_t1 =", pp_N2_aw_t1)
 
-	print("pp_N2_v_t0 =", pp_N2_v_t0)
-	print("pp_N2_v_t1 =", pp_N2_v_t1)
+		print("pp_N2_alv_t0 =", pp_N2_alv_t0)
+		print("pp_N2_alv_t1 =", pp_N2_alv_t1)
 
-	print("pp_N2_a_t0 =", pp_N2_a_t0)
-	print("pp_N2_a_t1 =", pp_N2_a_t1)
+		print("pp_N2_alb_t0 =", pp_N2_alb_t0)
+		print("pp_N2_alb_t1 =", pp_N2_alb_t1)
 
+		print("pp_N2_v_t0 =", pp_N2_v_t0)
+		print("pp_N2_v_t1 =", pp_N2_v_t1)
+
+		print("pp_N2_a_t0 =", pp_N2_a_t0)
+		print("pp_N2_a_t1 =", pp_N2_a_t1)
+
+func display_histogram() :
+	%Graph2D.remove_all()
+	my_plotti = %Graph2D.add_plot_item("Histogram",Color(0.3, 0.5, 0.7), 1.0)
+	%Graph2D.y_max = histo_max
+	for x in range(%Div.value):
+		my_plotti.add_point(Vector2(x, histo[x]))
 
 func _on_remove_all_plots_pressed() -> void:
-	$TabContainer/Graph/Graph2D.remove_all()
+	%Graph2D.remove_all()
 	print("press remove !")
-	
 
 #endregion
-
 
 # **********************
 # Export des resultats
