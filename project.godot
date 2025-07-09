@@ -15,6 +15,10 @@ run/main_scene="res://dive_pp_n2_mono.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="uid://dev3kr3ovimk"
 
+[display]
+
+window/stretch/aspect="expand"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

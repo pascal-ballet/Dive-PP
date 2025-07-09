@@ -587,13 +587,12 @@ func one_sobol_experimentation() -> void:
 		one_sobol_stage = 1
 		return
 
-
 	if one_sobol_stage == 1:
-
 		# ─────────────────────────────────────────────────────────────
 		# 1) Génération des échantillons  A  et  B  (séparés par variable)
 		# ─────────────────────────────────────────────────────────────
-		
+		%LblStage.text = "Generating Sobol samples (N = " + str(N) + ")"
+
 		ax1.resize(N); ax2.resize(N); ax3.resize(N); ax4.resize(N); ax5.resize(N); ax6.resize(N); ax7.resize(N); ax8.resize(N); ax9.resize(N); ax10.resize(N); ax11.resize(N); ax12.resize(N)
 		bx1.resize(N); bx2.resize(N); bx3.resize(N); bx4.resize(N); bx5.resize(N); bx6.resize(N); bx7.resize(N); bx8.resize(N); bx9.resize(N); bx10.resize(N); bx11.resize(N); bx12.resize(N)
 		
@@ -612,7 +611,7 @@ func one_sobol_experimentation() -> void:
 		var d_K3	:float	= K3 	* %K3.value 	/ 100.0
 		var d_vent	:float	= vent 	* %Vent.value 	/ 100.0
 
-		for ll in range(N):#variation de 20% (+/- 10%)
+		for ll in range(N):#variation (+/- %)
 			ax1[ll]  = Vt 	+ rng.randf_range(-d_Vt, d_Vt);   	bx1[ll] = Vt 	+ rng.randf_range(-d_Vt, d_Vt)
 			ax2[ll]  = Vc 	+ rng.randf_range(-d_Vc, d_Vc); 	bx2[ll] = Vc 	+ rng.randf_range(-d_Vc, d_Vc)
 			ax3[ll]  = Valg + rng.randf_range(-d_Valg, d_Valg);	bx3[ll] = Valg 	+ rng.randf_range(-d_Valg, d_Valg)
@@ -635,6 +634,7 @@ func one_sobol_experimentation() -> void:
 		
 		
 	if one_sobol_stage == 2:
+		%LblStage.text = "2 - Simulating all samples (N = " + str(N) + ")"
 
 		# ─────────────────────────────────────────────────────────────
 		# 2) Évaluations du modèle  f(A)  et  f(B)
@@ -659,11 +659,12 @@ func one_sobol_experimentation() -> void:
 
 
 	if one_sobol_stage == 3:
-
 		# ─────────────────────────────────────────────────────────────
 		# 3) Matrices mixtes  A_Bi  (pick & freeze) 
 		# La méthode vise à évaluer l'influence de chaque variable d’entrée sur la sortie du modèle, en ne changeant qu’une variable à la fois (on la "pick") tandis que les autres restent fixes (on les "freeze").
 		# ─────────────────────────────────────────────────────────────
+		%LblStage.text = "Computing output parameter of 1/2 saturation time, for all samples  (12xN = " + str(12*N) + ")"
+
 		#var YAB0 : Array[float] = [];  var YAB1 : Array[float] = [];  var YAB2 : Array[float] = []; var YAB3 : Array[float] = [];var YAB4 : Array[float] = []; var YAB5 : Array[float] = []; var YAB6 : Array[float] = []; var YAB7 : Array[float] = []; var YAB8 : Array[float] = []; var YAB9 : Array[float] = []; var YAB10 : Array[float] = []; var YAB11 : Array[float] = []
 		YAB0.resize(N);    YAB1.resize(N);    YAB2.resize(N)	;YAB3.resize(N);	YAB4.resize(N);	YAB5.resize(N);	YAB6.resize(N);	YAB7.resize(N);	YAB8.resize(N);	YAB9.resize(N);	YAB10.resize(N);	YAB11.resize(N)
 		print("4 - " + str(Time.get_ticks_msec() ) )
@@ -701,6 +702,8 @@ func one_sobol_experimentation() -> void:
 		# ─────────────────────────────────────────────────────────────
 		# 4) Variance totale de la sortie
 		# ─────────────────────────────────────────────────────────────
+		%LblStage.text = "Computing Variance between all outups"
+
 		all_Y = YA.duplicate()
 		all_Y.append_array(YB)
 		VY = variance(all_Y)
@@ -713,6 +716,8 @@ func one_sobol_experimentation() -> void:
 		# ─────────────────────────────────────────────────────────────
 		# 5) Indices de Sobol  S_i  et  S_Ti
 		# ─────────────────────────────────────────────────────────────
+		%LblStage.text = "Normalizing Sobol values for each 12 parameters"
+
 		S  = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 		ST = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
