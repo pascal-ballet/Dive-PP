@@ -160,6 +160,7 @@ offset = Vector2(104, 0)
 [node name="MutipleSobolMono" type="Button" parent="VBoxContainer/TabContainer/Mono Tissue/ButtonBar"]
 layout_mode = 2
 tooltip_text = "Launch MxN simulations to generate M different Sobol tests. Is useful to compute the variability of the Sobol tests."
+disabled = true
 text = "Multiple Sobol Tests
 with M repetitions"
 
@@ -206,27 +207,6 @@ layout_mode = 2
 theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
 theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 max_value = 100000.0
-value = 2.0
-custom_arrow_step = 1.0
-
-[node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/NM"]
-layout_mode = 2
-tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each interval is equals to N (number of Simulation for One Sobol Experimentation)."
-mouse_filter = 0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Histo = "
-
-[node name="Div" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/NM"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time
-between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each
-interval is equals to N (number of Simulation
-for One Sobol Experimentation)."
-theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
-theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
-min_value = 1.0
-max_value = 1000.0
 value = 100.0
 custom_arrow_step = 1.0
 
@@ -241,6 +221,63 @@ layout_mode = 2
 theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
 theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
 value = 2.0
+custom_arrow_step = 1.0
+
+[node name="Label5" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Histogram (only for Sobol)"
+label_settings = SubResource("LabelSettings_eovu1")
+
+[node name="Histo" type="HBoxContainer" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/Histo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "t min = "
+
+[node name="MinHisto" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/Histo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
+max_value = 100000.0
+value = 10.0
+custom_arrow_step = 1.0
+
+[node name="Label3" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/Histo"]
+layout_mode = 2
+tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each interval is equals to N (number of Simulation for One Sobol Experimentation)."
+mouse_filter = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "t Max = "
+
+[node name="MaxHisto" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/Histo"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Number of divisions recording all half-timel results statistics. For example, how many simulations have finished with a hal-time
+between 60 and 61 secondes, how many between 61 and 62, etc. The sum of each
+interval is equals to N (number of Simulation
+for One Sobol Experimentation)."
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
+min_value = 1.0
+max_value = 1000.0
+value = 20.0
+custom_arrow_step = 1.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/Histo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Div = "
+
+[node name="Div" type="SpinBox" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters/Histo"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/up_icon_modulate = Color(0, 0, 0, 1)
+theme_override_colors/down_icon_modulate = Color(0, 0, 0, 1)
+value = 20.0
 custom_arrow_step = 1.0
 
 [node name="LblMorphological" type="Label" parent="VBoxContainer/TabContainer/Mono Tissue/MainFrame/ScrollContainer/MonoParameters"]

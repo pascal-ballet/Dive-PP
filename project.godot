@@ -17,6 +17,8 @@ config/icon="uid://dev3kr3ovimk"
 
 [display]
 
+window/size/viewport_width=1900
+window/size/viewport_height=1000
 window/stretch/aspect="expand"
 
 [rendering]

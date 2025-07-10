@@ -289,11 +289,14 @@ func single_simu(params:Array) -> float:
 	# Record the result into the Histogramm
 	if graph_mode == GraphMode.HISTOGRAM:
 		var div = %Div.value
-		# if time >= 10 and time <= 20:
-		var p:int = int(floor(time*div/duration))
-		histo_curve[p]+=1
-		if histo_curve[p] > histo_max:
-			histo_max = histo_curve[p]
+		var t_min:float = %MinHisto.value
+		var t_max:float = %MaxHisto.value
+		if time >= t_min and time <= t_max:
+			var t_length:float = t_max - t_min
+			var p:int = int(floor( (time-t_min) * div / t_length))
+			histo_curve[p]+=1
+			if histo_curve[p] > histo_max:
+				histo_max = histo_curve[p]
 
 
 	return time
@@ -702,9 +705,9 @@ func one_sobol_experimentation() -> void:
 		YAB11[l]= single_simu([ ax1[l], ax2[l], ax3[l], ax4[l], ax5[l], ax6[l], ax7[l], ax8[l], ax9[l], ax10[l], ax11[l], bx12[l] ])
 
 		l = l + 1
+		if graph_mode == GraphMode.HISTOGRAM:
+			display_histogram()
 		if l >= N:
-			if graph_mode == GraphMode.HISTOGRAM:
-				display_histogram()
 			print("5 - " + str(Time.get_ticks_msec() ) )
 			one_sobol_stage = 4
 		return
@@ -779,9 +782,9 @@ func one_sobol_experimentation() -> void:
 		#print("Sobol Analysis end   at " + str(Time.get_ticks_msec() )+"in ms" )
 		print("Sobol Analysis end   at " + str(end_time)+"in ms" )
 		var duration_ms = end_time - start_time
-		var total_seconds:int = duration_ms / 1000
-		var hours = int(total_seconds / 3600)
-		var minutes = int((total_seconds % 3600) / 60)
+		var total_seconds:int = int(floor(duration_ms / 1000.0))
+		var hours = int(floor(total_seconds / 3600.0))
+		var minutes = int(floor((total_seconds % 3600) / 60.0))
 		var seconds = int(total_seconds % 60)
 
 		print("Sobol Analysis duration: %02dh %02dmin %02ds" % [hours, minutes, seconds])
@@ -925,34 +928,46 @@ func display_parameters() :
 		print("pp_N2_a_t0 =", pp_N2_a_t0)
 		print("pp_N2_a_t1 =", pp_N2_a_t1)
 
-func display_histogram() :
-	var duration = 120
-	var x_min = duration
-	var x_max = 0
-	for x in histo_curve.size():
-		if histo_curve[x] > 0:
-			x_min = 0
-	histo_curve.reverse()
-	for x in histo_curve.size():
-		if histo_curve[x] > 0:
-			x_max = histo_curve.size() - x
-	histo_curve.reverse()
 
-	x_max += 10
+
+
+
+
+
+
+
+
+
+
+#region **** TRAITEMENT ****
+#endregion
+func display_histogram() :
+	var div:float 		= %Div.value
+	var t_min:float 	= %MinHisto.value
+	var t_max:float 	= %MaxHisto.value
+	var t_length:float 	= t_max - t_min
 
 	%Graph2D.remove_all()
 	my_plot = %Graph2D.add_plot_item("Histogram",Color(0.3, 0.5, 0.7), 1.0)
+	%Graph2D.y_min = 0
 	%Graph2D.y_max = histo_max
-	%Graph2D.x_min = x_min
-	%Graph2D.x_max = x_max
+	%Graph2D.x_min = t_min #(x_min * duration) / div
+	%Graph2D.x_max = t_max #(x_max * duration) / div
 
-	for x in range(%Div.value):
-		my_plot.add_point(Vector2(x, histo_curve[x]))
+	for x:int in range(div):
+		var t:float = x * ( t_length / div ) + t_min
+		my_plot.add_point(   Vector2( t,  histo_curve[x])   )
+
 
 func display_saturation() :
+	var duration:float 	= 120
+
 	%Graph2D.remove_all()
 	my_plot = %Graph2D.add_plot_item("Saturation",Color(0.0, 0.0, 0.0), 1.0)
+	%Graph2D.y_min = 0
 	%Graph2D.y_max = sat_max
+	%Graph2D.x_min = 0
+	%Graph2D.x_max = duration
 	for i in sat_curve.size():
 		my_plot.add_point(Vector2(sat_curve[i].x, sat_curve[i].y))
 
