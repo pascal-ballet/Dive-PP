@@ -1,5 +1,9 @@
 extends Control
 
+
+# T1/2 => 18 min (avant)
+# aujourd'hui => 40 à 60 min
+
 # ***********************
 # Variables modifiables
 # ***********************
@@ -41,7 +45,6 @@ var diving_stage:int= 1  #iterateur pour le calcule du profil de plongé
 var iteration:int 	= 0 # pas de simulation en cours
 var Vc:float 		= 0.5# colume capilaire
 var Vt:float		= 70 # Tissue Volume
-#var Q: float =4.2#debit sanguin
 const kn2 :float 		= 0.0000619# coef solubiliter azote
 
 # Pressions partielles
@@ -230,7 +233,7 @@ func tissue_mono():
 #region Simulations
 
 # Diagram
-var my_plotti : PlotItem = null
+var my_plot : PlotItem = null
 	
 func single_simu(params:Array) -> float:
 	
@@ -252,40 +255,46 @@ func single_simu(params:Array) -> float:
 	# Parametres stables mais a re-initialiser
 	#_reset_mono()
 
-	if graph_mode == GraphMode.SATURATION:
+	#if graph_mode == GraphMode.SATURATION:
 		# Créer un nouveau plot avec un label unique et une couleur dynamique
-		var grey:int = int(randf()*0.5 + 0.5)
-		my_plotti = %Graph2D.add_plot_item(  
-				"Plot %d" % [%Graph2D.count()],
-				[Color(grey, grey, grey)][%Graph2D.count() % 1],
-				[1.0, 1.0, 1.0].pick_random()
-				)
+		# var grey:int = int(randf()*0.5 + 0.5)
+		# my_plot = %Graph2D.add_plot_item(  
+		# 		"Plot %d" % [%Graph2D.count()],
+		# 		[Color(grey, grey, grey)][%Graph2D.count() % 1],
+		# 		[1.0, 1.0, 1.0].pick_random()
+		# 		)
 	
-	var x: float = 0.0  # Initialize the x value
-	var y: float = 0.0  # Initialize the y value
+	# var x: float = 0.0  # Initialize the x value
+	# var y: float = 0.0  # Initialize the y value
 	
 	var duration:float  = 120
 	var max_points:float = duration / dt
 	var time_dist:int = int(floor(max_points / 1360.0))
-	var half_pressure : float = 75112.41 * 1.5 #TODO a changer par (pression init + pression final)/2 
-	while pp_N2_ti_t0 < half_pressure:
-	#while time < duration:
+	var half_pressure : float = 75112.41 * 1.5 #TODO a changer par (pression init + pression final)/2
+
+	var stop_criteria:bool = false
+
+	while stop_criteria == false: #pp_N2_ti_t0 < half_pressure:
 		one_step_mono() # Simulation of one step
-		if graph_mode == GraphMode.SATURATION and iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
-			x = time  # Increment x 
-			y = pp_N2_ti_t0  # increment  y 
-			# Add the point (x, y) to the plot
-			my_plotti.add_point(Vector2(x, y))
-		#_reset_valuesCourbe()
-	#print("Plot updated with points!")
+		if graph_mode == GraphMode.SATURATION:
+			if iteration % time_dist == 0: #recupere 1 valeur toute les time_dist 
+				sat_curve.append(Vector2(time,pp_N2_ti_t0))
+			if time >= duration:
+				stop_criteria = true
+
+		if graph_mode == GraphMode.HISTOGRAM:
+			if pp_N2_ti_t0 >= half_pressure:
+				stop_criteria = true
 
 	# Record the result into the Histogramm
 	if graph_mode == GraphMode.HISTOGRAM:
-		if time >= 10 and time <= 20:
-			var p:int = int(((time-10)*10))
-			histo[p]+=1
-			if histo[p] > histo_max:
-				histo_max = histo[p]
+		var div = %Div.value
+		# if time >= 10 and time <= 20:
+		var p:int = int(floor(time*div/duration))
+		histo_curve[p]+=1
+		if histo_curve[p] > histo_max:
+			histo_max = histo_curve[p]
+
 
 	return time
 
@@ -484,13 +493,15 @@ var ax9  : Array[float] = [];  var bx9 : Array[float]  = []
 var ax10 : Array[float] = [];  var bx10 : Array[float] = []
 var ax11 : Array[float] = [];  var bx11 : Array[float] = []
 var ax12 : Array[float] = [];  var bx12 : Array[float] = []
-var start_time:int = 0
-var end_time:int   = 0
-var histo:Array    = []
+var start_time:int   = 0
+var end_time:int     = 0
+var sat_curve:Array  = []
+var histo_curve:Array= []
+var sat_max 		 = 75112.41 * 3
 var histo_max:float= 0
-var M:int = 1 # Nombre d'expériences de Sobol (utile pour créer la gaussienne des résultats pour plusieurs Sobol)
+var M:int = 1 # Nombre d'expériences de Sobol (utile pour connaitre la dispertion des indices de Sobol)
 var num_sobol_experience:int = 0
-var  N:int = 100 # Nombre d'echantillon
+var N:int = 100 # Nombre d'echantillon
 
 
 var play_mode:PlayMode 		= PlayMode.STOP
@@ -515,20 +526,17 @@ func _process(_delta: float) -> void:
 
 
 
+# Only ONE simulation with the current parameters
 func _on_single_simulation() -> void:
-	play_mode = PlayMode.SINGLE
-	single_simu([Vt,Vc,Valg,Valb,Va,Vv,Vaw,Q,K1,K2,K3,vent])
+	play_mode 	= PlayMode.SINGLE
+	graph_mode 	= GraphMode.SATURATION
+	sat_curve 	= []
+	display_parameters()
+
+	single_simu( [ %Vt.value, %Vc.value , %Valg.value , %Valb.value , %Va.value ,%Vv.value , %Vaw.value ,
+				   %Q.value , %K1.value , %K2.value , %K3.value , %Vent.value ])
 	play_mode = PlayMode.STOP
-
-func _on_multiple_sobol_experimentation() ->void:
-	M = %M.value
-	play_mode = PlayMode.MULTIPLE
-	#%ProgressBarMono.max_value = M
-	#%ProgressBarMono.value = 1
-
-	# while num_sobol_experience < M:
-	# 	_on_one_sobol_experimentation()
-	# 	num_sobol_experience += 1
+	display_saturation()
 
 func _on_one_sobol_experimentation() -> void:
 	N = %N.value
@@ -539,7 +547,10 @@ func _on_one_sobol_experimentation() -> void:
 	#%ProgressBarMono.value = 1
 	one_sobol_stage = 0
 
-
+func _on_multiple_sobol_experimentation() ->void:
+	M = %M.value
+	play_mode = PlayMode.MULTIPLE
+	graph_mode = GraphMode.NONE
 
 
 
@@ -575,7 +586,7 @@ func one_sobol_experimentation() -> void:
 		l = 0
 		# Initialisation de l'histogramme
 		for i in range(div):
-			histo.append(0)
+			histo_curve.append(0)
 		
 		start_time = Time.get_ticks_msec()
 		print("Sobol Analysis start at " + str(start_time)+" in ms" )
@@ -805,7 +816,7 @@ func one_sobol_experimentation() -> void:
 		display_text += "K3 (11)   :   %.4f                             |   %.4f\n" % [S[10], ST[10]]
 		display_text += "vent (12)   :   %.4f                           |   %.4f\n" % [S[11], ST[11]]
 		if DEBUG == 1:
-			print(histo)
+			print(histo_curve)
 		creer_dossier_si_absent(save_folder)
 		var chemin = get_chemin_fichier(M)
 
@@ -815,8 +826,8 @@ func one_sobol_experimentation() -> void:
 
 		#capture_screenshot()
 		
-		#sauvegarder_resultats_json(chemin, histo)
-		histo 		= []
+		#sauvegarder_resultats_json(chemin, histo_curve)
+		histo_curve 		= []
 		histo_max 	= 0
 
 		# capture_screenshot()
@@ -832,7 +843,6 @@ func one_sobol_experimentation() -> void:
 		return
 
 #endregion
-
 
 # **************************
 #    DISPLAY DATA / PLOTS
@@ -916,15 +926,39 @@ func display_parameters() :
 		print("pp_N2_a_t1 =", pp_N2_a_t1)
 
 func display_histogram() :
+	var duration = 120
+	var x_min = duration
+	var x_max = 0
+	for x in histo_curve.size():
+		if histo_curve[x] > 0:
+			x_min = 0
+	histo_curve.reverse()
+	for x in histo_curve.size():
+		if histo_curve[x] > 0:
+			x_max = histo_curve.size() - x
+	histo_curve.reverse()
+
+	x_max += 10
+
 	%Graph2D.remove_all()
-	my_plotti = %Graph2D.add_plot_item("Histogram",Color(0.3, 0.5, 0.7), 1.0)
+	my_plot = %Graph2D.add_plot_item("Histogram",Color(0.3, 0.5, 0.7), 1.0)
 	%Graph2D.y_max = histo_max
+	%Graph2D.x_min = x_min
+	%Graph2D.x_max = x_max
+
 	for x in range(%Div.value):
-		my_plotti.add_point(Vector2(x, histo[x]))
+		my_plot.add_point(Vector2(x, histo_curve[x]))
+
+func display_saturation() :
+	%Graph2D.remove_all()
+	my_plot = %Graph2D.add_plot_item("Saturation",Color(0.0, 0.0, 0.0), 1.0)
+	%Graph2D.y_max = sat_max
+	for i in sat_curve.size():
+		my_plot.add_point(Vector2(sat_curve[i].x, sat_curve[i].y))
+
 
 func _on_remove_all_plots_pressed() -> void:
 	%Graph2D.remove_all()
-	print("press remove !")
 
 #endregion
 
@@ -954,7 +988,7 @@ func sauvegarder_resultats_json(chemin_complet: String, donnees: Array) -> void:
 	else:
 		push_error("Erreur : Impossible d’ouvrir le fichier : " + chemin_complet)
 func get_chemin_fichier(index: int) -> String:
-	return save_folder + "histo" + str(index) + ".json"	
+	return save_folder + "histo_curve" + str(index) + ".json"	
 	
 func creer_dossier_si_absent(chemin: String) -> void:
 	if not DirAccess.dir_exists_absolute(chemin):
@@ -964,12 +998,10 @@ func creer_dossier_si_absent(chemin: String) -> void:
 	
 #endregion
 
-
-	
-
-# ────────────────────────────────────────────────────────────────────
+# **********************
 # Fonctions utilitaires
-# ────────────────────────────────────────────────────────────────────
+# **********************
+#region utiltaires
 
 func mean(arr: Array[float]) -> float:
 	var s := 0.0
@@ -984,13 +1016,4 @@ func variance(arr: Array[float]) -> float:
 		s2 += d * d
 	return s2 / arr.size()
 	
-	##TODO lse parametre a faire varier 
-		##var V debi ventilatoire
-		##Q debit qaurdiaque
-		##K1 K2 K3
-		##tous les volume 7 
-		##
-	
-
-
-#l=1579 l=1845 l=1853 l=1863 l=1947 l=2077 l=2278 l=2287 l=2314 l=2890
+#endregion
